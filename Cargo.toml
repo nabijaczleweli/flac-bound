@@ -1,0 +1,14 @@
+[package]
+name = "ptiong"
+description = "prium trt brbw"
+# repository = "https://github.com/LoungeCPP/pir-8-emu"
+readme = "README.md"
+license = "MIT"
+version = "0.1.0"
+authors = ["nabijaczleweli <nabijaczleweli@gmail.com>"]
+exclude = ["*.enc"]
+
+
+[dependencies]
+clap = "2.33"
+flac-sys = "0.1"
