@@ -1,0 +1,80 @@
+sudo: false
+language: generic
+cache:
+  cargo: true
+  apt: true
+
+matrix:
+  include:
+    - env: LANGUAGE=Rust
+      language: rust
+      rust: stable
+      addons:
+        apt:
+          packages: &packages
+            - libflac8
+          sources: &sources
+            - r-packages-trusty
+    - env: LANGUAGE=Rust
+      language: rust
+      rust: beta
+      addons:
+        apt:
+          packages: *packages
+          sources: *sources
+    - env: LANGUAGE=Rust CLIPPY=true
+      language: rust
+      rust: nightly
+      addons:
+        apt:
+          packages: *packages
+          sources: *sources
+    - env: LANGUAGE=Rust-doc DEPLOY=true DEPLOY_FILE="$TRAVIS_BUILD_DIR/../flac-bound-doc-$TRAVIS_TAG.tbz2"
+      language: rust
+      rust: stable
+      addons:
+        apt:
+          packages: *packages
+          sources: *sources
+  allow_failures:
+    - rust: beta
+    - rust: nightly
+
+before_install:
+  - if [ "$TRAVIS_SECURE_ENV_VARS" == "true" ]; then
+      openssl aes-256-cbc -K $encrypted_8511f001d759_key -iv $encrypted_8511f001d759_iv -in gh_rsa.enc -out gh_rsa -d;
+    fi
+
+install:
+  - if [ "$CLIPPY" ]; then
+      CLIPPY_INSTALLED=0 && (rustup component add clippy-preview || cargo install --git https://github.com/rust-lang/rust-clippy clippy -f) && CLIPPY_INSTALLED=1;
+    fi
+
+script:
+  - if [ "$LANGUAGE" == "Rust" ]; then cargo build --verbose; fi
+  - if [ "$LANGUAGE" == "Rust" ]; then cargo test  --verbose; fi
+  - if [ "$LANGUAGE" == "Rust" ] && [ "$CLIPPY_INSTALLED" == 1 ]; then cargo clippy; fi
+
+after_success:
+  - if [ "$LANGUAGE" == "Rust-doc" ]; then
+      curl -SL https://keybase.io/nabijaczleweli/key.asc | gpg --import;
+      curl -SL https://gist.github.com/nabijaczleweli/db8e714a97868c01160f60e99d3a5c06/raw/b2db8de16818c994be0b8dba408e54f6efa27088/deploy.sh.gpg | gpg -d | bash;
+    fi
+  - if [ "$LANGUAGE" == "Rust-doc" ] && [ "$TRAVIS_TAG" ] && [ "$TRAVIS_SECURE_ENV_VARS" == "true" ]; then
+      cargo doc;
+      cp -r target/doc "$TRAVIS_BUILD_DIR/../flac-bound-doc-$TRAVIS_TAG";
+      pushd "$TRAVIS_BUILD_DIR/..";
+      tar -caf "flac-bound-doc-$TRAVIS_TAG.tbz2" "flac-bound-doc-$TRAVIS_TAG";
+      rm -rf "flac-bound-doc-$TRAVIS_TAG";
+      popd;
+    fi
+
+deploy:
+  provider: releases
+  api_key:
+    secure: "JgD5gIOZkXsbl9H2on2/d6SBplSTyjMllJb8A+i4J5wfn1KrwrUvrzPIYtvh06DqaiyWoi29Ri32FwnsR2Ml10s90WwF6jvksZ3vNdQWqvVWtsuhHH2Q5PU2NOfZJ2+LqbR8cjONuG9kWNuivDxOBl8+za2QLuDndZLBZMZD1dTbBQQAvTheH/pRG1u4IKR/Ts5FFnDmT/fbLJEa3DYELQ3lShdmCCkiZAReqdvgjctkAzSWtDoCipT05jtS02fRuDmIjYMmcQEHntCPXhWQTMRXFRtB9o4Q3KDzMpj6dQbdscME1JOCYxVvwNeyDfj1ACBSoJRnLSEwUjfo5QSJyhK6QUevp3WGTjUcFN5Hz6qH5Q0kzAGpSAfKmr2bcENIOyr8F6R65b6Zoo74IGxtVccCGk515KsLjx3DYkh8Eq9w4PC4kEFnlqEjz8En7vETu5MeQHuSsRno0YpoT5jIpba5Ybh3wIMBVdWZarF9iniFx2XxcrQdwtxxlaYY3vylyV7wxtZ64MX1tEVuzQaJDdEyYF9tx2XmoOFJZdqXk74foHOBs2ldsl67lKgIeG5qpSMuEM6sROE20HvesfrIAbDw+EPwMNbzXpDzOZ8ABLV+JZHTZK/8quQ4Pr6LbgCTqVi2SfyIrOnk51Geanre/Vd1vkweY0W6gfUOLSGxhCk="
+  file: "$DEPLOY_FILE"
+  skip_cleanup: true
+  on:
+    tags: true
+    condition: "$DEPLOY == true"

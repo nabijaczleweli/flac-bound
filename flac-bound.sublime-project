@@ -4,7 +4,7 @@
 		{
 			"working_dir": "$project_path",
 			"shell_cmd": "cargo build --color always && cargo test --color always",
-			"name": "Build ptiong",
+			"name": "Build flac-bound",
 
 			"target": "ansi_color_build",
 			"syntax": "Packages/ANSIescape/ANSI.sublime-syntax"
@@ -12,7 +12,7 @@
 		{
 			"working_dir": "$project_path",
 			"shell_cmd": "cargo doc --color always",
-			"name": "Document ptiong",
+			"name": "Document flac-bound",
 
 			"target": "ansi_color_build",
 			"syntax": "Packages/ANSIescape/ANSI.sublime-syntax"
@@ -27,14 +27,14 @@
 		},
 		{
 			"follow_symlinks": true,
-			"name": "External data",
-			"path": "ext"
+			"name": "Tests",
+			"path": "tests"
 		},
 		{
 			"follow_symlinks": true,
 			"name": "Build scripts",
 			"path": ".",
-			"file_include_patterns": ["Cargo.*", "*.yml", "*Makefile"],
+			"file_include_patterns": ["Cargo.*", "*.yml"],
 			"folder_exclude_patterns": ["*"]
 		},
 	]

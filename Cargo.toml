@@ -1,14 +1,17 @@
 [package]
-name = "ptiong"
-description = "prium trt brbw"
-# repository = "https://github.com/LoungeCPP/pir-8-emu"
+name = "flac-bound"
+description = "FLAC encoding via libflac FFI"
+documentation = "https://rawcdn.githack.com/nabijaczleweli/flac-bound/doc/flac_bound/index.html"
+repository = "https://github.com/nabijaczleweli/flac-bound"
 readme = "README.md"
+keywords = ["flac", "encoding", "encoder", "encode"]
+categories = ["api-bindings"]
 license = "MIT"
+# Remember to also update in appveyor.yml
 version = "0.1.0"
 authors = ["nabijaczleweli <nabijaczleweli@gmail.com>"]
 exclude = ["*.enc"]
 
 
 [dependencies]
-clap = "2.33"
 flac-sys = "0.1"
