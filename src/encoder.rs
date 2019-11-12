@@ -1,15 +1,30 @@
-use flac_sys::{FLAC__StreamEncoder, FLAC__bool, FLAC__stream_encoder_new, FLAC__stream_encoder_delete, FLAC__stream_encoder_set_ogg_serial_number,
-               FLAC__stream_encoder_set_verify, FLAC__stream_encoder_set_streamable_subset, FLAC__stream_encoder_set_channels,
-               FLAC__stream_encoder_set_bits_per_sample, FLAC__stream_encoder_set_sample_rate, FLAC__stream_encoder_set_compression_level,
-               FLAC__stream_encoder_set_blocksize, FLAC__stream_encoder_set_do_mid_side_stereo, FLAC__stream_encoder_set_loose_mid_side_stereo,
-               FLAC__stream_encoder_set_apodization, FLAC__stream_encoder_set_max_lpc_order, FLAC__stream_encoder_set_qlp_coeff_precision,
-               FLAC__stream_encoder_set_do_qlp_coeff_prec_search, FLAC__stream_encoder_set_do_escape_coding,
+use flac_sys::{FLAC__StreamEncoder, FLAC__StreamEncoderInitStatus, FLAC__bool, FLAC__stream_encoder_new, FLAC__stream_encoder_delete,
+               FLAC__stream_encoder_set_ogg_serial_number, FLAC__stream_encoder_set_verify, FLAC__stream_encoder_set_streamable_subset,
+               FLAC__stream_encoder_set_channels, FLAC__stream_encoder_set_bits_per_sample, FLAC__stream_encoder_set_sample_rate,
+               FLAC__stream_encoder_set_compression_level, FLAC__stream_encoder_set_blocksize, FLAC__stream_encoder_set_do_mid_side_stereo,
+               FLAC__stream_encoder_set_loose_mid_side_stereo, FLAC__stream_encoder_set_apodization, FLAC__stream_encoder_set_max_lpc_order,
+               FLAC__stream_encoder_set_qlp_coeff_precision, FLAC__stream_encoder_set_do_qlp_coeff_prec_search, FLAC__stream_encoder_set_do_escape_coding,
                FLAC__stream_encoder_set_do_exhaustive_model_search, FLAC__stream_encoder_set_min_residual_partition_order,
                FLAC__stream_encoder_set_max_residual_partition_order, FLAC__stream_encoder_set_rice_parameter_search_dist,
-               FLAC__stream_encoder_set_total_samples_estimate /* , FLAC__stream_encoder_set_metadata */};
+               FLAC__stream_encoder_set_total_samples_estimate /* , FLAC__stream_encoder_set_metadata */, FLAC__stream_encoder_init_file,
+               FLAC__stream_encoder_init_ogg_file, FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK};
+use std::ffi::{CString, CStr};
+use std::convert::TryFrom;
 use std::os::raw::c_long;
+use std::path::Path;
 use std::{mem, ptr};
-use std::ffi::CStr;
+
+
+/// extract this
+pub enum FlacEncoderInitError {}
+
+impl TryFrom<FLAC__StreamEncoderInitStatus> for FlacEncoderInitError {
+    type Error = ();
+
+    fn try_from(_: FLAC__StreamEncoderInitStatus) -> Result<FlacEncoderInitError, ()> {
+        Err(())
+    }
+}
 
 
 /// The [stream encoder](https://xiph.org/flac/api/group__flac__stream__encoder.html) can encode to native FLAC,
@@ -157,6 +172,7 @@ use std::ffi::CStr;
 /// **Note**:<br />
 /// `FLAC__stream_encoder_finish()` resets all settings to the constructor defaults.
 #[derive(Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(transparent)]
 pub struct FlacEncoder(*mut FLAC__StreamEncoder);
 
 impl FlacEncoder {
@@ -179,8 +195,91 @@ impl Drop for FlacEncoder {
 
 
 /// Wrapper around a FLAC encoder for configuring the output settings.
+///
+/// `FILE*`/stream constructors unsupported as of yet
 #[derive(Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(transparent)]
 pub struct FlacEncoderConfig(*mut FLAC__StreamEncoder);
+
+impl FlacEncoderConfig {
+    /// Initialize the encoder instance to encode native FLAC files.
+    ///
+    /// This flavor of initialization sets up the encoder to encode to a plain
+    /// FLAC file. If POSIX fopen() semantics are not sufficient (for example,
+    /// with Unicode filenames on Windows), you must use
+    /// `FLAC__stream_encoder_init_FILE()`, or `FLAC__stream_encoder_init_stream()`
+    /// and provide callbacks for the I/O.
+    ///
+    /// The file will be opened with `fopen()`.
+    pub fn init_file<P: AsRef<Path>>(self, filename: &P /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */)
+                                     -> Result<FlacEncoder, FlacEncoderInitError> {
+        self.init_file_impl(filename.as_ref())
+    }
+
+    pub fn init_file_impl(self, filename: &Path /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */)
+                          -> Result<FlacEncoder, FlacEncoderInitError> {
+        self.do_init(unsafe { FLAC__stream_encoder_init_file(self.0, FlacEncoderConfig::convert_path(filename).as_ptr(), None, ptr::null_mut()) })
+    }
+
+    /// Initialize the encoder instance to encode Ogg FLAC files.
+    ///
+    /// This flavor of initialization sets up the encoder to encode to a plain
+    /// Ogg FLAC file. If POSIX fopen() semantics are not sufficient (for example,
+    /// with Unicode filenames on Windows), you must use
+    /// `FLAC__stream_encoder_init_ogg_FILE()`, or `FLAC__stream_encoder_init_ogg_stream()`
+    /// and provide callbacks for the I/O.
+    ///
+    /// The file will be opened with `fopen()`.
+    pub fn init_file_ogg<P: AsRef<Path>>(self, filename: &P /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */)
+                                         -> Result<FlacEncoder, FlacEncoderInitError> {
+        self.init_file_impl(filename.as_ref())
+    }
+
+    pub fn init_file_ogg_impl(self, filename: &Path /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */)
+                              -> Result<FlacEncoder, FlacEncoderInitError> {
+        self.do_init(unsafe { FLAC__stream_encoder_init_ogg_file(self.0, FlacEncoderConfig::convert_path(filename).as_ptr(), None, ptr::null_mut()) })
+    }
+
+    /// Initialize the encoder instance to encode native FLAC files.
+    ///
+    /// This flavor of initialization sets up the encoder to encode to a plain
+    /// FLAC file. If POSIX fopen() semantics are not sufficient (for example,
+    /// with Unicode filenames on Windows), you must use
+    /// `FLAC__stream_encoder_init_FILE()`, or `FLAC__stream_encoder_init_stream()`
+    /// and provide callbacks for the I/O.
+    ///
+    /// **Note**:  a proper SEEKTABLE cannot be created when encoding to `stdout` since it is not seekable.
+    pub fn init_stdout<P: AsRef<Path>>(self) -> Result<FlacEncoder, FlacEncoderInitError> {
+        self.do_init(unsafe { FLAC__stream_encoder_init_file(self.0, ptr::null(), None, ptr::null_mut()) })
+    }
+
+    /// Initialize the encoder instance to encode Ogg FLAC files.
+    ///
+    /// This flavor of initialization sets up the encoder to encode to a plain
+    /// Ogg FLAC file. If POSIX fopen() semantics are not sufficient (for example,
+    /// with Unicode filenames on Windows), you must use
+    /// `FLAC__stream_encoder_init_ogg_FILE()`, or `FLAC__stream_encoder_init_ogg_stream()`
+    /// and provide callbacks for the I/O.
+    ///
+    /// **Note**:  a proper SEEKTABLE cannot be created when encoding to `stdout` since it is not seekable.
+    pub fn init_stdout_ogg<P: AsRef<Path>>(self) -> Result<FlacEncoder, FlacEncoderInitError> {
+        self.do_init(unsafe { FLAC__stream_encoder_init_ogg_file(self.0, ptr::null(), None, ptr::null_mut()) })
+    }
+
+    fn convert_path(path: &Path) -> CString {
+        CString::new(path.to_str().expect("non-UTF-8 filename")).expect("filename has internal NULs")
+    }
+
+    // Note: this function is actually self instead of &self, but this simplifies consumer code,
+    //       and the public interfaces are actually self
+    fn do_init(&self, init_result: FLAC__StreamEncoderInitStatus) -> Result<FlacEncoder, FlacEncoderInitError> {
+        if init_result == FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK {
+            Ok(FlacEncoder(self.0))
+        } else {
+            Err(FlacEncoderInitError::try_from(init_result).unwrap())
+        }
+    }
+}
 
 impl Drop for FlacEncoderConfig {
     fn drop(&mut self) {
