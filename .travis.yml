@@ -12,7 +12,7 @@ matrix:
       addons:
         apt:
           packages: &packages
-            - libflac8
+            - libflac-dev
           sources: &sources
             - r-packages-trusty
     - env: LANGUAGE=Rust
@@ -46,6 +46,9 @@ before_install:
     fi
 
 install:
+  - mkdir -p target/debug/deps
+  - cp /usr/lib/x86_64-linux-gnu/libFLAC.a target/debug/deps/libflac.a
+  -
   - if [ "$CLIPPY" ]; then
       CLIPPY_INSTALLED=0 && (rustup component add clippy-preview || cargo install --git https://github.com/rust-lang/rust-clippy clippy -f) && CLIPPY_INSTALLED=1;
     fi
