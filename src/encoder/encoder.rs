@@ -1,5 +1,9 @@
-use self::super::{StreamEncoderContainer, FlacEncoderConfig};
-use flac_sys::FLAC__stream_encoder_new;
+use flac_sys::{FLAC__stream_encoder_new, FLAC__stream_encoder_get_state, FLAC__stream_encoder_get_verify_decoder_state, FLAC__stream_encoder_finish,
+               FLAC__stream_encoder_process, FLAC__stream_encoder_process_interleaved};
+use self::super::{StreamEncoderContainer, FlacEncoderConfig, FlacEncoderState};
+use std::convert::TryFrom;
+use std::os::raw::c_uint;
+use std::{mem, ptr};
 
 
 /// The [stream encoder](https://xiph.org/flac/api/group__flac__stream__encoder.html) can encode to native FLAC,
@@ -158,6 +162,128 @@ impl FlacEncoder {
             Some(FlacEncoderConfig(StreamEncoderContainer(enc)))
         } else {
             None
+        }
+    }
+
+    /// Get the current encoder state.
+    pub fn state(&self) -> FlacEncoderState {
+        FlacEncoderState::try_from(unsafe { FLAC__stream_encoder_get_state((self.0).0) }).unwrap()
+    }
+
+    /// Get the state of the verify stream decoder.
+    ///
+    /// Useful when the stream encoder state is
+    /// `FLAC__STREAM_ENCODER_VERIFY_DECODER_ERROR`.
+    pub fn verify_decoder_state(&self) -> FlacEncoderState {
+        FlacEncoderState::try_from(unsafe { FLAC__stream_encoder_get_verify_decoder_state((self.0).0) }).unwrap()
+    }
+
+    /// Submit data for encoding.
+    ///
+    /// This version allows you to supply the input data via a slice of
+    /// slices, each pointer consisting of the same amount of samples as the first one,
+    /// representing one channel. The samples need not be block-aligned,
+    /// but each channel should have the same number of samples. Each sample
+    /// should be a signed integer, right-justified to the resolution set by
+    /// `FLAC__stream_encoder_set_bits_per_sample()`. For example, if the
+    /// resolution is 16 bits per sample, the samples should all be in the
+    /// range [-32768,32767].
+    ///
+    /// For applications where channel order is important, channels must
+    /// follow the order as described in the
+    /// [frame header](https://xiph.org/flac/format.html#frame_header).
+    ///
+    /// Requires encoder instance to be in OK state.
+    pub fn process(&mut self, buffers: &[&[i32]]) -> Result<(), ()> {
+        if buffers.len() <= 8 {
+            let mut buffer = [ptr::null(); 8];
+            self.process_impl(&mut buffer, buffers)
+        } else {
+            let mut buffer = vec![ptr::null(); buffers.len()];
+            self.process_impl(&mut buffer, buffers)
+        }
+    }
+
+    fn process_impl(&mut self, buffer: &mut [*const i32], buffers: &[&[i32]]) -> Result<(), ()> {
+        let samples = buffers.iter().next().map(|b| b.len()).unwrap_or(0) as c_uint;
+
+        for (pbfr, sbfr) in buffer.iter_mut().zip(buffers) {
+            *pbfr = sbfr.as_ptr();
+        }
+
+        if unsafe { FLAC__stream_encoder_process((self.0).0, buffer.as_ptr(), samples) } != 0 {
+            Ok(())
+        } else {
+            Err(())
+        }
+    }
+
+    /// Submit data for encoding.
+    ///
+    /// This version allows you to supply the input data where the channels
+    /// are interleaved into a single array (i.e. channel0_sample0,
+    /// channel1_sample0, ... , channelN_sample0, channel0_sample1, ...).
+    /// The samples need not be block-aligned but they must be
+    /// sample-aligned, i.e. the first value should be channel0_sample0
+    /// and the last value channelN_sampleM. Each sample should be a signed
+    /// integer, right-justified to the resolution set by
+    /// `FLAC__stream_encoder_set_bits_per_sample()`. For example, if the
+    /// resolution is 16 bits per sample, the samples should all be in the
+    /// range [-32768,32767].
+    ///
+    /// For applications where channel order is important, channels must
+    /// follow the order as described in the
+    /// [frame header](https://xiph.org/flac/format.html#frame_header).
+    ///
+    /// Requires encoder instance to be in OK state.
+    pub fn process_interleaved(&mut self, buffer: &[i32], samples_per_channel: u32) -> Result<(), ()> {
+        if unsafe { FLAC__stream_encoder_process_interleaved((self.0).0, buffer.as_ptr(), samples_per_channel) } != 0 {
+            Ok(())
+        } else {
+            Err(())
+        }
+    }
+
+    /// Finish the encoding process.
+    ///
+    /// Flushes the encoding buffer, releases resources, resets the encoder
+    /// settings to their defaults, and returns the encoder state to
+    /// `FLAC__STREAM_ENCODER_UNINITIALIZED`. Note that this can generate
+    /// one or more write callbacks before returning, and will generate
+    /// a metadata callback.
+    ///
+    /// Note that in the course of processing the last frame, errors can
+    /// occur, so the caller should be sure to check the return value to
+    /// ensure the file was encoded properly.
+    ///
+    /// In the event of a prematurely-terminated encode, it is not strictly
+    /// necessary to call this immediately before `FLAC__stream_encoder_delete()`
+    /// but it is good practice to match every `FLAC__stream_encoder_init_*()`
+    /// with a `FLAC__stream_encoder_finish()`.
+    ///
+    /// This is also called by `drop()`.
+    ///
+    /// Returns `self` if an error occurred processing the last frame, or, if verify
+    /// mode is set (see `FLAC__stream_encoder_set_verify()`), there was a
+    /// verify mismatch; else the config wrapper.
+    ///
+    /// If `Err()`, caller should check the state with `FLAC__stream_encoder_get_state()` for more information about the error.
+    pub fn finish(mut self) -> Result<FlacEncoderConfig, FlacEncoder> {
+        if unsafe { FLAC__stream_encoder_finish((self.0).0) } != 0 {
+            Ok(FlacEncoderConfig(mem::replace(&mut self.0, StreamEncoderContainer(ptr::null_mut()))))
+        } else {
+            Err(self)
+        }
+    }
+}
+
+impl Drop for FlacEncoder {
+    fn drop(&mut self) {
+        if !(self.0).0.is_null() {
+            eprintln!("drop nonnull");
+            unsafe { FLAC__stream_encoder_finish((self.0).0) };
+        } else {
+            eprintln!("drop null");
         }
     }
 }

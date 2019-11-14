@@ -1,5 +1,6 @@
 mod encoder;
 mod config;
+mod state;
 mod error;
 
 use flac_sys::{FLAC__StreamEncoder, FLAC__stream_encoder_delete};
@@ -7,6 +8,7 @@ use std::{mem, ptr};
 
 pub use self::error::FlacEncoderInitError;
 pub use self::config::FlacEncoderConfig;
+pub use self::state::FlacEncoderState;
 pub use self::encoder::FlacEncoder;
 
 
