@@ -1,6 +1,7 @@
 use flac_sys::{FLAC__stream_encoder_new, FLAC__stream_encoder_get_state, FLAC__stream_encoder_get_verify_decoder_state, FLAC__stream_encoder_finish,
                FLAC__stream_encoder_process, FLAC__stream_encoder_process_interleaved};
 use self::super::{StreamEncoderContainer, FlacEncoderConfig, FlacEncoderState};
+use std::marker::PhantomData;
 use std::convert::TryFrom;
 use std::os::raw::c_uint;
 use std::{mem, ptr};
@@ -152,9 +153,9 @@ use std::{mem, ptr};
 /// `FLAC__stream_encoder_finish()` resets all settings to the constructor defaults.
 #[derive(Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(transparent)]
-pub struct FlacEncoder(pub(super) StreamEncoderContainer);
+pub struct FlacEncoder<'out>(pub(super) StreamEncoderContainer, pub(super) PhantomData<&'out mut ()>);
 
-impl FlacEncoder {
+impl<'out> FlacEncoder<'out> {
     /// Create a new stream encoder, in a configuration wrapper, or `None` if one couldn't be allocated.
     pub fn new() -> Option<FlacEncoderConfig> {
         let enc = unsafe { FLAC__stream_encoder_new() };
@@ -268,7 +269,7 @@ impl FlacEncoder {
     /// verify mismatch; else the config wrapper.
     ///
     /// If `Err()`, caller should check the state with `FLAC__stream_encoder_get_state()` for more information about the error.
-    pub fn finish(mut self) -> Result<FlacEncoderConfig, FlacEncoder> {
+    pub fn finish(mut self) -> Result<FlacEncoderConfig, FlacEncoder<'out>> {
         if unsafe { FLAC__stream_encoder_finish((self.0).0) } != 0 {
             Ok(FlacEncoderConfig(mem::replace(&mut self.0, StreamEncoderContainer(ptr::null_mut()))))
         } else {
@@ -277,7 +278,7 @@ impl FlacEncoder {
     }
 }
 
-impl Drop for FlacEncoder {
+impl<'out> Drop for FlacEncoder<'out> {
     fn drop(&mut self) {
         if !(self.0).0.is_null() {
             eprintln!("drop nonnull");

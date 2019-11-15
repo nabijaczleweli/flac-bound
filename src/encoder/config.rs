@@ -6,12 +6,14 @@ use flac_sys::{FLAC__StreamEncoderInitStatus, FLAC__bool, FLAC__stream_encoder_s
                FLAC__stream_encoder_set_do_escape_coding, FLAC__stream_encoder_set_do_exhaustive_model_search,
                FLAC__stream_encoder_set_min_residual_partition_order, FLAC__stream_encoder_set_max_residual_partition_order,
                FLAC__stream_encoder_set_rice_parameter_search_dist,
-               FLAC__stream_encoder_set_total_samples_estimate /* , FLAC__stream_encoder_set_metadata */, FLAC__stream_encoder_init_file,
-               FLAC__stream_encoder_init_ogg_file, FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK};
-use self::super::{StreamEncoderContainer, FlacEncoderInitError, FlacEncoder};
+               FLAC__stream_encoder_set_total_samples_estimate /* , FLAC__stream_encoder_set_metadata */, FLAC__stream_encoder_init_stream,
+               FLAC__stream_encoder_init_ogg_stream, FLAC__stream_encoder_init_file, FLAC__stream_encoder_init_ogg_file,
+               FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK};
+use self::super::{StreamEncoderContainer, FlacEncoderInitError, WriteWrapper, FlacEncoder, flac_encoder_write_write_callback};
+use std::os::raw::{c_long, c_void};
 use std::ffi::{CString, CStr};
+use std::marker::PhantomData;
 use std::convert::TryFrom;
-use std::os::raw::c_long;
 use std::path::Path;
 use std::ptr;
 
@@ -19,12 +21,69 @@ use std::ptr;
 
 /// Wrapper around a FLAC encoder for configuring the output settings.
 ///
-/// `FILE*`/stream constructors unsupported as of yet
+/// `FILE*` constructors unsupported, Write+Seek constructors unsupportable due to https://github.com/rust-lang/rfcs/issues/2035
 #[derive(Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct FlacEncoderConfig(pub(super) StreamEncoderContainer);
 
 impl FlacEncoderConfig {
+    /// Initialize the encoder instance to encode native FLAC streams.
+    ///
+    /// This flavor of initialization sets up the encoder to encode to a
+    /// native FLAC stream. I/O is performed via callbacks to the client.
+    /// For encoding to a plain file via filename or open `FILE*`,
+    /// `FLAC__stream_encoder_init_file()` and `FLAC__stream_encoder_init_FILE()`
+    /// provide a simpler interface.
+    ///
+    /// This function should be called after `FLAC__stream_encoder_new()` and
+    /// `FLAC__stream_encoder_set_*(`) but before `FLAC__stream_encoder_process()`
+    /// or `FLAC__stream_encoder_process_interleaved()`.
+    /// initialization succeeded.
+    ///
+    /// The call to `FLAC__stream_encoder_init_stream()` currently will also
+    /// immediately call the write callback several times, once with the `fLaC`
+    /// signature, and once for each encoded metadata block.
+    pub fn init_write<'out>(self, out: &'out mut WriteWrapper<'out>) -> Result<FlacEncoder<'out>, FlacEncoderInitError> {
+        let result = unsafe {
+            FLAC__stream_encoder_init_stream((self.0).0,
+                                             Some(flac_encoder_write_write_callback),
+                                             None,
+                                             None,
+                                             None,
+                                             out as *mut WriteWrapper as *mut c_void)
+        };
+        self.do_init(result)
+    }
+
+    /// Initialize the encoder instance to encode Ogg FLAC streams.
+    ///
+    /// This flavor of initialization sets up the encoder to encode to a FLAC
+    /// stream in an Ogg container.  I/O is performed via callbacks to the
+    /// client.  For encoding to a plain file via filename or open `FILE*`,
+    /// `FLAC__stream_encoder_init_ogg_file()` and `FLAC__stream_encoder_init_ogg_FILE()`
+    /// provide a simpler interface.
+    ///
+    /// This function should be called after `FLAC__stream_encoder_new()` and
+    /// `FLAC__stream_encoder_set_*()` but before `FLAC__stream_encoder_process()`
+    /// or `FLAC__stream_encoder_process_interleaved()`.
+    /// initialization succeeded.
+    ///
+    /// The call to `FLAC__stream_encoder_init_ogg_stream()` currently will also
+    /// immediately call the write callback several times, once with the `fLaC`
+    /// signature, and once for each encoded metadata block.
+    pub fn init_write_ogg<'out>(self, out: &'out mut WriteWrapper<'out>) -> Result<FlacEncoder<'out>, FlacEncoderInitError> {
+        let result = unsafe {
+            FLAC__stream_encoder_init_ogg_stream((self.0).0,
+                                                 None,
+                                                 Some(flac_encoder_write_write_callback),
+                                                 None,
+                                                 None,
+                                                 None,
+                                                 out as *mut WriteWrapper as *mut c_void)
+        };
+        self.do_init(result)
+    }
+
     /// Initialize the encoder instance to encode native FLAC files.
     ///
     /// This flavor of initialization sets up the encoder to encode to a plain
@@ -35,12 +94,12 @@ impl FlacEncoderConfig {
     ///
     /// The file will be opened with `fopen()`.
     pub fn init_file<P: AsRef<Path>>(self, filename: &P /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */)
-                                     -> Result<FlacEncoder, FlacEncoderInitError> {
+                                     -> Result<FlacEncoder<'static>, FlacEncoderInitError> {
         self.init_file_impl(filename.as_ref())
     }
 
-    pub fn init_file_impl(self, filename: &Path /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */)
-                          -> Result<FlacEncoder, FlacEncoderInitError> {
+    fn init_file_impl(self, filename: &Path /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */)
+                      -> Result<FlacEncoder<'static>, FlacEncoderInitError> {
         let result = unsafe { FLAC__stream_encoder_init_file((self.0).0, FlacEncoderConfig::convert_path(filename).as_ptr(), None, ptr::null_mut()) };
         self.do_init(result)
     }
@@ -55,12 +114,12 @@ impl FlacEncoderConfig {
     ///
     /// The file will be opened with `fopen()`.
     pub fn init_file_ogg<P: AsRef<Path>>(self, filename: &P /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */)
-                                         -> Result<FlacEncoder, FlacEncoderInitError> {
-        self.init_file_impl(filename.as_ref())
+                                         -> Result<FlacEncoder<'static>, FlacEncoderInitError> {
+        self.init_file_ogg_impl(filename.as_ref())
     }
 
-    pub fn init_file_ogg_impl(self, filename: &Path /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */)
-                              -> Result<FlacEncoder, FlacEncoderInitError> {
+    fn init_file_ogg_impl(self, filename: &Path /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */)
+                          -> Result<FlacEncoder<'static>, FlacEncoderInitError> {
         let result = unsafe { FLAC__stream_encoder_init_ogg_file((self.0).0, FlacEncoderConfig::convert_path(filename).as_ptr(), None, ptr::null_mut()) };
         self.do_init(result)
     }
@@ -74,7 +133,7 @@ impl FlacEncoderConfig {
     /// and provide callbacks for the I/O.
     ///
     /// **Note**:  a proper SEEKTABLE cannot be created when encoding to `stdout` since it is not seekable.
-    pub fn init_stdout(self) -> Result<FlacEncoder, FlacEncoderInitError> {
+    pub fn init_stdout(self) -> Result<FlacEncoder<'static>, FlacEncoderInitError> {
         let result = unsafe { FLAC__stream_encoder_init_file((self.0).0, ptr::null(), None, ptr::null_mut()) };
         self.do_init(result)
     }
@@ -88,7 +147,7 @@ impl FlacEncoderConfig {
     /// and provide callbacks for the I/O.
     ///
     /// **Note**:  a proper SEEKTABLE cannot be created when encoding to `stdout` since it is not seekable.
-    pub fn init_stdout_ogg(self) -> Result<FlacEncoder, FlacEncoderInitError> {
+    pub fn init_stdout_ogg(self) -> Result<FlacEncoder<'static>, FlacEncoderInitError> {
         let result = unsafe { FLAC__stream_encoder_init_ogg_file((self.0).0, ptr::null(), None, ptr::null_mut()) };
         self.do_init(result)
     }
@@ -97,9 +156,9 @@ impl FlacEncoderConfig {
         CString::new(path.to_str().expect("non-UTF-8 filename")).expect("filename has internal NULs")
     }
 
-    fn do_init(self, init_result: FLAC__StreamEncoderInitStatus) -> Result<FlacEncoder, FlacEncoderInitError> {
+    fn do_init<'out>(self, init_result: FLAC__StreamEncoderInitStatus) -> Result<FlacEncoder<'out>, FlacEncoderInitError> {
         if init_result == FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK {
-            Ok(FlacEncoder(self.0))
+            Ok(FlacEncoder(self.0, PhantomData))
         } else {
             Err(FlacEncoderInitError::try_from(init_result).unwrap())
         }
