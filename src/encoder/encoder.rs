@@ -281,10 +281,7 @@ impl<'out> FlacEncoder<'out> {
 impl<'out> Drop for FlacEncoder<'out> {
     fn drop(&mut self) {
         if !(self.0).0.is_null() {
-            eprintln!("drop nonnull");
             unsafe { FLAC__stream_encoder_finish((self.0).0) };
-        } else {
-            eprintln!("drop null");
         }
     }
 }

@@ -1,8 +1,7 @@
-use flac_sys::{FLAC__StreamEncoder, FLAC__StreamEncoderWriteStatus, FLAC__StreamEncoderSeekStatus, FLAC__StreamEncoderSeekStatus_FLAC__STREAM_ENCODER_SEEK_STATUS_OK,
-               FLAC__StreamEncoderSeekStatus_FLAC__STREAM_ENCODER_SEEK_STATUS_ERROR, FLAC__StreamEncoderWriteStatus_FLAC__STREAM_ENCODER_WRITE_STATUS_OK,
+use flac_sys::{FLAC__StreamEncoder, FLAC__StreamEncoderWriteStatus, FLAC__StreamEncoderWriteStatus_FLAC__STREAM_ENCODER_WRITE_STATUS_OK,
                FLAC__StreamEncoderWriteStatus_FLAC__STREAM_ENCODER_WRITE_STATUS_FATAL_ERROR};
-use std::io::{SeekFrom, Write, Seek};
 use std::os::raw::{c_uint, c_void};
+use std::io::Write;
 use std::slice;
 
 

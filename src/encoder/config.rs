@@ -18,7 +18,6 @@ use std::path::Path;
 use std::ptr;
 
 
-
 /// Wrapper around a FLAC encoder for configuring the output settings.
 ///
 /// `FILE*` constructors unsupported, Write+Seek constructors unsupportable due to https://github.com/rust-lang/rfcs/issues/2035
@@ -518,86 +517,5 @@ impl FlacEncoderConfig {
     pub fn total_samples_estimate(self, value: u64) -> FlacEncoderConfig {
         unsafe { FLAC__stream_encoder_set_total_samples_estimate((self.0).0, value) };
         self
-    }
-
-    /// Set the metadata blocks to be emitted to the stream before encoding.
-    ///
-    /// A value of `NULL`, `0` implies no metadata; otherwise, supply an
-    /// array of pointers to metadata blocks. The array is non-const since
-    /// the encoder may need to change the *is_last* flag inside them, and
-    /// in some cases update seek point offsets. Otherwise, the encoder will
-    /// not modify or free the blocks. It is up to the caller to free the
-    /// metadata blocks after encoding finishes.
-    ///
-    /// **Note**:<br />
-    /// The encoder stores only copies of the pointers in the *metadata* array;
-    /// the metadata blocks themselves must survive at least until after
-    /// `FLAC__stream_encoder_finish()` returns. Do not free the blocks until then.
-    ///
-    /// **Note**:<br />
-    /// The STREAMINFO block is always written and no STREAMINFO block may
-    /// occur in the supplied array.
-    ///
-    /// **Note**:<br />
-    /// By default the encoder does not create a SEEKTABLE. If one is supplied
-    /// in the *metadata* array, but the client has specified that it does not
-    /// support seeking, then the SEEKTABLE will be written verbatim. However
-    /// by itself this is not very useful as the client will not know the stream
-    /// offsets for the seekpoints ahead of time. In order to get a proper
-    /// seektable the client must support seeking. See next note.
-    ///
-    /// **Note**:<br />
-    /// SEEKTABLE blocks are handled specially. Since you will not know
-    /// the values for the seek point stream offsets, you should pass in
-    /// a SEEKTABLE 'template', that is, a SEEKTABLE object with the
-    /// required sample numbers (or placeholder points), with `0` for the
-    /// *frame_samples* and *stream_offset* fields for each point. If the
-    /// client has specified that it supports seeking by providing a seek
-    /// callback to `FLAC__stream_encoder_init_stream()` or both seek AND read
-    /// callback to `FLAC__stream_encoder_init_ogg_stream()` (or by using
-    /// `FLAC__stream_encoder_init*_file()` or `FLAC__stream_encoder_init*_FILE()`),
-    /// then while it is encoding the encoder will fill the stream offsets in
-    /// for you and when encoding is finished, it will seek back and write the
-    /// real values into the SEEKTABLE block in the stream. There are helper
-    /// routines for manipulating seektable template blocks; see metadata.h:
-    /// `FLAC__metadata_object_seektable_template_*()`. If the client does
-    /// not support seeking, the SEEKTABLE will have inaccurate offsets which
-    /// will slow down or remove the ability to seek in the FLAC stream.
-    ///
-    /// **Note**:<br />
-    /// The encoder instance \b will modify the first `SEEKTABLE` block
-    /// as it transforms the template to a valid seektable while encoding,
-    /// but it is still up to the caller to free all metadata blocks after
-    /// encoding.
-    ///
-    /// **Note**:<br />
-    /// A VORBIS_COMMENT block may be supplied. The vendor string in it
-    /// will be ignored. libFLAC will use it's own vendor string. libFLAC
-    /// will not modify the passed-in VORBIS_COMMENT's vendor string, it
-    /// will simply write it's own into the stream. If no VORBIS_COMMENT
-    /// block is present in the *metadata* array, libFLAC will write an
-    /// empty one, containing only the vendor string.
-    ///
-    /// **Note**:<br /> The Ogg FLAC mapping requires that the VORBIS_COMMENT block be
-    /// the second metadata block of the stream. The encoder already supplies
-    /// the STREAMINFO block automatically. If *metadata* does not contain a
-    /// VORBIS_COMMENT block, the encoder will supply that too. Otherwise, if
-    /// *metadata* does contain a VORBIS_COMMENT block and it is not the
-    /// first, the init function will reorder *metadata* by moving the
-    /// VORBIS_COMMENT block to the front; the relative ordering of the other
-    /// blocks will remain as they were.
-    ///
-    /// **Note**:<br />
-    /// The Ogg FLAC mapping limits the number of metadata blocks per
-    /// stream to `65535`. If *num_blocks* exceeds this the function will
-    /// return `false`.
-    ///
-    /// **Default**: `NULL, 0`
-    ///
-    /// Requires, that *num_blocks* > 65535 if encoding to Ogg FLAC.
-    pub fn metadata(self) -> FlacEncoderConfig {
-        unimplemented!();
-        // FLAC__stream_encoder_set_metadata(self.0);
-        // self
     }
 }
