@@ -16,5 +16,5 @@ fn main() {
             eprintln!("err {}", i);
         }
     }
-    // eprintln!("{:?}", enc.finish());
+    eprintln!("{:?}", enc.finish());
 }

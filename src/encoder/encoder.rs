@@ -12,84 +12,88 @@ use std::{mem, ptr};
 ///
 /// The basic usage of this encoder is as follows:
 ///   * The program creates an instance of an encoder using
-///     `FLAC__stream_encoder_new()`.
-///   * The program overrides the default settings using
-///     `FLAC__stream_encoder_set_*()` functions. At a minimum, the following
+///     [`FlacEncoder::new()`](#method.new).
+///   * The program overrides the default settings using functions in
+///     [`FlacEncoderConfig`](struct.FlacEncoderConfig.html). At a minimum, the following
 ///     functions should be called:
-///       * `FLAC__stream_encoder_set_channels()`
-///       * `FLAC__stream_encoder_set_bits_per_sample()`
-///       * `FLAC__stream_encoder_set_sample_rate()`
-///       * `FLAC__stream_encoder_set_ogg_serial_number()` (if encoding to Ogg FLAC)
-///       * `FLAC__stream_encoder_set_total_samples_estimate()` (if known)
+///       * [`FlacEncoderConfig::channels()`](struct.FlacEncoderConfig.html#method.channels)
+///       * [`FlacEncoderConfig::bits_per_sample()`](struct.FlacEncoderConfig.html#method.bits_per_sample)
+///       * [`FlacEncoderConfig::sample_rate()`](struct.FlacEncoderConfig.html#method.sample_rate)
+///       * [`FlacEncoderConfig::ogg_serial_number()`](struct.FlacEncoderConfig.html#method.ogg_serial_number)
+///         (if encoding to Ogg FLAC)
+///       * [`FlacEncoderConfig::total_samples_estimate()`](struct.FlacEncoderConfig.html#method.total_samples_estimate)
+///         (if known)
 ///   * If the application wants to control the compression level or set its own
 ///     metadata, then the following should also be called:
-///     * `FLAC__stream_encoder_set_compression_level()`
-///     * `FLAC__stream_encoder_set_verify()`
-///     * `FLAC__stream_encoder_set_metadata()`
+///     * [`FlacEncoderConfig::compression_level()`](struct.FlacEncoderConfig.html#method.compression_level)
+///     * [`FlacEncoderConfig::verify()`](struct.FlacEncoderConfig.html#method.verify)
+///     * [`FlacEncoderConfig::metadata()`](struct.FlacEncoderConfig.html#method.metadata)
 ///   * The rest of the set functions should only be called if the client needs
 ///     exact control over how the audio is compressed; thorough understanding
 ///     of the FLAC format is necessary to achieve good results.
 ///   * The program initializes the instance to validate the settings and
 ///     prepare for encoding using
-///       * `FLAC__stream_encoder_init_stream()` or `FLAC__stream_encoder_init_FILE()`
-///         or `FLAC__stream_encoder_init_file()` for native FLAC
-///       * `FLAC__stream_encoder_init_ogg_stream()` or `FLAC__stream_encoder_init_ogg_FILE()`
-///         or `FLAC__stream_encoder_init_ogg_file()` for Ogg FLAC
-///   * The program calls `FLAC__stream_encoder_process()` or
-///     `FLAC__stream_encoder_process_interleaved()` to encode data, which
+///       * [`FlacEncoderConfig::init_write()`](struct.FlacEncoderConfig.html#method.init_write), or
+///         [`FlacEncoderConfig::init_file()`](struct.FlacEncoderConfig.html#method.init_file), or
+///         [`FlacEncoderConfig::init_stdout()`](struct.FlacEncoderConfig.html#method.init_stdout) for native FLAC
+///       * [`FlacEncoderConfig::init_write_ogg()`](struct.FlacEncoderConfig.html#method.init_write_ogg), or
+///         [`FlacEncoderConfig::init_file_ogg()`](struct.FlacEncoderConfig.html#method.init_file_ogg), or
+///         [`FlacEncoderConfig::init_stdout_ogg()`](struct.FlacEncoderConfig.html#method.init_stdout_ogg) for Ogg FLAC
+///   * The program calls [`FlacEncoder::process()`](#method.process) or
+///     [`FlacEncoder::process_interleaved()`](#method.process_interleaved) to encode data, which
 ///     subsequently calls the callbacks when there is encoder data ready
 ///     to be written.
-///   * The program finishes the encoding with `FLAC__stream_encoder_finish()`,
+///   * The program finishes the encoding with [`FlacEncoder::finish()`](#method.finish),
 ///     which causes the encoder to encode any data still in its input pipe,
 ///     update the metadata with the final encoding statistics if output
 ///     seeking is possible, and finally reset the encoder to the
 ///     uninitialized state.
+///     Note: the stream is `finish()`ed when it's dropped, and any potential error is ignored.
 ///   * The instance may be used again or deleted with
-///     `FLAC__stream_encoder_delete()`.
+///     [`FlacEncoder::delete()`](#method.delete).
+///     Note: the stream is `delete()`ed when it's dropped.
 ///
 /// In more detail, the stream encoder functions similarly to the
 /// stream decoder, but has fewer
 /// callbacks and more options. Typically the client will create a new
-/// instance by calling `FLAC__stream_encoder_new()`, then set the necessary
-/// parameters with `FLAC__stream_encoder_set_*()`, and initialize it by
-/// calling one of the `FLAC__stream_encoder_init_*()` functions.
+/// instance by calling [`FlacEncoder::new()`](#method.new), then set the necessary
+/// parameters with functions on [`FlacEncoderConfig`](struct.FlacEncoderConfig.html), and initialize it by
+/// calling one of the [`FlacEncoderConfig::init_*()`](struct.FlacEncoderConfig.html#method.init_write) functions.
 ///
 /// Unlike the decoders, the stream encoder has many options that can
 /// affect the speed and compression ratio. When setting these parameters
 /// you should have some basic knowledge of the format (see the
-/// user-level documentation or the formal description). The
-/// `FLAC__stream_encoder_set_*()` functions themselves do not validate the
-/// values as many are interdependent. `The FLAC__stream_encoder_init_*()`
-/// functions will do this, so make sure to pay attention to the state
-/// returned by `FLAC__stream_encoder_init_*()` to make sure that it is
-/// `FLAC__STREAM_ENCODER_INIT_STATUS_OK`. Any parameters that are not set
-/// before `FLAC__stream_encoder_init_*()` will take on the defaults from
+/// user-level documentation or the formal description). The functions on
+/// [`FlacEncoderConfig`](struct.FlacEncoderConfig.html) themselves do not validate the
+/// values as many are interdependent. The [`FlacEncoderConfig::init_*()`](struct.FlacEncoderConfig.html#method.init_write)
+/// functions will do this, so make sure to pay attention to the result
+/// returned by [`FlacEncoderConfig::init_*()`](struct.FlacEncoderConfig.html#method.init_write) to make sure that it is
+/// `Ok()`. Any parameters that are not set
+/// before [`FlacEncoderConfig::init_*()`](struct.FlacEncoderConfig.html#method.init_write) will take on the defaults from
 /// the constructor.
 ///
 /// There are three initialization functions for native FLAC, one for
 /// setting up the encoder to encode FLAC data to the client via
-/// callbacks, and two for encoding directly to a file.
+/// a `Write` stream, and two for encoding directly to a file.
 ///
-/// For encoding via callbacks, use `FLAC__stream_encoder_init_stream()`.
-/// You must also supply a write callback which will be called anytime
-/// there is raw encoded data to write. If the client can seek the output
-/// it is best to also supply seek and tell callbacks, as this allows the
-/// encoder to go back after encoding is finished to write back
+/// For encoding via a `Write` stream, use [`FlacEncoderConfig::init_write()`](struct.FlacEncoderConfig.html#method.init_write).
+/// You must also supply a `std::io::Write` stream which will be called anytime
+/// there is raw encoded data to write. The client cannot seek the output due to
+/// [RFC 2035](https://github.com/rust-lang/rfcs/issues/2035), so the
+/// encoder cannot go back after encoding is finished to write back
 /// information that was collected while encoding, like seek point offsets,
 /// frame sizes, etc.
 ///
-/// For encoding directly to a file, use `FLAC__stream_encoder_init_FILE()`
-/// or `FLAC__stream_encoder_init_file()`. Then you must only supply a
-/// filename or open `FILE*`; the encoder will handle all the callbacks
+/// For encoding directly to a file, use [`FlacEncoderConfig::init_file()`](struct.FlacEncoderConfig.html#method.init_file).
+/// Then you must only supply a UTF-8 filename; the encoder will handle all the callbacks
 /// internally. You may also supply a progress callback for periodic
 /// notification of the encoding progress.
 ///
 /// There are three similarly-named init functions for encoding to Ogg
-/// FLAC streams. Check `FLAC_API_SUPPORTS_OGG_FLAC` to find out if the
-/// library has been built with Ogg support.
+/// FLAC streams.
 ///
-/// The call to `FLAC__stream_encoder_init_*()` currently will also immediately
-/// call the write callback several times, once with the `fLaC signature`,
+/// The call to [`FlacEncoderConfig::init_*()`](struct.FlacEncoderConfig.html#method.init_write) currently will also immediately
+/// call write to the sink several times, once with the `fLaC` signature,
 /// and once for each encoded metadata block. Note that for Ogg FLAC
 /// encoding you will usually get at least twice the number of callbacks than
 /// with native FLAC, one for the Ogg page header and one for the page body.
@@ -97,28 +101,30 @@ use std::{mem, ptr};
 /// After initializing the instance, the client may feed audio data to the
 /// encoder in one of two ways:
 ///
-///   * Channel separate, through `FLAC__stream_encoder_process()` - The client
-///     will pass an array of pointers to buffers, one for each channel, to
+///   * Channel separate, through [`FlacEncoder::process()`](#method.process) - The client
+///     will pass an slice of buffer slices, one for each channel, to
 ///     the encoder, each of the same length. The samples need not be
 ///     block-aligned, but each channel should have the same number of samples.
+///     This function will allocate if the user supplies more than 8 channels.
 ///   * Channel interleaved, through
-///     `FLAC__stream_encoder_process_interleaved()` - The client will pass a single
-///     pointer to data that is channel-interleaved (i.e. channel0_sample0,
-///     channel1_sample0, ... , channelN_sample0, channel0_sample1, ...).
+///     [`FlacEncoder::process_interleaved()`](#method.process_interleaved) - The client will pass a single
+///     slice to data that is channel-interleaved (i.e. `channel0_sample0`,
+///     `channel1_sample0`, ... , `channelN_sample0`, `channel0_sample1`, ...).
 ///     Again, the samples need not be block-aligned but they must be
-///     sample-aligned, i.e. the first value should be channel0_sample0 and
-///     the last value channelN_sampleM.
+///     sample-aligned, i.e. the first value should be `channel0_sample0` and
+///     the last value `channelN_sampleM`.
 ///
 /// Note that for either process call, each sample in the buffers should be a
 /// signed integer, right-justified to the resolution set by
-/// `FLAC__stream_encoder_set_bits_per_sample()`. For example, if the resolution
-/// is 16 bits per sample, the samples should all be in the range [-32768,32767].
+/// [`FlacEncoderConfig::bits_per_sample()`](struct.FlacEncoderConfig.html#method.bits_per_sample).
+/// For example, if the resolution is 16 bits per sample, the samples should all be in the range [-32768,32767].
 ///
 /// When the client is finished encoding data, it calls
-/// `FLAC__stream_encoder_finish()`, which causes the encoder to encode any
+/// [`FlacEncoder::finish()`](#method.finish), either explicitly or by dropping the encoder,
+/// which causes the encoder to encode any
 /// data still in its input pipe, and call the metadata callback with the
 /// final encoding statistics. Then the instance may be deleted with
-/// `FLAC__stream_encoder_delete()` or initialized again to encode another
+/// [`FlacEncoder::delete()`](#method.delete) by dropping the encoder, or initialized again to encode another
 /// stream.
 ///
 /// For programs that write their own metadata, but that do not know the
@@ -139,18 +145,10 @@ use std::{mem, ptr};
 /// is open for update (e.g. mode "w+" for stdio streams). This is because
 /// after the first encoding pass, the encoder will try to seek back to the
 /// beginning of the stream, to the STREAMINFO block, to write some data
-/// there. (If using `FLAC__stream_encoder_init*_file()` or
-/// `FLAC__stream_encoder_init*_FILE()`, the file is managed internally.)
+/// there. (If using [`FlacEncoderConfig::init_file()`](struct.FlacEncoderConfig.html#method.init_file), the file is managed internally.)
 ///
 /// **Note**:<br />
-/// The "set" functions may only be called when the encoder is in the
-/// state `FLAC__STREAM_ENCODER_UNINITIALIZED`, i.e. after
-/// `FLAC__stream_encoder_new()` or `FLAC__stream_encoder_finish()`, but
-/// before `FLAC__stream_encoder_init_*()`. If this is the case they will
-/// return `true`, otherwise `false`.
-///
-/// **Note**:<br />
-/// `FLAC__stream_encoder_finish()` resets all settings to the constructor defaults.
+/// [`FlacEncoder::finish()`](#method.finish) resets all settings to the constructor defaults.
 #[derive(Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct FlacEncoder<'out>(pub(super) StreamEncoderContainer, pub(super) PhantomData<&'out mut ()>);
@@ -174,7 +172,7 @@ impl<'out> FlacEncoder<'out> {
     /// Get the state of the verify stream decoder.
     ///
     /// Useful when the stream encoder state is
-    /// `FLAC__STREAM_ENCODER_VERIFY_DECODER_ERROR`.
+    /// [`VerifyDecoderError`](enum.FlacEncoderState.html#variant.VerifyDecoderError).
     pub fn verify_decoder_state(&self) -> FlacEncoderState {
         FlacEncoderState::try_from(unsafe { FLAC__stream_encoder_get_verify_decoder_state((self.0).0) }).unwrap()
     }
@@ -182,11 +180,11 @@ impl<'out> FlacEncoder<'out> {
     /// Submit data for encoding.
     ///
     /// This version allows you to supply the input data via a slice of
-    /// slices, each pointer consisting of the same amount of samples as the first one,
+    /// slices, each slice consisting of the same amount of samples as the first one,
     /// representing one channel. The samples need not be block-aligned,
     /// but each channel should have the same number of samples. Each sample
     /// should be a signed integer, right-justified to the resolution set by
-    /// `FLAC__stream_encoder_set_bits_per_sample()`. For example, if the
+    /// [`FlacEncoderConfig::bits_per_sample()`](struct.FlacEncoderConfig.html#method.bits_per_sample. For example, if the
     /// resolution is 16 bits per sample, the samples should all be in the
     /// range [-32768,32767].
     ///
@@ -222,14 +220,14 @@ impl<'out> FlacEncoder<'out> {
     /// Submit data for encoding.
     ///
     /// This version allows you to supply the input data where the channels
-    /// are interleaved into a single array (i.e. channel0_sample0,
-    /// channel1_sample0, ... , channelN_sample0, channel0_sample1, ...).
+    /// are interleaved into a single array (i.e. `channel0_sample0`,
+    /// `channel1_sample0`, ... , `channelN_sample0`, `channel0_sample1`, ...).
     /// The samples need not be block-aligned but they must be
-    /// sample-aligned, i.e. the first value should be channel0_sample0
-    /// and the last value channelN_sampleM. Each sample should be a signed
+    /// sample-aligned, i.e. the first value should be `channel0_sample0`
+    /// and the last value `channelN_sampleM`. Each sample should be a signed
     /// integer, right-justified to the resolution set by
-    /// `FLAC__stream_encoder_set_bits_per_sample()`. For example, if the
-    /// resolution is 16 bits per sample, the samples should all be in the
+    /// [`FlacEncoderConfig::bits_per_sample()`](struct.FlacEncoderConfig.html#method.bits_per_sample).
+    /// For example, if the resolution is 16 bits per sample, the samples should all be in the
     /// range [-32768,32767].
     ///
     /// For applications where channel order is important, channels must
@@ -258,17 +256,17 @@ impl<'out> FlacEncoder<'out> {
     /// ensure the file was encoded properly.
     ///
     /// In the event of a prematurely-terminated encode, it is not strictly
-    /// necessary to call this immediately before `FLAC__stream_encoder_delete()`
-    /// but it is good practice to match every `FLAC__stream_encoder_init_*()`
-    /// with a `FLAC__stream_encoder_finish()`.
+    /// necessary to call this immediately before [`FlacEncoder::delete()`](#method.delete)
+    /// but it is good practice to match every [`FlacEncoderConfig::init_*()`](struct.FlacEncoderConfig.html#method.init_write)
+    /// with a [`FlacEncoder::finish()`](#method.finish).
     ///
     /// This is also called by `drop()`.
     ///
-    /// Returns `self` if an error occurred processing the last frame, or, if verify
-    /// mode is set (see `FLAC__stream_encoder_set_verify()`), there was a
+    /// Returns `Err(self)` if an error occurred processing the last frame, or, if verify
+    /// mode is set (see [`FlacEncoderConfig::verify()`](struct.FlacEncoderConfig.html#method.verify)), there was a
     /// verify mismatch; else the config wrapper.
     ///
-    /// If `Err()`, caller should check the state with `FLAC__stream_encoder_get_state()` for more information about the error.
+    /// If `Err()`, caller should check the state with [`state()`](#method.state) for more information about the error.
     pub fn finish(mut self) -> Result<FlacEncoderConfig, FlacEncoder<'out>> {
         if unsafe { FLAC__stream_encoder_finish((self.0).0) } != 0 {
             Ok(FlacEncoderConfig(mem::replace(&mut self.0, StreamEncoderContainer(ptr::null_mut()))))

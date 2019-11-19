@@ -14,11 +14,11 @@ use flac_sys::{FLAC__StreamEncoderInitStatus, FLAC__StreamEncoderInitStatus_FLAC
 use std::convert::TryFrom;
 
 
-/// Possible erroneous return values for the `FLAC__stream_encoder_init_*()` functions.
+/// Possible erroneous return values for the [`FlacEncoderConfig::init_*()`](struct.FlacEncoderConfig.html#method.init_write) functions.
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(u32)]
 pub enum FlacEncoderInitError {
-    /// General failure to set up encoder; call `FLAC__stream_encoder_get_state()` for cause.
+    /// General failure to set up encoder; call [`FlacEncoder::state()`](struct.FlacEncoder.html#method.state) for cause.
     EncoderError = FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_ENCODER_ERROR,
 
     /// The library was not compiled with support for the given container format.
@@ -50,18 +50,17 @@ pub enum FlacEncoderInitError {
     /// The specified block size is less than the maximum LPC order.
     BlockSizeTooSmallForLpcOrder = FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_BLOCK_SIZE_TOO_SMALL_FOR_LPC_ORDER,
 
-    /// The encoder is bound to the <A HREF="../format.html#subset">Subset</A> but other settings violate it.
+    /// The encoder is bound to the [Subset](https://xiph.org/flac/format.html#subset) but other settings violate it.
     NotStreamable = FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_NOT_STREAMABLE,
 
     /// The metadata input to the encoder is invalid, in one of the following ways:
-    ///   * FLAC__stream_encoder_set_metadata() was called with a null pointer but a block count > 0
     ///   * One of the metadata blocks contains an undefined type
-    ///   * It contains an illegal CUESHEET as checked by FLAC__format_cuesheet_is_legal()
-    ///   * It contains an illegal SEEKTABLE as checked by FLAC__format_seektable_is_legal()
+    ///   * It contains an illegal CUESHEET as checked by `FLAC__format_cuesheet_is_legal()`
+    ///   * It contains an illegal SEEKTABLE as checked by `FLAC__format_seektable_is_legal()`
     ///   * It contains more than one SEEKTABLE block or more than one VORBIS_COMMENT block
     InvalidMetadata = FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_INVALID_METADATA,
 
-    /// `FLAC__stream_encoder_init_*()` was called when the encoder was already initialized, usually because
+    /// [`FlacEncoderConfig::init_*()`](struct.FlacEncoderConfig.html#method.init_write) was called when the encoder was already initialized, usually because
     /// FLAC__stream_encoder_finish() was not called.
     AlreadyInitialized = FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_ALREADY_INITIALIZED,
 }

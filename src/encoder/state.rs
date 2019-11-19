@@ -6,27 +6,29 @@ use flac_sys::{FLAC__StreamEncoderState, FLAC__StreamEncoderState_FLAC__STREAM_E
 use std::convert::TryFrom;
 
 
-/// State values for a `FLAC__StreamEncoder`.
+/// State values for a [`FlacEncoder`](struct.FlacEncoder.html).
 ///
-/// The encoder's state can be obtained by calling `FLAC__stream_encoder_get_state()`.
+/// The encoder's state can be obtained by calling [`FlacEncoder::state()`](struct.FlacEncoder.html#method.state).
 ///
-/// If the encoder gets into any other state besides `FLAC__STREAM_ENCODER_OK`
-/// or `FLAC__STREAM_ENCODER_UNINITIALIZED`, it becomes invalid for encoding and
-/// must be deleted with FLAC__stream_encoder_delete().
+/// If the encoder gets into any other state besides `Ok`
+/// or `Uninitialized`, it becomes invalid for encoding and
+/// must be deleted by dropping.
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(u32)]
 pub enum FlacEncoderState {
     /// The encoder is in the normal OK state and samples can be processed.
     Ok = FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_OK,
 
-    /// The encoder is in the uninitialized state; one of the `FLAC__stream_encoder_init_*()` functions must be called before
-    /// samples can be processed.
+    /// The encoder is in the uninitialized state; one of the
+    /// [`FlacEncoderConfig::init_*()`](struct.FlacEncoderConfig.html#method.init_write)
+    /// functions must be called before samples can be processed.
     Uninitialized = FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_UNINITIALIZED,
 
     /// An error occurred in the underlying Ogg layer.
     OggError = FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_OGG_ERROR,
 
-    /// An error occurred in the underlying verify stream decoder; check `FLAC__stream_encoder_get_verify_decoder_state()`.
+    /// An error occurred in the underlying verify stream decoder; check
+    /// [`FlacEncoder::verify_decoder_state()`](struct.FlacEncoder.html#method.verify_decoder_state).
     VerifyDecoderError = FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_VERIFY_DECODER_ERROR,
 
     /// The verify decoder detected a mismatch between the original audio signal and the decoded audio signal.

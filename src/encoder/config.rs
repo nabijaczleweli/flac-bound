@@ -29,18 +29,10 @@ impl FlacEncoderConfig {
     /// Initialize the encoder instance to encode native FLAC streams.
     ///
     /// This flavor of initialization sets up the encoder to encode to a
-    /// native FLAC stream. I/O is performed via callbacks to the client.
-    /// For encoding to a plain file via filename or open `FILE*`,
-    /// `FLAC__stream_encoder_init_file()` and `FLAC__stream_encoder_init_FILE()`
-    /// provide a simpler interface.
+    /// native FLAC stream. I/O is performed into the specified stream.
     ///
-    /// This function should be called after `FLAC__stream_encoder_new()` and
-    /// `FLAC__stream_encoder_set_*(`) but before `FLAC__stream_encoder_process()`
-    /// or `FLAC__stream_encoder_process_interleaved()`.
-    /// initialization succeeded.
-    ///
-    /// The call to `FLAC__stream_encoder_init_stream()` currently will also
-    /// immediately call the write callback several times, once with the `fLaC`
+    /// The call to `init_write()` currently will also
+    /// immediately write several times, once with the `fLaC`
     /// signature, and once for each encoded metadata block.
     pub fn init_write<'out>(self, out: &'out mut WriteWrapper<'out>) -> Result<FlacEncoder<'out>, FlacEncoderInitError> {
         let result = unsafe {
@@ -57,18 +49,10 @@ impl FlacEncoderConfig {
     /// Initialize the encoder instance to encode Ogg FLAC streams.
     ///
     /// This flavor of initialization sets up the encoder to encode to a FLAC
-    /// stream in an Ogg container.  I/O is performed via callbacks to the
-    /// client.  For encoding to a plain file via filename or open `FILE*`,
-    /// `FLAC__stream_encoder_init_ogg_file()` and `FLAC__stream_encoder_init_ogg_FILE()`
-    /// provide a simpler interface.
+    /// stream in an Ogg container. I/O is performed into the specified stream.
     ///
-    /// This function should be called after `FLAC__stream_encoder_new()` and
-    /// `FLAC__stream_encoder_set_*()` but before `FLAC__stream_encoder_process()`
-    /// or `FLAC__stream_encoder_process_interleaved()`.
-    /// initialization succeeded.
-    ///
-    /// The call to `FLAC__stream_encoder_init_ogg_stream()` currently will also
-    /// immediately call the write callback several times, once with the `fLaC`
+    /// The call to `init_write_ogg()` currently will also
+    /// immediately write several times, once with the `fLaC`
     /// signature, and once for each encoded metadata block.
     pub fn init_write_ogg<'out>(self, out: &'out mut WriteWrapper<'out>) -> Result<FlacEncoder<'out>, FlacEncoderInitError> {
         let result = unsafe {
@@ -87,9 +71,8 @@ impl FlacEncoderConfig {
     ///
     /// This flavor of initialization sets up the encoder to encode to a plain
     /// FLAC file. If POSIX fopen() semantics are not sufficient (for example,
-    /// with Unicode filenames on Windows), you must use
-    /// `FLAC__stream_encoder_init_FILE()`, or `FLAC__stream_encoder_init_stream()`
-    /// and provide callbacks for the I/O.
+    /// with Unicode filenames), you must use `init_write()`
+    /// and provide the output stream.
     ///
     /// The file will be opened with `fopen()`.
     pub fn init_file<P: AsRef<Path>>(self, filename: &P /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */)
@@ -106,10 +89,9 @@ impl FlacEncoderConfig {
     /// Initialize the encoder instance to encode Ogg FLAC files.
     ///
     /// This flavor of initialization sets up the encoder to encode to a plain
-    /// Ogg FLAC file. If POSIX fopen() semantics are not sufficient (for example,
-    /// with Unicode filenames on Windows), you must use
-    /// `FLAC__stream_encoder_init_ogg_FILE()`, or `FLAC__stream_encoder_init_ogg_stream()`
-    /// and provide callbacks for the I/O.
+    /// FLAC file. If POSIX fopen() semantics are not sufficient (for example,
+    /// with Unicode filenames), you must use `init_write_ogg()`
+    /// and provide the output stream.
     ///
     /// The file will be opened with `fopen()`.
     pub fn init_file_ogg<P: AsRef<Path>>(self, filename: &P /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */)
@@ -125,13 +107,10 @@ impl FlacEncoderConfig {
 
     /// Initialize the encoder instance to encode native FLAC files.
     ///
-    /// This flavor of initialization sets up the encoder to encode to a plain
-    /// FLAC file. If POSIX fopen() semantics are not sufficient (for example,
-    /// with Unicode filenames on Windows), you must use
-    /// `FLAC__stream_encoder_init_FILE()`, or `FLAC__stream_encoder_init_stream()`
-    /// and provide callbacks for the I/O.
+    /// This flavor of initialization sets up the encoder to encode a plain
+    /// FLAC file to stdout.
     ///
-    /// **Note**:  a proper SEEKTABLE cannot be created when encoding to `stdout` since it is not seekable.
+    /// **Note**: a proper SEEKTABLE cannot be created when encoding to `stdout` since it is not seekable.
     pub fn init_stdout(self) -> Result<FlacEncoder<'static>, FlacEncoderInitError> {
         let result = unsafe { FLAC__stream_encoder_init_file((self.0).0, ptr::null(), None, ptr::null_mut()) };
         self.do_init(result)
@@ -139,13 +118,10 @@ impl FlacEncoderConfig {
 
     /// Initialize the encoder instance to encode Ogg FLAC files.
     ///
-    /// This flavor of initialization sets up the encoder to encode to a plain
-    /// Ogg FLAC file. If POSIX fopen() semantics are not sufficient (for example,
-    /// with Unicode filenames on Windows), you must use
-    /// `FLAC__stream_encoder_init_ogg_FILE()`, or `FLAC__stream_encoder_init_ogg_stream()`
-    /// and provide callbacks for the I/O.
+    /// This flavor of initialization sets up the encoder to encode a plain
+    /// Ogg FLAC file to stdout.
     ///
-    /// **Note**:  a proper SEEKTABLE cannot be created when encoding to `stdout` since it is not seekable.
+    /// **Note**: a proper SEEKTABLE cannot be created when encoding to `stdout` since it is not seekable.
     pub fn init_stdout_ogg(self) -> Result<FlacEncoder<'static>, FlacEncoderInitError> {
         let result = unsafe { FLAC__stream_encoder_init_ogg_file((self.0).0, ptr::null(), None, ptr::null_mut()) };
         self.do_init(result)
@@ -197,7 +173,7 @@ impl FlacEncoderConfig {
     /// Set the Subset flag.
     ///
     /// If `true`, the encoder will comply with the Subset and will check the
-    /// settings during `FLAC__stream_encoder_init_*()` to see if all settings
+    /// settings during [`init_*()`](#method.init_write) to see if all settings
     /// comply. If `false`, the settings may take advantage of the full
     /// range that the format allows.
     ///
@@ -251,17 +227,17 @@ impl FlacEncoderConfig {
     /// This function automatically calls the following other *`set`*
     /// functions with appropriate values, so the client does not need to
     /// unless it specifically wants to override them:
-    ///   * `FLAC__stream_encoder_set_do_mid_side_stereo()`
-    ///   * `FLAC__stream_encoder_set_loose_mid_side_stereo()`
-    ///   * `FLAC__stream_encoder_set_apodization()`
-    ///   * `FLAC__stream_encoder_set_max_lpc_order()`
-    ///   * `FLAC__stream_encoder_set_qlp_coeff_precision()`
-    ///   * `FLAC__stream_encoder_set_do_qlp_coeff_prec_search()`
-    ///   * `FLAC__stream_encoder_set_do_escape_coding()`
-    ///   * `FLAC__stream_encoder_set_do_exhaustive_model_search()`
-    ///   * `FLAC__stream_encoder_set_min_residual_partition_order()`
-    ///   * `FLAC__stream_encoder_set_max_residual_partition_order()`
-    ///   * `FLAC__stream_encoder_set_rice_parameter_search_dist()`
+    ///   * [`do_mid_side_stereo()`](#method.do_mid_side_stereo)
+    ///   * [`loose_mid_side_stereo()`](#method.loose_mid_side_stereo)
+    ///   * [`apodization()`](#method.apodization)
+    ///   * [`max_lpc_order()`](#method.max_lpc_order)
+    ///   * [`qlp_coeff_precision()`](#method.qlp_coeff_precision)
+    ///   * [`do_qlp_coeff_prec_search()`](#method.do_qlp_coeff_prec_search)
+    ///   * [`do_escape_coding()`](#method.do_escape_coding)
+    ///   * [`do_exhaustive_model_search()`](#method.do_exhaustive_model_search)
+    ///   * [`min_residual_partition_order()`](#method.min_residual_partition_order)
+    ///   * [`max_residual_partition_order()`](#method.max_residual_partition_order)
+    ///   * [`rice_parameter_search_dist()`](#method.rice_parameter_search_dist)
     ///
     /// The actual values set for each level are:
     /// <table>
@@ -339,7 +315,7 @@ impl FlacEncoderConfig {
     /// Set to `true` to enable adaptive switching between mid-side and left-right encoding on stereo input.
     ///
     /// Set to `false` to use exhaustive searching. Setting this to `true` requires
-    /// FLAC__stream_encoder_set_do_mid_side_stereo() to also be set to `true` in order to have any effect.
+    /// `do_mid_side_stereo()` to also be set to `true` in order to have any effect.
     ///
     /// **Default**: `false`
     pub fn loose_mid_side_stereo(self, value: bool) -> FlacEncoderConfig {
@@ -420,7 +396,7 @@ impl FlacEncoderConfig {
     /// blocksize.
     ///
     /// **Note**:<br />
-    /// In the current implementation, qlp_coeff_precision + bits_per_sample must
+    /// In the current implementation, `qlp_coeff_precision + bits_per_sample` must
     /// be less than 32.
     ///
     /// **Default**: `0`
@@ -459,8 +435,7 @@ impl FlacEncoderConfig {
 
     /// Set the minimum partition order to search when coding the residual.
     ///
-    /// This is used in tandem with
-    /// `FLAC__stream_encoder_set_max_residual_partition_order()`.
+    /// This is used in tandem with [`max_residual_partition_order()`](method.max_residual_partition_order).
     ///
     /// The partition order determines the context size in the residual.
     ///
@@ -480,8 +455,7 @@ impl FlacEncoderConfig {
 
     /// Set the maximum partition order to search when coding the residual.
     ///
-    /// This is used in tandem with
-    /// `FLAC__stream_encoder_set_min_residual_partition_order()`.
+    /// This is used in tandem with [`min_residual_partition_order()`](method.min_residual_partition_order).
     ///
     /// The partition order determines the context size in the residual.
     /// The context size will be approximately `blocksize / (2 ^ order)`.
