@@ -1,0 +1,38 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `FLAC__StreamEncoderTellCallback` type in crate `flac_sys`."><meta name="keywords" content="rust, rustlang, rust-lang, FLAC__StreamEncoderTellCallback"><title>flac_sys::FLAC__StreamEncoderTellCallback - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc type"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../flac_sys/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><p class='location'>Type Definition FLAC__StreamEncoderTellCallback</p><div class="sidebar-elems"><p class='location'><a href='index.html'>flac_sys</a></p><script>window.sidebarCurrent = {name: 'FLAC__StreamEncoderTellCallback', ty: 'type', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/flac_sys/lib.rs.html#6459-6465' title='goto source code'>[src]</a></span><span class='in-band'>Type Definition <a href='index.html'>flac_sys</a>::<wbr><a class="type" href=''>FLAC__StreamEncoderTellCallback</a></span></h1><pre class='rust typedef'>type FLAC__StreamEncoderTellCallback = <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;unsafe extern &quot;C&quot; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.fn.html">fn</a>(encoder: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*const </a><a class="struct" href="../flac_sys/struct.FLAC__StreamEncoder.html" title="struct flac_sys::FLAC__StreamEncoder">FLAC__StreamEncoder</a>, absolute_byte_offset: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="type" href="../flac_sys/type.FLAC__uint64.html" title="type flac_sys::FLAC__uint64">FLAC__uint64</a>, client_data: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="enum" href="https://doc.rust-lang.org/nightly/core/ffi/enum.c_void.html" title="enum core::ffi::c_void">c_void</a>) -&gt; <a class="type" href="../flac_sys/type.FLAC__StreamEncoderTellStatus.html" title="type flac_sys::FLAC__StreamEncoderTellStatus">FLAC__StreamEncoderTellStatus</a>&gt;;</pre><div class='docblock'><p>Signature for the tell callback.</p>
+<p>A function pointer matching this signature may be passed to
+FLAC__stream_encoder_init*_stream().  The supplied function will be called
+when the encoder needs to know the current position of the output stream.</p>
+<p>\warning
+The callback must return the true current byte offset of the output to
+which the encoder is writing.  If you are buffering the output, make
+sure and take this into account.  If you are writing directly to a
+FILE* from your write callback, ftell() is sufficient.  If you are
+writing directly to a file descriptor from your write callback, you
+can use lseek(fd, SEEK_CUR, 0).  The encoder may later seek back to
+these points to rewrite metadata after encoding.</p>
+<p>Here is an example of a tell callback for stdio streams:
+\code
+FLAC__StreamEncoderTellStatus tell_cb(const FLAC__StreamEncoder *encoder, FLAC__uint64 *absolute_byte_offset, void *client_data)
+{
+FILE <em>file = ((MyClientData</em>)client_data)-&gt;file;
+off_t pos;
+if(file == stdin)
+return FLAC__STREAM_ENCODER_TELL_STATUS_UNSUPPORTED;
+else if((pos = ftello(file)) &lt; 0)
+return FLAC__STREAM_ENCODER_TELL_STATUS_ERROR;
+else {
+*absolute_byte_offset = (FLAC__uint64)pos;
+return FLAC__STREAM_ENCODER_TELL_STATUS_OK;
+}
+}
+\endcode</p>
+<p>\note In general, FLAC__StreamEncoder functions which change the
+state should not be called on the \a encoder while in the callback.</p>
+<p>\param  encoder  The encoder instance calling the callback.
+\param  absolute_byte_offset  The address at which to store the current
+position of the output.
+\param  client_data  The callee's client data set through
+FLAC__stream_encoder_init_*().
+\retval FLAC__StreamEncoderTellStatus
+The callee's return status.</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../";window.currentCrate = "flac_sys";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

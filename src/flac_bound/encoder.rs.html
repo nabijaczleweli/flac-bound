@@ -1,0 +1,1211 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `src/encoder.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>encoder.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../flac_bound/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<span id="2">  2</span>
+<span id="3">  3</span>
+<span id="4">  4</span>
+<span id="5">  5</span>
+<span id="6">  6</span>
+<span id="7">  7</span>
+<span id="8">  8</span>
+<span id="9">  9</span>
+<span id="10"> 10</span>
+<span id="11"> 11</span>
+<span id="12"> 12</span>
+<span id="13"> 13</span>
+<span id="14"> 14</span>
+<span id="15"> 15</span>
+<span id="16"> 16</span>
+<span id="17"> 17</span>
+<span id="18"> 18</span>
+<span id="19"> 19</span>
+<span id="20"> 20</span>
+<span id="21"> 21</span>
+<span id="22"> 22</span>
+<span id="23"> 23</span>
+<span id="24"> 24</span>
+<span id="25"> 25</span>
+<span id="26"> 26</span>
+<span id="27"> 27</span>
+<span id="28"> 28</span>
+<span id="29"> 29</span>
+<span id="30"> 30</span>
+<span id="31"> 31</span>
+<span id="32"> 32</span>
+<span id="33"> 33</span>
+<span id="34"> 34</span>
+<span id="35"> 35</span>
+<span id="36"> 36</span>
+<span id="37"> 37</span>
+<span id="38"> 38</span>
+<span id="39"> 39</span>
+<span id="40"> 40</span>
+<span id="41"> 41</span>
+<span id="42"> 42</span>
+<span id="43"> 43</span>
+<span id="44"> 44</span>
+<span id="45"> 45</span>
+<span id="46"> 46</span>
+<span id="47"> 47</span>
+<span id="48"> 48</span>
+<span id="49"> 49</span>
+<span id="50"> 50</span>
+<span id="51"> 51</span>
+<span id="52"> 52</span>
+<span id="53"> 53</span>
+<span id="54"> 54</span>
+<span id="55"> 55</span>
+<span id="56"> 56</span>
+<span id="57"> 57</span>
+<span id="58"> 58</span>
+<span id="59"> 59</span>
+<span id="60"> 60</span>
+<span id="61"> 61</span>
+<span id="62"> 62</span>
+<span id="63"> 63</span>
+<span id="64"> 64</span>
+<span id="65"> 65</span>
+<span id="66"> 66</span>
+<span id="67"> 67</span>
+<span id="68"> 68</span>
+<span id="69"> 69</span>
+<span id="70"> 70</span>
+<span id="71"> 71</span>
+<span id="72"> 72</span>
+<span id="73"> 73</span>
+<span id="74"> 74</span>
+<span id="75"> 75</span>
+<span id="76"> 76</span>
+<span id="77"> 77</span>
+<span id="78"> 78</span>
+<span id="79"> 79</span>
+<span id="80"> 80</span>
+<span id="81"> 81</span>
+<span id="82"> 82</span>
+<span id="83"> 83</span>
+<span id="84"> 84</span>
+<span id="85"> 85</span>
+<span id="86"> 86</span>
+<span id="87"> 87</span>
+<span id="88"> 88</span>
+<span id="89"> 89</span>
+<span id="90"> 90</span>
+<span id="91"> 91</span>
+<span id="92"> 92</span>
+<span id="93"> 93</span>
+<span id="94"> 94</span>
+<span id="95"> 95</span>
+<span id="96"> 96</span>
+<span id="97"> 97</span>
+<span id="98"> 98</span>
+<span id="99"> 99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="ident">flac_sys</span>::{<span class="ident">FLAC__StreamEncoder</span>, <span class="ident">FLAC__bool</span>, <span class="ident">FLAC__stream_encoder_new</span>, <span class="ident">FLAC__stream_encoder_delete</span>, <span class="ident">FLAC__stream_encoder_set_ogg_serial_number</span>,
+               <span class="ident">FLAC__stream_encoder_set_verify</span>, <span class="ident">FLAC__stream_encoder_set_streamable_subset</span>, <span class="ident">FLAC__stream_encoder_set_channels</span>,
+               <span class="ident">FLAC__stream_encoder_set_bits_per_sample</span>, <span class="ident">FLAC__stream_encoder_set_sample_rate</span>, <span class="ident">FLAC__stream_encoder_set_compression_level</span>,
+               <span class="ident">FLAC__stream_encoder_set_blocksize</span>, <span class="ident">FLAC__stream_encoder_set_do_mid_side_stereo</span>, <span class="ident">FLAC__stream_encoder_set_loose_mid_side_stereo</span>,
+               <span class="ident">FLAC__stream_encoder_set_apodization</span>, <span class="ident">FLAC__stream_encoder_set_max_lpc_order</span>, <span class="ident">FLAC__stream_encoder_set_qlp_coeff_precision</span>,
+               <span class="ident">FLAC__stream_encoder_set_do_qlp_coeff_prec_search</span>, <span class="ident">FLAC__stream_encoder_set_do_escape_coding</span>,
+               <span class="ident">FLAC__stream_encoder_set_do_exhaustive_model_search</span>, <span class="ident">FLAC__stream_encoder_set_min_residual_partition_order</span>,
+               <span class="ident">FLAC__stream_encoder_set_max_residual_partition_order</span>, <span class="ident">FLAC__stream_encoder_set_rice_parameter_search_dist</span>,
+               <span class="ident">FLAC__stream_encoder_set_total_samples_estimate</span> <span class="comment">/* , FLAC__stream_encoder_set_metadata */</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">os</span>::<span class="ident">raw</span>::<span class="ident">c_long</span>;
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">mem</span>, <span class="ident">ptr</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">CStr</span>;
+
+
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FlacEncoder</span>(<span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">FLAC__StreamEncoder</span>);
+
+<span class="kw">impl</span> <span class="ident">FlacEncoder</span> {
+    <span class="doccomment">/// Create a new stream encoder instance.  The instance is created with</span>
+    <span class="doccomment">///  default settings; see the individual FLAC__stream_encoder_set_*()</span>
+    <span class="doccomment">///  functions for each setting&#39;s default.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \retval FLAC__StreamEncoder*</span>
+    <span class="doccomment">///    \c NULL if there was an error allocating memory, else the new instance.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FlacEncoderConfig</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">enc</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_new</span>() };
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">enc</span>.<span class="ident">is_null</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">FlacEncoderConfig</span>(<span class="ident">enc</span>))
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        }
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">FlacEncoder</span> {
+    <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+        <span class="ident">drop_stream_encoder</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="number">0</span>)
+    }
+}
+
+
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FlacEncoderConfig</span>(<span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">FLAC__StreamEncoder</span>);
+
+<span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">FlacEncoderConfig</span> {
+    <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+        <span class="ident">drop_stream_encoder</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="number">0</span>)
+    }
+}
+
+
+<span class="kw">fn</span> <span class="ident">drop_stream_encoder</span>(<span class="ident">enc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">FLAC__StreamEncoder</span>) {
+    <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">replace</span>(<span class="ident">enc</span>, <span class="ident">ptr</span>::<span class="ident">null_mut</span>());
+    <span class="kw">if</span> <span class="op">!</span><span class="ident">ptr</span>.<span class="ident">is_null</span>() {
+        <span class="ident">FLAC__stream_encoder_delete</span>(<span class="ident">ptr</span>);
+    }
+}
+
+
+<span class="kw">impl</span> <span class="ident">FlacEncoderConfig</span> {
+    <span class="doccomment">/// Set the serial number for the FLAC stream to use in the Ogg container.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \note</span>
+    <span class="doccomment">/// This does not need to be set for native FLAC encoding.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \note</span>
+    <span class="doccomment">/// It is recommended to set a serial number explicitly as the default of &#39;0&#39;</span>
+    <span class="doccomment">/// may collide with other streams.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c 0</span>
+    <span class="doccomment">/// \param  encoder        An encoder instance to set.</span>
+    <span class="doccomment">/// \param  serial_number  See above.</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ogg_serial_number</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">serial_number</span>: <span class="ident">c_long</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_ogg_serial_number</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">serial_number</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Set the &quot;verify&quot; flag.  If \c true, the encoder will verify it&#39;s own</span>
+    <span class="doccomment">///  encoded output by feeding it through an internal decoder and comparing</span>
+    <span class="doccomment">///  the original signal against the decoded signal.  If a mismatch occurs,</span>
+    <span class="doccomment">///  the process call will return \c false.  Note that this will slow the</span>
+    <span class="doccomment">///  encoding process by the extra time required for decoding and comparison.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c false</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    Flag value (see above).</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">verify</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_verify</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Set the &lt;A HREF=&quot;../format.html#subset&quot;&gt;Subset&lt;/A&gt; flag.  If \c true,</span>
+    <span class="doccomment">///  the encoder will comply with the Subset and will check the</span>
+    <span class="doccomment">///  settings during FLAC__stream_encoder_init_*() to see if all settings</span>
+    <span class="doccomment">///  comply.  If \c false, the settings may take advantage of the full</span>
+    <span class="doccomment">///  range that the format allows.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///  Make sure you know what it entails before setting this to \c false.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c true</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    Flag value (see above).</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">streamable_subset</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_streamable_subset</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Set the number of channels to be encoded.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c 2</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    See above.</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">channels</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_channels</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Set the sample resolution of the input to be encoded.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \warning</span>
+    <span class="doccomment">/// Do not feed the encoder data that is wider than the value you</span>
+    <span class="doccomment">/// set here or you will generate an invalid stream.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c 16</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    See above.</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bits_per_sample</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_bits_per_sample</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Set the sample rate (in Hz) of the input to be encoded.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c 44100</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    See above.</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sample_rate</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_sample_rate</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Set the compression level</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The compression level is roughly proportional to the amount of effort</span>
+    <span class="doccomment">/// the encoder expends to compress the file.  A higher level usually</span>
+    <span class="doccomment">/// means more computation but higher compression.  The default level is</span>
+    <span class="doccomment">/// suitable for most applications.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Currently the levels range from \c 0 (fastest, least compression) to</span>
+    <span class="doccomment">/// \c 8 (slowest, most compression).  A value larger than \c 8 will be</span>
+    <span class="doccomment">/// treated as \c 8.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This function automatically calls the following other \c _set_</span>
+    <span class="doccomment">/// functions with appropriate values, so the client does not need to</span>
+    <span class="doccomment">/// unless it specifically wants to override them:</span>
+    <span class="doccomment">/// - FLAC__stream_encoder_set_do_mid_side_stereo()</span>
+    <span class="doccomment">/// - FLAC__stream_encoder_set_loose_mid_side_stereo()</span>
+    <span class="doccomment">/// - FLAC__stream_encoder_set_apodization()</span>
+    <span class="doccomment">/// - FLAC__stream_encoder_set_max_lpc_order()</span>
+    <span class="doccomment">/// - FLAC__stream_encoder_set_qlp_coeff_precision()</span>
+    <span class="doccomment">/// - FLAC__stream_encoder_set_do_qlp_coeff_prec_search()</span>
+    <span class="doccomment">/// - FLAC__stream_encoder_set_do_escape_coding()</span>
+    <span class="doccomment">/// - FLAC__stream_encoder_set_do_exhaustive_model_search()</span>
+    <span class="doccomment">/// - FLAC__stream_encoder_set_min_residual_partition_order()</span>
+    <span class="doccomment">/// - FLAC__stream_encoder_set_max_residual_partition_order()</span>
+    <span class="doccomment">/// - FLAC__stream_encoder_set_rice_parameter_search_dist()</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The actual values set for each level are:</span>
+    <span class="doccomment">/// &lt;table&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;</span>
+    <span class="doccomment">///  &lt;td&gt;&lt;b&gt;level&lt;/b&gt;&lt;/td&gt;</span>
+    <span class="doccomment">///  &lt;td&gt;do mid-side stereo&lt;/td&gt;</span>
+    <span class="doccomment">///  &lt;td&gt;loose mid-side stereo&lt;/td&gt;</span>
+    <span class="doccomment">///  &lt;td&gt;apodization&lt;/td&gt;</span>
+    <span class="doccomment">///  &lt;td&gt;max lpc order&lt;/td&gt;</span>
+    <span class="doccomment">///  &lt;td&gt;qlp coeff precision&lt;/td&gt;</span>
+    <span class="doccomment">///  &lt;td&gt;qlp coeff prec search&lt;/td&gt;</span>
+    <span class="doccomment">///  &lt;td&gt;escape coding&lt;/td&gt;</span>
+    <span class="doccomment">///  &lt;td&gt;exhaustive model search&lt;/td&gt;</span>
+    <span class="doccomment">///  &lt;td&gt;min residual partition order&lt;/td&gt;</span>
+    <span class="doccomment">///  &lt;td&gt;max residual partition order&lt;/td&gt;</span>
+    <span class="doccomment">///  &lt;td&gt;rice parameter search dist&lt;/td&gt;</span>
+    <span class="doccomment">/// &lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;0&lt;/b&gt;&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
+    <span class="doccomment">///       &lt;td&gt;0&lt;/td&gt;  &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;3&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
+    <span class="doccomment">///       &lt;td&gt;0&lt;/td&gt;  &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;3&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;2&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
+    <span class="doccomment">///       &lt;td&gt;0&lt;/td&gt;  &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;3&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;3&lt;/b&gt;&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
+    <span class="doccomment">///       &lt;td&gt;6&lt;/td&gt;  &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;4&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;4&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
+    <span class="doccomment">///       &lt;td&gt;8&lt;/td&gt;  &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;4&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;5&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
+    <span class="doccomment">///       &lt;td&gt;8&lt;/td&gt;  &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;5&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;6&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5);partial_tukey(2)&lt;td&gt;</span>
+    <span class="doccomment">///       &lt;td&gt;8&lt;/td&gt;  &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;6&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;7&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5);partial_tukey(2)&lt;td&gt;</span>
+    <span class="doccomment">///       &lt;td&gt;12&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;6&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;8&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5);partial_tukey(2);punchout_tukey(3)&lt;/td&gt;</span>
+    <span class="doccomment">///       &lt;td&gt;12&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;6&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;/table&gt;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c 5</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    See above.</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">compression_level</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_compression_level</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Set the blocksize to use while encoding.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The number of samples to use per frame.  Use \c 0 to let the encoder</span>
+    <span class="doccomment">/// estimate a blocksize; this is usually best.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c 0</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    See above.</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">blocksize</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_blocksize</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Set to \c true to enable mid-side encoding on stereo input.  The</span>
+    <span class="doccomment">///  number of channels must be 2 for this to have any effect.  Set to</span>
+    <span class="doccomment">///  \c false to use only independent channel coding.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c true</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    Flag value (see above).</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">do_mid_side_stereo</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_do_mid_side_stereo</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Set to \c true to enable adaptive switching between mid-side and</span>
+    <span class="doccomment">///  left-right encoding on stereo input.  Set to \c false to use</span>
+    <span class="doccomment">///  exhaustive searching.  Setting this to \c true requires</span>
+    <span class="doccomment">///  FLAC__stream_encoder_set_do_mid_side_stereo() to also be set to</span>
+    <span class="doccomment">///  \c true in order to have any effect.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c false</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    Flag value (see above).</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">loose_mid_side_stereo</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_loose_mid_side_stereo</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Sets the apodization function(s) the encoder will use when windowing</span>
+    <span class="doccomment">///  audio data for LPC analysis.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The \a specification is a plain ASCII string which specifies exactly</span>
+    <span class="doccomment">/// which functions to use.  There may be more than one (up to 32),</span>
+    <span class="doccomment">/// separated by \c &#39;;&#39; characters.  Some functions take one or more</span>
+    <span class="doccomment">/// comma-separated arguments in parentheses.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The available functions are \c bartlett, \c bartlett_hann,</span>
+    <span class="doccomment">/// \c blackman, \c blackman_harris_4term_92db, \c connes, \c flattop,</span>
+    <span class="doccomment">/// \c gauss(STDDEV), \c hamming, \c hann, \c kaiser_bessel, \c nuttall,</span>
+    <span class="doccomment">/// \c rectangle, \c triangle, \c tukey(P), \c partial_tukey(n[/ov[/P]]),</span>
+    <span class="doccomment">/// \c punchout_tukey(n[/ov[/P]]), \c welch.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// For \c gauss(STDDEV), STDDEV specifies the standard deviation</span>
+    <span class="doccomment">/// (0&lt;STDDEV&lt;=0.5).</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// For \c tukey(P), P specifies the fraction of the window that is</span>
+    <span class="doccomment">/// tapered (0&lt;=P&lt;=1).  P=0 corresponds to \c rectangle and P=1</span>
+    <span class="doccomment">/// corresponds to \c hann.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Specifying \c partial_tukey or \c punchout_tukey works a little</span>
+    <span class="doccomment">/// different. These do not specify a single apodization function, but</span>
+    <span class="doccomment">/// a series of them with some overlap. partial_tukey specifies a series</span>
+    <span class="doccomment">/// of small windows (all treated separately) while punchout_tukey</span>
+    <span class="doccomment">/// specifies a series of windows that have a hole in them. In this way,</span>
+    <span class="doccomment">/// the predictor is constructed with only a part of the block, which</span>
+    <span class="doccomment">/// helps in case a block consists of dissimilar parts.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The three parameters that can be specified for the functions are</span>
+    <span class="doccomment">/// n, ov and P. n is the number of functions to add, ov is the overlap</span>
+    <span class="doccomment">/// of the windows in case of partial_tukey and the overlap in the gaps</span>
+    <span class="doccomment">/// in case of punchout_tukey. P is the fraction of the window that is</span>
+    <span class="doccomment">/// tapered, like with a regular tukey window. The function can be</span>
+    <span class="doccomment">/// specified with only a number, a number and an overlap, or a number</span>
+    <span class="doccomment">/// an overlap and a P, for example, partial_tukey(3), partial_tukey(3/0.3)</span>
+    <span class="doccomment">/// and partial_tukey(3/0.3/0.5) are all valid. ov should be smaller than 1</span>
+    <span class="doccomment">/// and can be negative.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Example specifications are \c &quot;blackman&quot; or</span>
+    <span class="doccomment">/// \c &quot;hann;triangle;tukey(0.5);tukey(0.25);tukey(0.125)&quot;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Any function that is specified erroneously is silently dropped.  Up</span>
+    <span class="doccomment">/// to 32 functions are kept, the rest are dropped.  If the specification</span>
+    <span class="doccomment">/// is empty the encoder defaults to \c &quot;tukey(0.5)&quot;.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// When more than one function is specified, then for every subframe the</span>
+    <span class="doccomment">/// encoder will try each of them separately and choose the window that</span>
+    <span class="doccomment">/// results in the smallest compressed subframe.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Note that each function specified causes the encoder to occupy a</span>
+    <span class="doccomment">/// floating point array in which to store the window. Also note that the</span>
+    <span class="doccomment">/// values of P, STDDEV and ov are locale-specific, so if the comma</span>
+    <span class="doccomment">/// separator specified by the locale is a comma, a comma should be used.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c &quot;tukey(0.5)&quot;</span>
+    <span class="doccomment">/// \param  encoder        An encoder instance to set.</span>
+    <span class="doccomment">/// \param  specification  See above.</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">///    \code specification != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">apodization</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">specification</span>: <span class="kw-2">&amp;</span><span class="ident">CStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_apodization</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">specification</span>.<span class="ident">as_ptr</span>()) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Set the maximum LPC order, or \c 0 to use only the fixed predictors.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c 8</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    See above.</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_lpc_order</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_max_lpc_order</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Set the precision, in bits, of the quantized linear predictor</span>
+    <span class="doccomment">///  coefficients, or \c 0 to let the encoder select it based on the</span>
+    <span class="doccomment">///  blocksize.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \note</span>
+    <span class="doccomment">/// In the current implementation, qlp_coeff_precision + bits_per_sample must</span>
+    <span class="doccomment">/// be less than 32.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c 0</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    See above.</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">qlp_coeff_precision</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_qlp_coeff_precision</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Set to \c false to use only the specified quantized linear predictor</span>
+    <span class="doccomment">///  coefficient precision, or \c true to search neighboring precision</span>
+    <span class="doccomment">///  values and use the best one.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c false</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    See above.</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">do_qlp_coeff_prec_search</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_do_qlp_coeff_prec_search</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Deprecated.  Setting this value has no effect.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c false</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    See above.</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">do_escape_coding</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_do_escape_coding</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Set to \c false to let the encoder estimate the best model order</span>
+    <span class="doccomment">///  based on the residual signal energy, or \c true to force the</span>
+    <span class="doccomment">///  encoder to evaluate all order models and select the best.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c false</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    See above.</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">do_exhaustive_model_search</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_do_exhaustive_model_search</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Set the minimum partition order to search when coding the residual.</span>
+    <span class="doccomment">///  This is used in tandem with</span>
+    <span class="doccomment">///  FLAC__stream_encoder_set_max_residual_partition_order().</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///  The partition order determines the context size in the residual.</span>
+    <span class="doccomment">///  The context size will be approximately &lt;tt&gt;blocksize / (2 ^ order)&lt;/tt&gt;.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///  Set both min and max values to \c 0 to force a single context,</span>
+    <span class="doccomment">///  whose Rice parameter is based on the residual signal variance.</span>
+    <span class="doccomment">///  Otherwise, set a min and max order, and the encoder will search</span>
+    <span class="doccomment">///  all orders, using the mean of each context for its Rice parameter,</span>
+    <span class="doccomment">///  and use the best.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c 0</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    See above.</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">min_residual_partition_order</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_min_residual_partition_order</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Set the maximum partition order to search when coding the residual.</span>
+    <span class="doccomment">///  This is used in tandem with</span>
+    <span class="doccomment">///  FLAC__stream_encoder_set_min_residual_partition_order().</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///  The partition order determines the context size in the residual.</span>
+    <span class="doccomment">///  The context size will be approximately &lt;tt&gt;blocksize / (2 ^ order)&lt;/tt&gt;.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///  Set both min and max values to \c 0 to force a single context,</span>
+    <span class="doccomment">///  whose Rice parameter is based on the residual signal variance.</span>
+    <span class="doccomment">///  Otherwise, set a min and max order, and the encoder will search</span>
+    <span class="doccomment">///  all orders, using the mean of each context for its Rice parameter,</span>
+    <span class="doccomment">///  and use the best.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c 5</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    See above.</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_residual_partition_order</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_max_residual_partition_order</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Deprecated.  Setting this value has no effect.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c 0</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    See above.</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rice_parameter_search_dist</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_rice_parameter_search_dist</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Set an estimate of the total samples that will be encoded.</span>
+    <span class="doccomment">///  This is merely an estimate and may be set to \c 0 if unknown.</span>
+    <span class="doccomment">///  This value will be written to the STREAMINFO block before encoding,</span>
+    <span class="doccomment">///  and can remove the need for the caller to rewrite the value later</span>
+    <span class="doccomment">///  if the value is known before encoding.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c 0</span>
+    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
+    <span class="doccomment">/// \param  value    See above.</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">total_samples_estimate</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_total_samples_estimate</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Set the metadata blocks to be emitted to the stream before encoding.</span>
+    <span class="doccomment">///  A value of \c NULL, \c 0 implies no metadata; otherwise, supply an</span>
+    <span class="doccomment">///  array of pointers to metadata blocks.  The array is non-const since</span>
+    <span class="doccomment">///  the encoder may need to change the \a is_last flag inside them, and</span>
+    <span class="doccomment">///  in some cases update seek point offsets.  Otherwise, the encoder will</span>
+    <span class="doccomment">///  not modify or free the blocks.  It is up to the caller to free the</span>
+    <span class="doccomment">///  metadata blocks after encoding finishes.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \note</span>
+    <span class="doccomment">/// The encoder stores only copies of the pointers in the \a metadata array;</span>
+    <span class="doccomment">/// the metadata blocks themselves must survive at least until after</span>
+    <span class="doccomment">/// FLAC__stream_encoder_finish() returns.  Do not free the blocks until then.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \note</span>
+    <span class="doccomment">/// The STREAMINFO block is always written and no STREAMINFO block may</span>
+    <span class="doccomment">/// occur in the supplied array.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \note</span>
+    <span class="doccomment">/// By default the encoder does not create a SEEKTABLE.  If one is supplied</span>
+    <span class="doccomment">/// in the \a metadata array, but the client has specified that it does not</span>
+    <span class="doccomment">/// support seeking, then the SEEKTABLE will be written verbatim.  However</span>
+    <span class="doccomment">/// by itself this is not very useful as the client will not know the stream</span>
+    <span class="doccomment">/// offsets for the seekpoints ahead of time.  In order to get a proper</span>
+    <span class="doccomment">/// seektable the client must support seeking.  See next note.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \note</span>
+    <span class="doccomment">/// SEEKTABLE blocks are handled specially.  Since you will not know</span>
+    <span class="doccomment">/// the values for the seek point stream offsets, you should pass in</span>
+    <span class="doccomment">/// a SEEKTABLE &#39;template&#39;, that is, a SEEKTABLE object with the</span>
+    <span class="doccomment">/// required sample numbers (or placeholder points), with \c 0 for the</span>
+    <span class="doccomment">/// \a frame_samples and \a stream_offset fields for each point.  If the</span>
+    <span class="doccomment">/// client has specified that it supports seeking by providing a seek</span>
+    <span class="doccomment">/// callback to FLAC__stream_encoder_init_stream() or both seek AND read</span>
+    <span class="doccomment">/// callback to FLAC__stream_encoder_init_ogg_stream() (or by using</span>
+    <span class="doccomment">/// FLAC__stream_encoder_init*_file() or FLAC__stream_encoder_init*_FILE()),</span>
+    <span class="doccomment">/// then while it is encoding the encoder will fill the stream offsets in</span>
+    <span class="doccomment">/// for you and when encoding is finished, it will seek back and write the</span>
+    <span class="doccomment">/// real values into the SEEKTABLE block in the stream.  There are helper</span>
+    <span class="doccomment">/// routines for manipulating seektable template blocks; see metadata.h:</span>
+    <span class="doccomment">/// FLAC__metadata_object_seektable_template_*().  If the client does</span>
+    <span class="doccomment">/// not support seeking, the SEEKTABLE will have inaccurate offsets which</span>
+    <span class="doccomment">/// will slow down or remove the ability to seek in the FLAC stream.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \note</span>
+    <span class="doccomment">/// The encoder instance \b will modify the first \c SEEKTABLE block</span>
+    <span class="doccomment">/// as it transforms the template to a valid seektable while encoding,</span>
+    <span class="doccomment">/// but it is still up to the caller to free all metadata blocks after</span>
+    <span class="doccomment">/// encoding.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \note</span>
+    <span class="doccomment">/// A VORBIS_COMMENT block may be supplied.  The vendor string in it</span>
+    <span class="doccomment">/// will be ignored.  libFLAC will use it&#39;s own vendor string. libFLAC</span>
+    <span class="doccomment">/// will not modify the passed-in VORBIS_COMMENT&#39;s vendor string, it</span>
+    <span class="doccomment">/// will simply write it&#39;s own into the stream.  If no VORBIS_COMMENT</span>
+    <span class="doccomment">/// block is present in the \a metadata array, libFLAC will write an</span>
+    <span class="doccomment">/// empty one, containing only the vendor string.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \note The Ogg FLAC mapping requires that the VORBIS_COMMENT block be</span>
+    <span class="doccomment">/// the second metadata block of the stream.  The encoder already supplies</span>
+    <span class="doccomment">/// the STREAMINFO block automatically.  If \a metadata does not contain a</span>
+    <span class="doccomment">/// VORBIS_COMMENT block, the encoder will supply that too.  Otherwise, if</span>
+    <span class="doccomment">/// \a metadata does contain a VORBIS_COMMENT block and it is not the</span>
+    <span class="doccomment">/// first, the init function will reorder \a metadata by moving the</span>
+    <span class="doccomment">/// VORBIS_COMMENT block to the front; the relative ordering of the other</span>
+    <span class="doccomment">/// blocks will remain as they were.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \note The Ogg FLAC mapping limits the number of metadata blocks per</span>
+    <span class="doccomment">/// stream to \c 65535.  If \a num_blocks exceeds this the function will</span>
+    <span class="doccomment">/// return \c false.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// \default \c NULL, 0</span>
+    <span class="doccomment">/// \param  encoder     An encoder instance to set.</span>
+    <span class="doccomment">/// \param  metadata    See above.</span>
+    <span class="doccomment">/// \param  num_blocks  See above.</span>
+    <span class="doccomment">/// \assert</span>
+    <span class="doccomment">///    \code encoder != NULL \endcode</span>
+    <span class="doccomment">/// \retval FLAC__bool</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">///    \c false if the encoder is already initialized, or if</span>
+    <span class="doccomment">///    \a num_blocks &gt; 65535 if encoding to Ogg FLAC, else \c true.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">metadata</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
+        <span class="macro">unimplemented</span><span class="macro">!</span>();
+        <span class="comment">// FLAC__stream_encoder_set_metadata(self.0);</span>
+        <span class="comment">// self</span>
+    }
+}
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "flac_bound";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
