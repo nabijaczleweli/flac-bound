@@ -542,12 +542,8 @@
 <span id="542">542</span>
 <span id="543">543</span>
 <span id="544">544</span>
-<span id="545">545</span>
-<span id="546">546</span>
-<span id="547">547</span>
-<span id="548">548</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">flac_sys</span>::{<span class="ident">FLAC__StreamEncoder</span>, <span class="ident">FLAC__StreamEncoderInitStatus</span>, <span class="ident">FLAC__bool</span>, <span class="ident">FLAC__stream_encoder_set_ogg_serial_number</span>, <span class="ident">FLAC__stream_encoder_set_verify</span>,
+<span class="kw">use</span> <span class="ident">flac_sys</span>::{<span class="ident">FLAC__StreamEncoderInitStatus</span>, <span class="ident">FLAC__bool</span>, <span class="ident">FLAC__stream_encoder_set_ogg_serial_number</span>, <span class="ident">FLAC__stream_encoder_set_verify</span>,
                <span class="ident">FLAC__stream_encoder_set_streamable_subset</span>, <span class="ident">FLAC__stream_encoder_set_channels</span>, <span class="ident">FLAC__stream_encoder_set_bits_per_sample</span>,
                <span class="ident">FLAC__stream_encoder_set_sample_rate</span>, <span class="ident">FLAC__stream_encoder_set_compression_level</span>, <span class="ident">FLAC__stream_encoder_set_blocksize</span>,
                <span class="ident">FLAC__stream_encoder_set_do_mid_side_stereo</span>, <span class="ident">FLAC__stream_encoder_set_loose_mid_side_stereo</span>, <span class="ident">FLAC__stream_encoder_set_apodization</span>,
@@ -557,7 +553,7 @@
                <span class="ident">FLAC__stream_encoder_set_rice_parameter_search_dist</span>,
                <span class="ident">FLAC__stream_encoder_set_total_samples_estimate</span> <span class="comment">/* , FLAC__stream_encoder_set_metadata */</span>, <span class="ident">FLAC__stream_encoder_init_file</span>,
                <span class="ident">FLAC__stream_encoder_init_ogg_file</span>, <span class="ident">FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK</span>};
-<span class="kw">use</span> <span class="self">self</span>::<span class="kw">super</span>::{<span class="ident">FlacEncoderInitError</span>, <span class="ident">FlacEncoder</span>, <span class="ident">drop_stream_encoder</span>};
+<span class="kw">use</span> <span class="self">self</span>::<span class="kw">super</span>::{<span class="ident">StreamEncoderContainer</span>, <span class="ident">FlacEncoderInitError</span>, <span class="ident">FlacEncoder</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::{<span class="ident">CString</span>, <span class="ident">CStr</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">TryFrom</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">os</span>::<span class="ident">raw</span>::<span class="ident">c_long</span>;
@@ -571,7 +567,7 @@
 <span class="doccomment">/// `FILE*`/stream constructors unsupported as of yet</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Hash</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>)]</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FlacEncoderConfig</span>(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">FLAC__StreamEncoder</span>);
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FlacEncoderConfig</span>(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">StreamEncoderContainer</span>);
 
 <span class="kw">impl</span> <span class="ident">FlacEncoderConfig</span> {
     <span class="doccomment">/// Initialize the encoder instance to encode native FLAC files.</span>
@@ -590,7 +586,8 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_file_impl</span>(<span class="self">self</span>, <span class="ident">filename</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span> <span class="comment">/* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */</span>)
                           <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">do_init</span>(<span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_init_file</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">FlacEncoderConfig</span>::<span class="ident">convert_path</span>(<span class="ident">filename</span>).<span class="ident">as_ptr</span>(), <span class="prelude-val">None</span>, <span class="ident">ptr</span>::<span class="ident">null_mut</span>()) })
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_init_file</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">FlacEncoderConfig</span>::<span class="ident">convert_path</span>(<span class="ident">filename</span>).<span class="ident">as_ptr</span>(), <span class="prelude-val">None</span>, <span class="ident">ptr</span>::<span class="ident">null_mut</span>()) };
+        <span class="self">self</span>.<span class="ident">do_init</span>(<span class="ident">result</span>)
     }
 
     <span class="doccomment">/// Initialize the encoder instance to encode Ogg FLAC files.</span>
@@ -609,7 +606,8 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_file_ogg_impl</span>(<span class="self">self</span>, <span class="ident">filename</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span> <span class="comment">/* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */</span>)
                               <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">do_init</span>(<span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_init_ogg_file</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">FlacEncoderConfig</span>::<span class="ident">convert_path</span>(<span class="ident">filename</span>).<span class="ident">as_ptr</span>(), <span class="prelude-val">None</span>, <span class="ident">ptr</span>::<span class="ident">null_mut</span>()) })
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_init_ogg_file</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">FlacEncoderConfig</span>::<span class="ident">convert_path</span>(<span class="ident">filename</span>).<span class="ident">as_ptr</span>(), <span class="prelude-val">None</span>, <span class="ident">ptr</span>::<span class="ident">null_mut</span>()) };
+        <span class="self">self</span>.<span class="ident">do_init</span>(<span class="ident">result</span>)
     }
 
     <span class="doccomment">/// Initialize the encoder instance to encode native FLAC files.</span>
@@ -622,7 +620,8 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Note**:  a proper SEEKTABLE cannot be created when encoding to `stdout` since it is not seekable.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_stdout</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">do_init</span>(<span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_init_file</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">ptr</span>::<span class="ident">null</span>(), <span class="prelude-val">None</span>, <span class="ident">ptr</span>::<span class="ident">null_mut</span>()) })
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_init_file</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">ptr</span>::<span class="ident">null</span>(), <span class="prelude-val">None</span>, <span class="ident">ptr</span>::<span class="ident">null_mut</span>()) };
+        <span class="self">self</span>.<span class="ident">do_init</span>(<span class="ident">result</span>)
     }
 
     <span class="doccomment">/// Initialize the encoder instance to encode Ogg FLAC files.</span>
@@ -635,27 +634,20 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Note**:  a proper SEEKTABLE cannot be created when encoding to `stdout` since it is not seekable.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_stdout_ogg</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">do_init</span>(<span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_init_ogg_file</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">ptr</span>::<span class="ident">null</span>(), <span class="prelude-val">None</span>, <span class="ident">ptr</span>::<span class="ident">null_mut</span>()) })
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_init_ogg_file</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">ptr</span>::<span class="ident">null</span>(), <span class="prelude-val">None</span>, <span class="ident">ptr</span>::<span class="ident">null_mut</span>()) };
+        <span class="self">self</span>.<span class="ident">do_init</span>(<span class="ident">result</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">convert_path</span>(<span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CString</span> {
         <span class="ident">CString</span>::<span class="ident">new</span>(<span class="ident">path</span>.<span class="ident">to_str</span>().<span class="ident">expect</span>(<span class="string">&quot;non-UTF-8 filename&quot;</span>)).<span class="ident">expect</span>(<span class="string">&quot;filename has internal NULs&quot;</span>)
     }
 
-    <span class="comment">// Note: this function is actually self instead of &amp;self, but this simplifies consumer code,</span>
-    <span class="comment">//       and the public interfaces are actually self</span>
-    <span class="kw">fn</span> <span class="ident">do_init</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">init_result</span>: <span class="ident">FLAC__StreamEncoderInitStatus</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">do_init</span>(<span class="self">self</span>, <span class="ident">init_result</span>: <span class="ident">FLAC__StreamEncoderInitStatus</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="ident">init_result</span> <span class="op">=</span><span class="op">=</span> <span class="ident">FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK</span> {
             <span class="prelude-val">Ok</span>(<span class="ident">FlacEncoder</span>(<span class="self">self</span>.<span class="number">0</span>))
         } <span class="kw">else</span> {
             <span class="prelude-val">Err</span>(<span class="ident">FlacEncoderInitError</span>::<span class="ident">try_from</span>(<span class="ident">init_result</span>).<span class="ident">unwrap</span>())
         }
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">FlacEncoderConfig</span> {
-    <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-        <span class="ident">drop_stream_encoder</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="number">0</span>)
     }
 }
 
@@ -671,7 +663,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `0`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ogg_serial_number</span>(<span class="self">self</span>, <span class="ident">serial_number</span>: <span class="ident">c_long</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_ogg_serial_number</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">serial_number</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_ogg_serial_number</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">serial_number</span>) };
         <span class="self">self</span>
     }
 
@@ -685,7 +677,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `false`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">verify</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_verify</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_verify</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
         <span class="self">self</span>
     }
 
@@ -700,7 +692,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `true`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">streamable_subset</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_streamable_subset</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_streamable_subset</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
         <span class="self">self</span>
     }
 
@@ -708,7 +700,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `2`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">channels</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_channels</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_channels</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 
@@ -720,7 +712,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `16`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bits_per_sample</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_bits_per_sample</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_bits_per_sample</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 
@@ -728,7 +720,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `44100`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sample_rate</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_sample_rate</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_sample_rate</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 
@@ -805,7 +797,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `5`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">compression_level</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_compression_level</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_compression_level</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 
@@ -816,7 +808,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `0`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">blocksize</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_blocksize</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_blocksize</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 
@@ -827,7 +819,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `true`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">do_mid_side_stereo</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_do_mid_side_stereo</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_do_mid_side_stereo</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
         <span class="self">self</span>
     }
 
@@ -838,7 +830,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `false`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">loose_mid_side_stereo</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_loose_mid_side_stereo</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_loose_mid_side_stereo</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
         <span class="self">self</span>
     }
 
@@ -898,7 +890,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `&quot;tukey(0.5)&quot;`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">apodization</span>(<span class="self">self</span>, <span class="ident">specification</span>: <span class="kw-2">&amp;</span><span class="ident">CStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_apodization</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">specification</span>.<span class="ident">as_ptr</span>()) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_apodization</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">specification</span>.<span class="ident">as_ptr</span>()) };
         <span class="self">self</span>
     }
 
@@ -906,7 +898,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `8`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_lpc_order</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_max_lpc_order</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_max_lpc_order</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 
@@ -920,7 +912,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `0`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">qlp_coeff_precision</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_qlp_coeff_precision</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_qlp_coeff_precision</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 
@@ -930,7 +922,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `false`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">do_qlp_coeff_prec_search</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_do_qlp_coeff_prec_search</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_do_qlp_coeff_prec_search</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
         <span class="self">self</span>
     }
 
@@ -938,7 +930,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `false`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">do_escape_coding</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_do_escape_coding</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_do_escape_coding</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
         <span class="self">self</span>
     }
 
@@ -948,7 +940,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `false`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">do_exhaustive_model_search</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_do_exhaustive_model_search</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_do_exhaustive_model_search</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
         <span class="self">self</span>
     }
 
@@ -969,7 +961,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `0`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">min_residual_partition_order</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_min_residual_partition_order</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_min_residual_partition_order</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 
@@ -989,7 +981,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `5`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_residual_partition_order</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_max_residual_partition_order</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_max_residual_partition_order</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 
@@ -997,7 +989,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `0`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rice_parameter_search_dist</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_rice_parameter_search_dist</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_rice_parameter_search_dist</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 
@@ -1010,7 +1002,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Default**: `0`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">total_samples_estimate</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_total_samples_estimate</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_total_samples_estimate</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 

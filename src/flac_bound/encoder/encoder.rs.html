@@ -161,15 +161,9 @@
 <span id="161">161</span>
 <span id="162">162</span>
 <span id="163">163</span>
-<span id="164">164</span>
-<span id="165">165</span>
-<span id="166">166</span>
-<span id="167">167</span>
-<span id="168">168</span>
-<span id="169">169</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">flac_sys</span>::{<span class="ident">FLAC__StreamEncoder</span>, <span class="ident">FLAC__stream_encoder_new</span>};
-<span class="kw">use</span> <span class="self">self</span>::<span class="kw">super</span>::{<span class="ident">FlacEncoderConfig</span>, <span class="ident">drop_stream_encoder</span>};
+<span class="kw">use</span> <span class="self">self</span>::<span class="kw">super</span>::{<span class="ident">StreamEncoderContainer</span>, <span class="ident">FlacEncoderConfig</span>};
+<span class="kw">use</span> <span class="ident">flac_sys</span>::<span class="ident">FLAC__stream_encoder_new</span>;
 
 
 <span class="doccomment">/// The [stream encoder](https://xiph.org/flac/api/group__flac__stream__encoder.html) can encode to native FLAC,</span>
@@ -318,23 +312,17 @@
 <span class="doccomment">/// `FLAC__stream_encoder_finish()` resets all settings to the constructor defaults.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Hash</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>)]</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FlacEncoder</span>(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">FLAC__StreamEncoder</span>);
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FlacEncoder</span>(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">StreamEncoderContainer</span>);
 
 <span class="kw">impl</span> <span class="ident">FlacEncoder</span> {
     <span class="doccomment">/// Create a new stream encoder, in a configuration wrapper, or `None` if one couldn&#39;t be allocated.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FlacEncoderConfig</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">enc</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_new</span>() };
         <span class="kw">if</span> <span class="op">!</span><span class="ident">enc</span>.<span class="ident">is_null</span>() {
-            <span class="prelude-val">Some</span>(<span class="ident">FlacEncoderConfig</span>(<span class="ident">enc</span>))
+            <span class="prelude-val">Some</span>(<span class="ident">FlacEncoderConfig</span>(<span class="ident">StreamEncoderContainer</span>(<span class="ident">enc</span>)))
         } <span class="kw">else</span> {
             <span class="prelude-val">None</span>
         }
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">FlacEncoder</span> {
-    <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-        <span class="ident">drop_stream_encoder</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="number">0</span>)
     }
 }
 </pre></div>
