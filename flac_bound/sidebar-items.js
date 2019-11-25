@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["FlacEncoder",""],["FlacEncoderConfig",""]]});
+initSidebarItems({"struct":[["FlacEncoder","The stream encoder can encode to native FLAC, and optionally Ogg FLAC (check FLAC_API_SUPPORTS_OGG_FLAC) streams and files."],["FlacEncoderConfig","Wrapper around a FLAC encoder for configuring the output settings."]]});

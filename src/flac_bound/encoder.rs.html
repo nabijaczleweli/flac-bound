@@ -602,6 +602,36 @@
 <span id="602">602</span>
 <span id="603">603</span>
 <span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">flac_sys</span>::{<span class="ident">FLAC__StreamEncoder</span>, <span class="ident">FLAC__bool</span>, <span class="ident">FLAC__stream_encoder_new</span>, <span class="ident">FLAC__stream_encoder_delete</span>, <span class="ident">FLAC__stream_encoder_set_ogg_serial_number</span>,
                <span class="ident">FLAC__stream_encoder_set_verify</span>, <span class="ident">FLAC__stream_encoder_set_streamable_subset</span>, <span class="ident">FLAC__stream_encoder_set_channels</span>,
@@ -617,15 +647,155 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::<span class="ident">CStr</span>;
 
 
+<span class="doccomment">/// The [stream encoder](https://xiph.org/flac/api/group__flac__stream__encoder.html) can encode to native FLAC,</span>
+<span class="doccomment">/// and optionally Ogg FLAC (check FLAC_API_SUPPORTS_OGG_FLAC) streams and files.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The basic usage of this encoder is as follows:</span>
+<span class="doccomment">///   * The program creates an instance of an encoder using</span>
+<span class="doccomment">///     `FLAC__stream_encoder_new()`.</span>
+<span class="doccomment">///   * The program overrides the default settings using</span>
+<span class="doccomment">///     `FLAC__stream_encoder_set_*()` functions. At a minimum, the following</span>
+<span class="doccomment">///     functions should be called:</span>
+<span class="doccomment">///       * `FLAC__stream_encoder_set_channels()`</span>
+<span class="doccomment">///       * `FLAC__stream_encoder_set_bits_per_sample()`</span>
+<span class="doccomment">///       * `FLAC__stream_encoder_set_sample_rate()`</span>
+<span class="doccomment">///       * `FLAC__stream_encoder_set_ogg_serial_number()` (if encoding to Ogg FLAC)</span>
+<span class="doccomment">///       * `FLAC__stream_encoder_set_total_samples_estimate()` (if known)</span>
+<span class="doccomment">///   * If the application wants to control the compression level or set its own</span>
+<span class="doccomment">///     metadata, then the following should also be called:</span>
+<span class="doccomment">///     * `FLAC__stream_encoder_set_compression_level()`</span>
+<span class="doccomment">///     * `FLAC__stream_encoder_set_verify()`</span>
+<span class="doccomment">///     * `FLAC__stream_encoder_set_metadata()`</span>
+<span class="doccomment">///   * The rest of the set functions should only be called if the client needs</span>
+<span class="doccomment">///     exact control over how the audio is compressed; thorough understanding</span>
+<span class="doccomment">///     of the FLAC format is necessary to achieve good results.</span>
+<span class="doccomment">///   * The program initializes the instance to validate the settings and</span>
+<span class="doccomment">///     prepare for encoding using</span>
+<span class="doccomment">///       * `FLAC__stream_encoder_init_stream()` or `FLAC__stream_encoder_init_FILE()`</span>
+<span class="doccomment">///         or `FLAC__stream_encoder_init_file()` for native FLAC</span>
+<span class="doccomment">///       * `FLAC__stream_encoder_init_ogg_stream()` or `FLAC__stream_encoder_init_ogg_FILE()`</span>
+<span class="doccomment">///         or `FLAC__stream_encoder_init_ogg_file()` for Ogg FLAC</span>
+<span class="doccomment">///   * The program calls `FLAC__stream_encoder_process()` or</span>
+<span class="doccomment">///     `FLAC__stream_encoder_process_interleaved()` to encode data, which</span>
+<span class="doccomment">///     subsequently calls the callbacks when there is encoder data ready</span>
+<span class="doccomment">///     to be written.</span>
+<span class="doccomment">///   * The program finishes the encoding with `FLAC__stream_encoder_finish()`,</span>
+<span class="doccomment">///     which causes the encoder to encode any data still in its input pipe,</span>
+<span class="doccomment">///     update the metadata with the final encoding statistics if output</span>
+<span class="doccomment">///     seeking is possible, and finally reset the encoder to the</span>
+<span class="doccomment">///     uninitialized state.</span>
+<span class="doccomment">///   * The instance may be used again or deleted with</span>
+<span class="doccomment">///     `FLAC__stream_encoder_delete()`.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// In more detail, the stream encoder functions similarly to the</span>
+<span class="doccomment">/// stream decoder, but has fewer</span>
+<span class="doccomment">/// callbacks and more options. Typically the client will create a new</span>
+<span class="doccomment">/// instance by calling `FLAC__stream_encoder_new()`, then set the necessary</span>
+<span class="doccomment">/// parameters with `FLAC__stream_encoder_set_*()`, and initialize it by</span>
+<span class="doccomment">/// calling one of the `FLAC__stream_encoder_init_*()` functions.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Unlike the decoders, the stream encoder has many options that can</span>
+<span class="doccomment">/// affect the speed and compression ratio. When setting these parameters</span>
+<span class="doccomment">/// you should have some basic knowledge of the format (see the</span>
+<span class="doccomment">/// user-level documentation or the formal description). The</span>
+<span class="doccomment">/// `FLAC__stream_encoder_set_*()` functions themselves do not validate the</span>
+<span class="doccomment">/// values as many are interdependent. `The FLAC__stream_encoder_init_*()`</span>
+<span class="doccomment">/// functions will do this, so make sure to pay attention to the state</span>
+<span class="doccomment">/// returned by `FLAC__stream_encoder_init_*()` to make sure that it is</span>
+<span class="doccomment">/// `FLAC__STREAM_ENCODER_INIT_STATUS_OK`. Any parameters that are not set</span>
+<span class="doccomment">/// before `FLAC__stream_encoder_init_*()` will take on the defaults from</span>
+<span class="doccomment">/// the constructor.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// There are three initialization functions for native FLAC, one for</span>
+<span class="doccomment">/// setting up the encoder to encode FLAC data to the client via</span>
+<span class="doccomment">/// callbacks, and two for encoding directly to a file.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// For encoding via callbacks, use `FLAC__stream_encoder_init_stream()`.</span>
+<span class="doccomment">/// You must also supply a write callback which will be called anytime</span>
+<span class="doccomment">/// there is raw encoded data to write. If the client can seek the output</span>
+<span class="doccomment">/// it is best to also supply seek and tell callbacks, as this allows the</span>
+<span class="doccomment">/// encoder to go back after encoding is finished to write back</span>
+<span class="doccomment">/// information that was collected while encoding, like seek point offsets,</span>
+<span class="doccomment">/// frame sizes, etc.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// For encoding directly to a file, use `FLAC__stream_encoder_init_FILE()`</span>
+<span class="doccomment">/// or `FLAC__stream_encoder_init_file()`. Then you must only supply a</span>
+<span class="doccomment">/// filename or open `FILE*`; the encoder will handle all the callbacks</span>
+<span class="doccomment">/// internally. You may also supply a progress callback for periodic</span>
+<span class="doccomment">/// notification of the encoding progress.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// There are three similarly-named init functions for encoding to Ogg</span>
+<span class="doccomment">/// FLAC streams. Check `FLAC_API_SUPPORTS_OGG_FLAC` to find out if the</span>
+<span class="doccomment">/// library has been built with Ogg support.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The call to `FLAC__stream_encoder_init_*()` currently will also immediately</span>
+<span class="doccomment">/// call the write callback several times, once with the `fLaC signature`,</span>
+<span class="doccomment">/// and once for each encoded metadata block. Note that for Ogg FLAC</span>
+<span class="doccomment">/// encoding you will usually get at least twice the number of callbacks than</span>
+<span class="doccomment">/// with native FLAC, one for the Ogg page header and one for the page body.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// After initializing the instance, the client may feed audio data to the</span>
+<span class="doccomment">/// encoder in one of two ways:</span>
+<span class="doccomment">///</span>
+<span class="doccomment">///   * Channel separate, through `FLAC__stream_encoder_process()` - The client</span>
+<span class="doccomment">///     will pass an array of pointers to buffers, one for each channel, to</span>
+<span class="doccomment">///     the encoder, each of the same length. The samples need not be</span>
+<span class="doccomment">///     block-aligned, but each channel should have the same number of samples.</span>
+<span class="doccomment">///   * Channel interleaved, through</span>
+<span class="doccomment">///     `FLAC__stream_encoder_process_interleaved()` - The client will pass a single</span>
+<span class="doccomment">///     pointer to data that is channel-interleaved (i.e. channel0_sample0,</span>
+<span class="doccomment">///     channel1_sample0, ... , channelN_sample0, channel0_sample1, ...).</span>
+<span class="doccomment">///     Again, the samples need not be block-aligned but they must be</span>
+<span class="doccomment">///     sample-aligned, i.e. the first value should be channel0_sample0 and</span>
+<span class="doccomment">///     the last value channelN_sampleM.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Note that for either process call, each sample in the buffers should be a</span>
+<span class="doccomment">/// signed integer, right-justified to the resolution set by</span>
+<span class="doccomment">/// `FLAC__stream_encoder_set_bits_per_sample()`. For example, if the resolution</span>
+<span class="doccomment">/// is 16 bits per sample, the samples should all be in the range [-32768,32767].</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// When the client is finished encoding data, it calls</span>
+<span class="doccomment">/// `FLAC__stream_encoder_finish()`, which causes the encoder to encode any</span>
+<span class="doccomment">/// data still in its input pipe, and call the metadata callback with the</span>
+<span class="doccomment">/// final encoding statistics. Then the instance may be deleted with</span>
+<span class="doccomment">/// `FLAC__stream_encoder_delete()` or initialized again to encode another</span>
+<span class="doccomment">/// stream.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// For programs that write their own metadata, but that do not know the</span>
+<span class="doccomment">/// actual metadata until after encoding, it is advantageous to instruct</span>
+<span class="doccomment">/// the encoder to write a PADDING block of the correct size, so that</span>
+<span class="doccomment">/// instead of rewriting the whole stream after encoding, the program can</span>
+<span class="doccomment">/// just overwrite the PADDING block. If only the maximum size of the</span>
+<span class="doccomment">/// metadata is known, the program can write a slightly larger padding</span>
+<span class="doccomment">/// block, then split it after encoding.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Make sure you understand how lengths are calculated. All FLAC metadata</span>
+<span class="doccomment">/// blocks have a 4 byte header which contains the type and length. This</span>
+<span class="doccomment">/// length does not include the 4 bytes of the header. See the format page</span>
+<span class="doccomment">/// for the specification of metadata blocks and their lengths.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// **Note**:&lt;br /&gt;</span>
+<span class="doccomment">/// If you are writing the FLAC data to a file via callbacks, make sure it</span>
+<span class="doccomment">/// is open for update (e.g. mode &quot;w+&quot; for stdio streams). This is because</span>
+<span class="doccomment">/// after the first encoding pass, the encoder will try to seek back to the</span>
+<span class="doccomment">/// beginning of the stream, to the STREAMINFO block, to write some data</span>
+<span class="doccomment">/// there. (If using `FLAC__stream_encoder_init*_file()` or</span>
+<span class="doccomment">/// `FLAC__stream_encoder_init*_FILE()`, the file is managed internally.)</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// **Note**:&lt;br /&gt;</span>
+<span class="doccomment">/// The &quot;set&quot; functions may only be called when the encoder is in the</span>
+<span class="doccomment">/// state `FLAC__STREAM_ENCODER_UNINITIALIZED`, i.e. after</span>
+<span class="doccomment">/// `FLAC__stream_encoder_new()` or `FLAC__stream_encoder_finish()`, but</span>
+<span class="doccomment">/// before `FLAC__stream_encoder_init_*()`. If this is the case they will</span>
+<span class="doccomment">/// return `true`, otherwise `false`.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// **Note**:&lt;br /&gt;</span>
+<span class="doccomment">/// `FLAC__stream_encoder_finish()` resets all settings to the constructor defaults.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Hash</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FlacEncoder</span>(<span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">FLAC__StreamEncoder</span>);
 
 <span class="kw">impl</span> <span class="ident">FlacEncoder</span> {
-    <span class="doccomment">/// Create a new stream encoder instance.  The instance is created with</span>
-    <span class="doccomment">///  default settings; see the individual FLAC__stream_encoder_set_*()</span>
-    <span class="doccomment">///  functions for each setting&#39;s default.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// \retval FLAC__StreamEncoder*</span>
-    <span class="doccomment">///    \c NULL if there was an error allocating memory, else the new instance.</span>
+    <span class="doccomment">/// Create a new stream encoder, in a configuration wrapper, or `None` if one couldn&#39;t be allocated.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FlacEncoderConfig</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">enc</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_new</span>() };
         <span class="kw">if</span> <span class="op">!</span><span class="ident">enc</span>.<span class="ident">is_null</span>() {
@@ -643,6 +813,8 @@
 }
 
 
+<span class="doccomment">/// Wrapper around a FLAC encoder for configuring the output settings.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Hash</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FlacEncoderConfig</span>(<span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">FLAC__StreamEncoder</span>);
 
 <span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">FlacEncoderConfig</span> {
@@ -655,7 +827,7 @@
 <span class="kw">fn</span> <span class="ident">drop_stream_encoder</span>(<span class="ident">enc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">FLAC__StreamEncoder</span>) {
     <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">replace</span>(<span class="ident">enc</span>, <span class="ident">ptr</span>::<span class="ident">null_mut</span>());
     <span class="kw">if</span> <span class="op">!</span><span class="ident">ptr</span>.<span class="ident">is_null</span>() {
-        <span class="ident">FLAC__stream_encoder_delete</span>(<span class="ident">ptr</span>);
+        <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_delete</span>(<span class="ident">ptr</span>) };
     }
 }
 
@@ -663,58 +835,42 @@
 <span class="kw">impl</span> <span class="ident">FlacEncoderConfig</span> {
     <span class="doccomment">/// Set the serial number for the FLAC stream to use in the Ogg container.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \note</span>
+    <span class="doccomment">/// **Note**:&lt;br /&gt;</span>
     <span class="doccomment">/// This does not need to be set for native FLAC encoding.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \note</span>
     <span class="doccomment">/// It is recommended to set a serial number explicitly as the default of &#39;0&#39;</span>
     <span class="doccomment">/// may collide with other streams.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c 0</span>
-    <span class="doccomment">/// \param  encoder        An encoder instance to set.</span>
-    <span class="doccomment">/// \param  serial_number  See above.</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// **Default**: `0`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ogg_serial_number</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">serial_number</span>: <span class="ident">c_long</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_ogg_serial_number</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">serial_number</span>) };
         <span class="self">self</span>
     }
 
-    <span class="doccomment">/// Set the &quot;verify&quot; flag.  If \c true, the encoder will verify it&#39;s own</span>
-    <span class="doccomment">///  encoded output by feeding it through an internal decoder and comparing</span>
-    <span class="doccomment">///  the original signal against the decoded signal.  If a mismatch occurs,</span>
-    <span class="doccomment">///  the process call will return \c false.  Note that this will slow the</span>
-    <span class="doccomment">///  encoding process by the extra time required for decoding and comparison.</span>
+    <span class="doccomment">/// Set the &quot;verify&quot; flag.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c false</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    Flag value (see above).</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// If `true`, the encoder will verify its own</span>
+    <span class="doccomment">/// encoded output by feeding it through an internal decoder and comparing</span>
+    <span class="doccomment">/// the original signal against the decoded signal. If a mismatch occurs,</span>
+    <span class="doccomment">/// the process call will return `false`. Note that this will slow the</span>
+    <span class="doccomment">/// encoding process by the extra time required for decoding and comparison.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// **Default**: `false`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">verify</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_verify</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
         <span class="self">self</span>
     }
 
-    <span class="doccomment">/// Set the &lt;A HREF=&quot;../format.html#subset&quot;&gt;Subset&lt;/A&gt; flag.  If \c true,</span>
-    <span class="doccomment">///  the encoder will comply with the Subset and will check the</span>
-    <span class="doccomment">///  settings during FLAC__stream_encoder_init_*() to see if all settings</span>
-    <span class="doccomment">///  comply.  If \c false, the settings may take advantage of the full</span>
-    <span class="doccomment">///  range that the format allows.</span>
+    <span class="doccomment">/// Set the Subset flag.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">///  Make sure you know what it entails before setting this to \c false.</span>
+    <span class="doccomment">/// If `true`, the encoder will comply with the Subset and will check the</span>
+    <span class="doccomment">/// settings during `FLAC__stream_encoder_init_*()` to see if all settings</span>
+    <span class="doccomment">/// comply. If `false`, the settings may take advantage of the full</span>
+    <span class="doccomment">/// range that the format allows.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c true</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    Flag value (see above).</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// Make sure you know what it entails before setting this to `false`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// **Default**: `true`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">streamable_subset</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_streamable_subset</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
         <span class="self">self</span>
@@ -722,13 +878,7 @@
 
     <span class="doccomment">/// Set the number of channels to be encoded.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c 2</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    See above.</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// **Default**: `2`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">channels</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_channels</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
@@ -736,17 +886,11 @@
 
     <span class="doccomment">/// Set the sample resolution of the input to be encoded.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \warning</span>
+    <span class="doccomment">/// **Warning**:&lt;br /&gt;</span>
     <span class="doccomment">/// Do not feed the encoder data that is wider than the value you</span>
     <span class="doccomment">/// set here or you will generate an invalid stream.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c 16</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    See above.</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// **Default**: `16`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bits_per_sample</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_bits_per_sample</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
@@ -754,13 +898,7 @@
 
     <span class="doccomment">/// Set the sample rate (in Hz) of the input to be encoded.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c 44100</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    See above.</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// **Default**: `44100`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sample_rate</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_sample_rate</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
@@ -769,28 +907,28 @@
     <span class="doccomment">/// Set the compression level</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// The compression level is roughly proportional to the amount of effort</span>
-    <span class="doccomment">/// the encoder expends to compress the file.  A higher level usually</span>
-    <span class="doccomment">/// means more computation but higher compression.  The default level is</span>
+    <span class="doccomment">/// the encoder expends to compress the file. A higher level usually</span>
+    <span class="doccomment">/// means more computation but higher compression. The default level is</span>
     <span class="doccomment">/// suitable for most applications.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// Currently the levels range from \c 0 (fastest, least compression) to</span>
-    <span class="doccomment">/// \c 8 (slowest, most compression).  A value larger than \c 8 will be</span>
-    <span class="doccomment">/// treated as \c 8.</span>
+    <span class="doccomment">/// Currently the levels range from `0` (fastest, least compression) to</span>
+    <span class="doccomment">/// `8` (slowest, most compression). A value larger than `8` will be</span>
+    <span class="doccomment">/// treated as `8`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// This function automatically calls the following other \c _set_</span>
+    <span class="doccomment">/// This function automatically calls the following other *`set`*</span>
     <span class="doccomment">/// functions with appropriate values, so the client does not need to</span>
     <span class="doccomment">/// unless it specifically wants to override them:</span>
-    <span class="doccomment">/// - FLAC__stream_encoder_set_do_mid_side_stereo()</span>
-    <span class="doccomment">/// - FLAC__stream_encoder_set_loose_mid_side_stereo()</span>
-    <span class="doccomment">/// - FLAC__stream_encoder_set_apodization()</span>
-    <span class="doccomment">/// - FLAC__stream_encoder_set_max_lpc_order()</span>
-    <span class="doccomment">/// - FLAC__stream_encoder_set_qlp_coeff_precision()</span>
-    <span class="doccomment">/// - FLAC__stream_encoder_set_do_qlp_coeff_prec_search()</span>
-    <span class="doccomment">/// - FLAC__stream_encoder_set_do_escape_coding()</span>
-    <span class="doccomment">/// - FLAC__stream_encoder_set_do_exhaustive_model_search()</span>
-    <span class="doccomment">/// - FLAC__stream_encoder_set_min_residual_partition_order()</span>
-    <span class="doccomment">/// - FLAC__stream_encoder_set_max_residual_partition_order()</span>
-    <span class="doccomment">/// - FLAC__stream_encoder_set_rice_parameter_search_dist()</span>
+    <span class="doccomment">///   * `FLAC__stream_encoder_set_do_mid_side_stereo()`</span>
+    <span class="doccomment">///   * `FLAC__stream_encoder_set_loose_mid_side_stereo()`</span>
+    <span class="doccomment">///   * `FLAC__stream_encoder_set_apodization()`</span>
+    <span class="doccomment">///   * `FLAC__stream_encoder_set_max_lpc_order()`</span>
+    <span class="doccomment">///   * `FLAC__stream_encoder_set_qlp_coeff_precision()`</span>
+    <span class="doccomment">///   * `FLAC__stream_encoder_set_do_qlp_coeff_prec_search()`</span>
+    <span class="doccomment">///   * `FLAC__stream_encoder_set_do_escape_coding()`</span>
+    <span class="doccomment">///   * `FLAC__stream_encoder_set_do_exhaustive_model_search()`</span>
+    <span class="doccomment">///   * `FLAC__stream_encoder_set_min_residual_partition_order()`</span>
+    <span class="doccomment">///   * `FLAC__stream_encoder_set_max_residual_partition_order()`</span>
+    <span class="doccomment">///   * `FLAC__stream_encoder_set_rice_parameter_search_dist()`</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// The actual values set for each level are:</span>
     <span class="doccomment">/// &lt;table&gt;</span>
@@ -808,33 +946,36 @@
     <span class="doccomment">///  &lt;td&gt;max residual partition order&lt;/td&gt;</span>
     <span class="doccomment">///  &lt;td&gt;rice parameter search dist&lt;/td&gt;</span>
     <span class="doccomment">/// &lt;/tr&gt;</span>
-    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;0&lt;/b&gt;&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
-    <span class="doccomment">///       &lt;td&gt;0&lt;/td&gt;  &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;3&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
-    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
-    <span class="doccomment">///       &lt;td&gt;0&lt;/td&gt;  &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;3&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
-    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;2&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
-    <span class="doccomment">///       &lt;td&gt;0&lt;/td&gt;  &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;3&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
-    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;3&lt;/b&gt;&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
-    <span class="doccomment">///       &lt;td&gt;6&lt;/td&gt;  &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;4&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
-    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;4&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
-    <span class="doccomment">///       &lt;td&gt;8&lt;/td&gt;  &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;4&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
-    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;5&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
-    <span class="doccomment">///       &lt;td&gt;8&lt;/td&gt;  &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;5&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
-    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;6&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5);partial_tukey(2)&lt;td&gt;</span>
-    <span class="doccomment">///       &lt;td&gt;8&lt;/td&gt;  &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;6&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
-    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;7&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5);partial_tukey(2)&lt;td&gt;</span>
-    <span class="doccomment">///       &lt;td&gt;12&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;6&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
-    <span class="doccomment">/// &lt;tr&gt;  &lt;td&gt;&lt;b&gt;8&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5);partial_tukey(2);punchout_tukey(3)&lt;/td&gt;</span>
-    <span class="doccomment">///       &lt;td&gt;12&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;td&gt;6&lt;/td&gt; &lt;td&gt;0&lt;/td&gt; &lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;&lt;td&gt;&lt;b&gt;0&lt;/b&gt;&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;0&lt;/td&gt;        &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;false&lt;/td&gt;    &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;3&lt;/td&gt;     &lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;&lt;td&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;0&lt;/td&gt;        &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;false&lt;/td&gt;    &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;3&lt;/td&gt;     &lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;&lt;td&gt;&lt;b&gt;2&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;0&lt;/td&gt;        &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;false&lt;/td&gt;    &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;3&lt;/td&gt;     &lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;&lt;td&gt;&lt;b&gt;3&lt;/b&gt;&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;6&lt;/td&gt;        &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;false&lt;/td&gt;    &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;4&lt;/td&gt;     &lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;&lt;td&gt;&lt;b&gt;4&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;8&lt;/td&gt;        &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;false&lt;/td&gt;    &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;4&lt;/td&gt;     &lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;&lt;td&gt;&lt;b&gt;5&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5)&lt;td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;8&lt;/td&gt;        &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;false&lt;/td&gt;    &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;5&lt;/td&gt;     &lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;&lt;td&gt;&lt;b&gt;6&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5);partial_tukey(2)&lt;td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;8&lt;/td&gt;        &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;false&lt;/td&gt;    &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;6&lt;/td&gt;     &lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;&lt;td&gt;&lt;b&gt;7&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5);partial_tukey(2)&lt;td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;12&lt;/td&gt;       &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;false&lt;/td&gt;    &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;6&lt;/td&gt;     &lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;</span>
+    <span class="doccomment">/// &lt;tr&gt;&lt;td&gt;&lt;b&gt;8&lt;/b&gt;&lt;/td&gt; &lt;td&gt;true&lt;/td&gt;  &lt;td&gt;false&lt;/td&gt; &lt;td&gt;tukey(0.5);partial_tukey(2);punchout_tukey(3)&lt;/td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;12&lt;/td&gt;       &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;false&lt;/td&gt; &lt;td&gt;false&lt;/td&gt;</span>
+    <span class="doccomment">///     &lt;td&gt;false&lt;/td&gt;    &lt;td&gt;0&lt;/td&gt;     &lt;td&gt;6&lt;/td&gt;     &lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;</span>
     <span class="doccomment">/// &lt;/table&gt;</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c 5</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    See above.</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// **Default**: `5`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">compression_level</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_compression_level</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
@@ -842,77 +983,58 @@
 
     <span class="doccomment">/// Set the blocksize to use while encoding.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// The number of samples to use per frame.  Use \c 0 to let the encoder</span>
+    <span class="doccomment">/// The number of samples to use per frame. Use `0` to let the encoder</span>
     <span class="doccomment">/// estimate a blocksize; this is usually best.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c 0</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    See above.</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// **Default**: `0`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">blocksize</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_blocksize</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 
-    <span class="doccomment">/// Set to \c true to enable mid-side encoding on stereo input.  The</span>
-    <span class="doccomment">///  number of channels must be 2 for this to have any effect.  Set to</span>
-    <span class="doccomment">///  \c false to use only independent channel coding.</span>
+    <span class="doccomment">/// Set to `true` to enable mid-side encoding on stereo input.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c true</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    Flag value (see above).</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// The number of channels must be 2 for this to have any effect.</span>
+    <span class="doccomment">/// Set to `false` to use only independent channel coding.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// **Default**: `true`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">do_mid_side_stereo</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_do_mid_side_stereo</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
         <span class="self">self</span>
     }
 
-    <span class="doccomment">/// Set to \c true to enable adaptive switching between mid-side and</span>
-    <span class="doccomment">///  left-right encoding on stereo input.  Set to \c false to use</span>
-    <span class="doccomment">///  exhaustive searching.  Setting this to \c true requires</span>
-    <span class="doccomment">///  FLAC__stream_encoder_set_do_mid_side_stereo() to also be set to</span>
-    <span class="doccomment">///  \c true in order to have any effect.</span>
+    <span class="doccomment">/// Set to `true` to enable adaptive switching between mid-side and left-right encoding on stereo input.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c false</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    Flag value (see above).</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// Set to `false` to use exhaustive searching. Setting this to `true` requires</span>
+    <span class="doccomment">/// FLAC__stream_encoder_set_do_mid_side_stereo() to also be set to `true` in order to have any effect.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// **Default**: `false`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">loose_mid_side_stereo</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_loose_mid_side_stereo</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
         <span class="self">self</span>
     }
 
-    <span class="doccomment">/// Sets the apodization function(s) the encoder will use when windowing</span>
-    <span class="doccomment">///  audio data for LPC analysis.</span>
+    <span class="doccomment">/// Sets the apodization function(s) the encoder will use when windowing audio data for LPC analysis.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// The \a specification is a plain ASCII string which specifies exactly</span>
-    <span class="doccomment">/// which functions to use.  There may be more than one (up to 32),</span>
-    <span class="doccomment">/// separated by \c &#39;;&#39; characters.  Some functions take one or more</span>
+    <span class="doccomment">/// The *specification* is a plain ASCII string which specifies exactly</span>
+    <span class="doccomment">/// which functions to use. There may be more than one (up to 32),</span>
+    <span class="doccomment">/// separated by `&#39;;&#39;` characters. Some functions take one or more</span>
     <span class="doccomment">/// comma-separated arguments in parentheses.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// The available functions are \c bartlett, \c bartlett_hann,</span>
-    <span class="doccomment">/// \c blackman, \c blackman_harris_4term_92db, \c connes, \c flattop,</span>
-    <span class="doccomment">/// \c gauss(STDDEV), \c hamming, \c hann, \c kaiser_bessel, \c nuttall,</span>
-    <span class="doccomment">/// \c rectangle, \c triangle, \c tukey(P), \c partial_tukey(n[/ov[/P]]),</span>
-    <span class="doccomment">/// \c punchout_tukey(n[/ov[/P]]), \c welch.</span>
+    <span class="doccomment">/// The available functions are `bartlett`, `bartlett_hann`,</span>
+    <span class="doccomment">/// `blackman`, `blackman_harris_4term_92db`, `connes`, `flattop`,</span>
+    <span class="doccomment">/// `gauss`(STDDEV), `hamming`, `hann`, `kaiser_bessel`, `nuttall`,</span>
+    <span class="doccomment">/// `rectangle`, `triangle`, `tukey`(P), `partial_tukey(n[/ov[/P]])`,</span>
+    <span class="doccomment">/// `punchout_tukey(n[/ov[/P]])`, `welch`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// For \c gauss(STDDEV), STDDEV specifies the standard deviation</span>
+    <span class="doccomment">/// For `gauss(STDDEV)`, STDDEV specifies the standard deviation</span>
     <span class="doccomment">/// (0&lt;STDDEV&lt;=0.5).</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// For \c tukey(P), P specifies the fraction of the window that is</span>
-    <span class="doccomment">/// tapered (0&lt;=P&lt;=1).  P=0 corresponds to \c rectangle and P=1</span>
-    <span class="doccomment">/// corresponds to \c hann.</span>
+    <span class="doccomment">/// For `tukey(P)`, P specifies the fraction of the window that is</span>
+    <span class="doccomment">/// tapered (0&lt;=P&lt;=1). P=0 corresponds to `rectangle` and P=1</span>
+    <span class="doccomment">/// corresponds to `hann`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// Specifying \c partial_tukey or \c punchout_tukey works a little</span>
+    <span class="doccomment">/// Specifying `partial_tukey` or `punchout_tukey` works a little</span>
     <span class="doccomment">/// different. These do not specify a single apodization function, but</span>
     <span class="doccomment">/// a series of them with some overlap. partial_tukey specifies a series</span>
     <span class="doccomment">/// of small windows (all treated separately) while punchout_tukey</span>
@@ -930,12 +1052,12 @@
     <span class="doccomment">/// and partial_tukey(3/0.3/0.5) are all valid. ov should be smaller than 1</span>
     <span class="doccomment">/// and can be negative.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// Example specifications are \c &quot;blackman&quot; or</span>
-    <span class="doccomment">/// \c &quot;hann;triangle;tukey(0.5);tukey(0.25);tukey(0.125)&quot;</span>
+    <span class="doccomment">/// Example specifications are `&quot;blackman&quot;` or</span>
+    <span class="doccomment">/// `&quot;hann;triangle;tukey(0.5);tukey(0.25);tukey(0.125)&quot;`</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// Any function that is specified erroneously is silently dropped.  Up</span>
-    <span class="doccomment">/// to 32 functions are kept, the rest are dropped.  If the specification</span>
-    <span class="doccomment">/// is empty the encoder defaults to \c &quot;tukey(0.5)&quot;.</span>
+    <span class="doccomment">/// Any function that is specified erroneously is silently dropped. Up</span>
+    <span class="doccomment">/// to 32 functions are kept, the rest are dropped. If the specification</span>
+    <span class="doccomment">/// is empty the encoder defaults to `&quot;tukey(0.5)&quot;`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// When more than one function is specified, then for every subframe the</span>
     <span class="doccomment">/// encoder will try each of them separately and choose the window that</span>
@@ -946,261 +1068,199 @@
     <span class="doccomment">/// values of P, STDDEV and ov are locale-specific, so if the comma</span>
     <span class="doccomment">/// separator specified by the locale is a comma, a comma should be used.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c &quot;tukey(0.5)&quot;</span>
-    <span class="doccomment">/// \param  encoder        An encoder instance to set.</span>
-    <span class="doccomment">/// \param  specification  See above.</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">///    \code specification != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// **Default**: `&quot;tukey(0.5)&quot;`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">apodization</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">specification</span>: <span class="kw-2">&amp;</span><span class="ident">CStr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_apodization</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">specification</span>.<span class="ident">as_ptr</span>()) };
         <span class="self">self</span>
     }
 
-    <span class="doccomment">/// Set the maximum LPC order, or \c 0 to use only the fixed predictors.</span>
+    <span class="doccomment">/// Set the maximum LPC order, or `0` to use only the fixed predictors.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c 8</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    See above.</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// **Default**: `8`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_lpc_order</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_max_lpc_order</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 
     <span class="doccomment">/// Set the precision, in bits, of the quantized linear predictor</span>
-    <span class="doccomment">///  coefficients, or \c 0 to let the encoder select it based on the</span>
-    <span class="doccomment">///  blocksize.</span>
+    <span class="doccomment">/// coefficients, or `0` to let the encoder select it based on the</span>
+    <span class="doccomment">/// blocksize.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \note</span>
+    <span class="doccomment">/// **Note**:&lt;br /&gt;</span>
     <span class="doccomment">/// In the current implementation, qlp_coeff_precision + bits_per_sample must</span>
     <span class="doccomment">/// be less than 32.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c 0</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    See above.</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// **Default**: `0`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">qlp_coeff_precision</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_qlp_coeff_precision</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 
-    <span class="doccomment">/// Set to \c false to use only the specified quantized linear predictor</span>
-    <span class="doccomment">///  coefficient precision, or \c true to search neighboring precision</span>
-    <span class="doccomment">///  values and use the best one.</span>
+    <span class="doccomment">/// Set to `false` to use only the specified quantized linear predictor</span>
+    <span class="doccomment">/// coefficient precision, or `true` to search neighboring precision</span>
+    <span class="doccomment">/// values and use the best one.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c false</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    See above.</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// **Default**: `false`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">do_qlp_coeff_prec_search</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_do_qlp_coeff_prec_search</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
         <span class="self">self</span>
     }
 
-    <span class="doccomment">/// Deprecated.  Setting this value has no effect.</span>
+    <span class="doccomment">/// Deprecated. Setting this value has no effect.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c false</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    See above.</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// **Default**: `false`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">do_escape_coding</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_do_escape_coding</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
         <span class="self">self</span>
     }
 
-    <span class="doccomment">/// Set to \c false to let the encoder estimate the best model order</span>
-    <span class="doccomment">///  based on the residual signal energy, or \c true to force the</span>
-    <span class="doccomment">///  encoder to evaluate all order models and select the best.</span>
+    <span class="doccomment">/// Set to `false` to let the encoder estimate the best model order</span>
+    <span class="doccomment">/// based on the residual signal energy, or `true` to force the</span>
+    <span class="doccomment">/// encoder to evaluate all order models and select the best.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c false</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    See above.</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// **Default**: `false`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">do_exhaustive_model_search</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_do_exhaustive_model_search</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span> <span class="kw">as</span> <span class="ident">FLAC__bool</span>) };
         <span class="self">self</span>
     }
 
     <span class="doccomment">/// Set the minimum partition order to search when coding the residual.</span>
-    <span class="doccomment">///  This is used in tandem with</span>
-    <span class="doccomment">///  FLAC__stream_encoder_set_max_residual_partition_order().</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">///  The partition order determines the context size in the residual.</span>
-    <span class="doccomment">///  The context size will be approximately &lt;tt&gt;blocksize / (2 ^ order)&lt;/tt&gt;.</span>
+    <span class="doccomment">/// This is used in tandem with</span>
+    <span class="doccomment">/// `FLAC__stream_encoder_set_max_residual_partition_order()`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">///  Set both min and max values to \c 0 to force a single context,</span>
-    <span class="doccomment">///  whose Rice parameter is based on the residual signal variance.</span>
-    <span class="doccomment">///  Otherwise, set a min and max order, and the encoder will search</span>
-    <span class="doccomment">///  all orders, using the mean of each context for its Rice parameter,</span>
-    <span class="doccomment">///  and use the best.</span>
+    <span class="doccomment">/// The partition order determines the context size in the residual.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c 0</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    See above.</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// The context size will be approximately `blocksize / (2 ^ order)`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Set both min and max values to `0` to force a single context,</span>
+    <span class="doccomment">/// whose Rice parameter is based on the residual signal variance.</span>
+    <span class="doccomment">/// Otherwise, set a min and max order, and the encoder will search</span>
+    <span class="doccomment">/// all orders, using the mean of each context for its Rice parameter,</span>
+    <span class="doccomment">/// and use the best.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// **Default**: `0`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">min_residual_partition_order</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_min_residual_partition_order</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 
     <span class="doccomment">/// Set the maximum partition order to search when coding the residual.</span>
-    <span class="doccomment">///  This is used in tandem with</span>
-    <span class="doccomment">///  FLAC__stream_encoder_set_min_residual_partition_order().</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">///  The partition order determines the context size in the residual.</span>
-    <span class="doccomment">///  The context size will be approximately &lt;tt&gt;blocksize / (2 ^ order)&lt;/tt&gt;.</span>
+    <span class="doccomment">/// This is used in tandem with</span>
+    <span class="doccomment">/// `FLAC__stream_encoder_set_min_residual_partition_order()`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">///  Set both min and max values to \c 0 to force a single context,</span>
-    <span class="doccomment">///  whose Rice parameter is based on the residual signal variance.</span>
-    <span class="doccomment">///  Otherwise, set a min and max order, and the encoder will search</span>
-    <span class="doccomment">///  all orders, using the mean of each context for its Rice parameter,</span>
-    <span class="doccomment">///  and use the best.</span>
+    <span class="doccomment">/// The partition order determines the context size in the residual.</span>
+    <span class="doccomment">/// The context size will be approximately `blocksize / (2 ^ order)`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c 5</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    See above.</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// Set both min and max values to `0` to force a single context,</span>
+    <span class="doccomment">/// whose Rice parameter is based on the residual signal variance.</span>
+    <span class="doccomment">/// Otherwise, set a min and max order, and the encoder will search</span>
+    <span class="doccomment">/// all orders, using the mean of each context for its Rice parameter,</span>
+    <span class="doccomment">/// and use the best.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// **Default**: `5`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_residual_partition_order</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_max_residual_partition_order</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 
-    <span class="doccomment">/// Deprecated.  Setting this value has no effect.</span>
+    <span class="doccomment">/// Deprecated. Setting this value has no effect.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c 0</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    See above.</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// **Default**: `0`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rice_parameter_search_dist</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_rice_parameter_search_dist</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 
     <span class="doccomment">/// Set an estimate of the total samples that will be encoded.</span>
-    <span class="doccomment">///  This is merely an estimate and may be set to \c 0 if unknown.</span>
-    <span class="doccomment">///  This value will be written to the STREAMINFO block before encoding,</span>
-    <span class="doccomment">///  and can remove the need for the caller to rewrite the value later</span>
-    <span class="doccomment">///  if the value is known before encoding.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c 0</span>
-    <span class="doccomment">/// \param  encoder  An encoder instance to set.</span>
-    <span class="doccomment">/// \param  value    See above.</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
+    <span class="doccomment">/// This is merely an estimate and may be set to `0` if unknown.</span>
+    <span class="doccomment">/// This value will be written to the STREAMINFO block before encoding,</span>
+    <span class="doccomment">/// and can remove the need for the caller to rewrite the value later</span>
+    <span class="doccomment">/// if the value is known before encoding.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// **Default**: `0`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">total_samples_estimate</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_total_samples_estimate</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
     }
 
     <span class="doccomment">/// Set the metadata blocks to be emitted to the stream before encoding.</span>
-    <span class="doccomment">///  A value of \c NULL, \c 0 implies no metadata; otherwise, supply an</span>
-    <span class="doccomment">///  array of pointers to metadata blocks.  The array is non-const since</span>
-    <span class="doccomment">///  the encoder may need to change the \a is_last flag inside them, and</span>
-    <span class="doccomment">///  in some cases update seek point offsets.  Otherwise, the encoder will</span>
-    <span class="doccomment">///  not modify or free the blocks.  It is up to the caller to free the</span>
-    <span class="doccomment">///  metadata blocks after encoding finishes.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \note</span>
-    <span class="doccomment">/// The encoder stores only copies of the pointers in the \a metadata array;</span>
+    <span class="doccomment">/// A value of `NULL`, `0` implies no metadata; otherwise, supply an</span>
+    <span class="doccomment">/// array of pointers to metadata blocks. The array is non-const since</span>
+    <span class="doccomment">/// the encoder may need to change the *is_last* flag inside them, and</span>
+    <span class="doccomment">/// in some cases update seek point offsets. Otherwise, the encoder will</span>
+    <span class="doccomment">/// not modify or free the blocks. It is up to the caller to free the</span>
+    <span class="doccomment">/// metadata blocks after encoding finishes.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// **Note**:&lt;br /&gt;</span>
+    <span class="doccomment">/// The encoder stores only copies of the pointers in the *metadata* array;</span>
     <span class="doccomment">/// the metadata blocks themselves must survive at least until after</span>
-    <span class="doccomment">/// FLAC__stream_encoder_finish() returns.  Do not free the blocks until then.</span>
+    <span class="doccomment">/// `FLAC__stream_encoder_finish()` returns. Do not free the blocks until then.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \note</span>
+    <span class="doccomment">/// **Note**:&lt;br /&gt;</span>
     <span class="doccomment">/// The STREAMINFO block is always written and no STREAMINFO block may</span>
     <span class="doccomment">/// occur in the supplied array.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \note</span>
-    <span class="doccomment">/// By default the encoder does not create a SEEKTABLE.  If one is supplied</span>
-    <span class="doccomment">/// in the \a metadata array, but the client has specified that it does not</span>
-    <span class="doccomment">/// support seeking, then the SEEKTABLE will be written verbatim.  However</span>
+    <span class="doccomment">/// **Note**:&lt;br /&gt;</span>
+    <span class="doccomment">/// By default the encoder does not create a SEEKTABLE. If one is supplied</span>
+    <span class="doccomment">/// in the *metadata* array, but the client has specified that it does not</span>
+    <span class="doccomment">/// support seeking, then the SEEKTABLE will be written verbatim. However</span>
     <span class="doccomment">/// by itself this is not very useful as the client will not know the stream</span>
-    <span class="doccomment">/// offsets for the seekpoints ahead of time.  In order to get a proper</span>
-    <span class="doccomment">/// seektable the client must support seeking.  See next note.</span>
+    <span class="doccomment">/// offsets for the seekpoints ahead of time. In order to get a proper</span>
+    <span class="doccomment">/// seektable the client must support seeking. See next note.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \note</span>
-    <span class="doccomment">/// SEEKTABLE blocks are handled specially.  Since you will not know</span>
+    <span class="doccomment">/// **Note**:&lt;br /&gt;</span>
+    <span class="doccomment">/// SEEKTABLE blocks are handled specially. Since you will not know</span>
     <span class="doccomment">/// the values for the seek point stream offsets, you should pass in</span>
     <span class="doccomment">/// a SEEKTABLE &#39;template&#39;, that is, a SEEKTABLE object with the</span>
-    <span class="doccomment">/// required sample numbers (or placeholder points), with \c 0 for the</span>
-    <span class="doccomment">/// \a frame_samples and \a stream_offset fields for each point.  If the</span>
+    <span class="doccomment">/// required sample numbers (or placeholder points), with `0` for the</span>
+    <span class="doccomment">/// *frame_samples* and *stream_offset* fields for each point. If the</span>
     <span class="doccomment">/// client has specified that it supports seeking by providing a seek</span>
-    <span class="doccomment">/// callback to FLAC__stream_encoder_init_stream() or both seek AND read</span>
-    <span class="doccomment">/// callback to FLAC__stream_encoder_init_ogg_stream() (or by using</span>
-    <span class="doccomment">/// FLAC__stream_encoder_init*_file() or FLAC__stream_encoder_init*_FILE()),</span>
+    <span class="doccomment">/// callback to `FLAC__stream_encoder_init_stream()` or both seek AND read</span>
+    <span class="doccomment">/// callback to `FLAC__stream_encoder_init_ogg_stream()` (or by using</span>
+    <span class="doccomment">/// `FLAC__stream_encoder_init*_file()` or `FLAC__stream_encoder_init*_FILE()`),</span>
     <span class="doccomment">/// then while it is encoding the encoder will fill the stream offsets in</span>
     <span class="doccomment">/// for you and when encoding is finished, it will seek back and write the</span>
-    <span class="doccomment">/// real values into the SEEKTABLE block in the stream.  There are helper</span>
+    <span class="doccomment">/// real values into the SEEKTABLE block in the stream. There are helper</span>
     <span class="doccomment">/// routines for manipulating seektable template blocks; see metadata.h:</span>
-    <span class="doccomment">/// FLAC__metadata_object_seektable_template_*().  If the client does</span>
+    <span class="doccomment">/// `FLAC__metadata_object_seektable_template_*()`. If the client does</span>
     <span class="doccomment">/// not support seeking, the SEEKTABLE will have inaccurate offsets which</span>
     <span class="doccomment">/// will slow down or remove the ability to seek in the FLAC stream.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \note</span>
-    <span class="doccomment">/// The encoder instance \b will modify the first \c SEEKTABLE block</span>
+    <span class="doccomment">/// **Note**:&lt;br /&gt;</span>
+    <span class="doccomment">/// The encoder instance \b will modify the first `SEEKTABLE` block</span>
     <span class="doccomment">/// as it transforms the template to a valid seektable while encoding,</span>
     <span class="doccomment">/// but it is still up to the caller to free all metadata blocks after</span>
     <span class="doccomment">/// encoding.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \note</span>
-    <span class="doccomment">/// A VORBIS_COMMENT block may be supplied.  The vendor string in it</span>
-    <span class="doccomment">/// will be ignored.  libFLAC will use it&#39;s own vendor string. libFLAC</span>
+    <span class="doccomment">/// **Note**:&lt;br /&gt;</span>
+    <span class="doccomment">/// A VORBIS_COMMENT block may be supplied. The vendor string in it</span>
+    <span class="doccomment">/// will be ignored. libFLAC will use it&#39;s own vendor string. libFLAC</span>
     <span class="doccomment">/// will not modify the passed-in VORBIS_COMMENT&#39;s vendor string, it</span>
-    <span class="doccomment">/// will simply write it&#39;s own into the stream.  If no VORBIS_COMMENT</span>
-    <span class="doccomment">/// block is present in the \a metadata array, libFLAC will write an</span>
+    <span class="doccomment">/// will simply write it&#39;s own into the stream. If no VORBIS_COMMENT</span>
+    <span class="doccomment">/// block is present in the *metadata* array, libFLAC will write an</span>
     <span class="doccomment">/// empty one, containing only the vendor string.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \note The Ogg FLAC mapping requires that the VORBIS_COMMENT block be</span>
-    <span class="doccomment">/// the second metadata block of the stream.  The encoder already supplies</span>
-    <span class="doccomment">/// the STREAMINFO block automatically.  If \a metadata does not contain a</span>
-    <span class="doccomment">/// VORBIS_COMMENT block, the encoder will supply that too.  Otherwise, if</span>
-    <span class="doccomment">/// \a metadata does contain a VORBIS_COMMENT block and it is not the</span>
-    <span class="doccomment">/// first, the init function will reorder \a metadata by moving the</span>
+    <span class="doccomment">/// **Note**:&lt;br /&gt; The Ogg FLAC mapping requires that the VORBIS_COMMENT block be</span>
+    <span class="doccomment">/// the second metadata block of the stream. The encoder already supplies</span>
+    <span class="doccomment">/// the STREAMINFO block automatically. If *metadata* does not contain a</span>
+    <span class="doccomment">/// VORBIS_COMMENT block, the encoder will supply that too. Otherwise, if</span>
+    <span class="doccomment">/// *metadata* does contain a VORBIS_COMMENT block and it is not the</span>
+    <span class="doccomment">/// first, the init function will reorder *metadata* by moving the</span>
     <span class="doccomment">/// VORBIS_COMMENT block to the front; the relative ordering of the other</span>
     <span class="doccomment">/// blocks will remain as they were.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \note The Ogg FLAC mapping limits the number of metadata blocks per</span>
-    <span class="doccomment">/// stream to \c 65535.  If \a num_blocks exceeds this the function will</span>
-    <span class="doccomment">/// return \c false.</span>
+    <span class="doccomment">/// **Note**:&lt;br /&gt;</span>
+    <span class="doccomment">/// The Ogg FLAC mapping limits the number of metadata blocks per</span>
+    <span class="doccomment">/// stream to `65535`. If *num_blocks* exceeds this the function will</span>
+    <span class="doccomment">/// return `false`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// \default \c NULL, 0</span>
-    <span class="doccomment">/// \param  encoder     An encoder instance to set.</span>
-    <span class="doccomment">/// \param  metadata    See above.</span>
-    <span class="doccomment">/// \param  num_blocks  See above.</span>
-    <span class="doccomment">/// \assert</span>
-    <span class="doccomment">///    \code encoder != NULL \endcode</span>
-    <span class="doccomment">/// \retval FLAC__bool</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, else \c true.</span>
-    <span class="doccomment">///    \c false if the encoder is already initialized, or if</span>
-    <span class="doccomment">///    \a num_blocks &gt; 65535 if encoding to Ogg FLAC, else \c true.</span>
+    <span class="doccomment">/// **Default**: `NULL, 0`</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Requires, that *num_blocks* &gt; 65535 if encoding to Ogg FLAC.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">metadata</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="macro">unimplemented</span><span class="macro">!</span>();
         <span class="comment">// FLAC__stream_encoder_set_metadata(self.0);</span>

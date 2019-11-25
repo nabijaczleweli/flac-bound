@@ -1,91 +1,56 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `FlacEncoderConfig` struct in crate `flac_bound`."><meta name="keywords" content="rust, rustlang, rust-lang, FlacEncoderConfig"><title>flac_bound::FlacEncoderConfig - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc struct"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../flac_bound/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><p class='location'>Struct FlacEncoderConfig</p><div class="sidebar-elems"><div class="block items"><a class="sidebar-title" href="#methods">Methods</a><div class="sidebar-links"><a href="#method.apodization">apodization</a><a href="#method.bits_per_sample">bits_per_sample</a><a href="#method.blocksize">blocksize</a><a href="#method.channels">channels</a><a href="#method.compression_level">compression_level</a><a href="#method.do_escape_coding">do_escape_coding</a><a href="#method.do_exhaustive_model_search">do_exhaustive_model_search</a><a href="#method.do_mid_side_stereo">do_mid_side_stereo</a><a href="#method.do_qlp_coeff_prec_search">do_qlp_coeff_prec_search</a><a href="#method.loose_mid_side_stereo">loose_mid_side_stereo</a><a href="#method.max_lpc_order">max_lpc_order</a><a href="#method.max_residual_partition_order">max_residual_partition_order</a><a href="#method.metadata">metadata</a><a href="#method.min_residual_partition_order">min_residual_partition_order</a><a href="#method.ogg_serial_number">ogg_serial_number</a><a href="#method.qlp_coeff_precision">qlp_coeff_precision</a><a href="#method.rice_parameter_search_dist">rice_parameter_search_dist</a><a href="#method.sample_rate">sample_rate</a><a href="#method.streamable_subset">streamable_subset</a><a href="#method.total_samples_estimate">total_samples_estimate</a><a href="#method.verify">verify</a></div><a class="sidebar-title" href="#implementations">Trait Implementations</a><div class="sidebar-links"><a href="#impl-Drop">Drop</a></div><a class="sidebar-title" href="#synthetic-implementations">Auto Trait Implementations</a><div class="sidebar-links"><a href="#impl-RefUnwindSafe">RefUnwindSafe</a><a href="#impl-Send">!Send</a><a href="#impl-Sync">!Sync</a><a href="#impl-Unpin">Unpin</a><a href="#impl-UnwindSafe">UnwindSafe</a></div><a class="sidebar-title" href="#blanket-implementations">Blanket Implementations</a><div class="sidebar-links"><a href="#impl-Any">Any</a><a href="#impl-Borrow%3CT%3E">Borrow&lt;T&gt;</a><a href="#impl-BorrowMut%3CT%3E">BorrowMut&lt;T&gt;</a><a href="#impl-From%3CT%3E">From&lt;T&gt;</a><a href="#impl-Into%3CU%3E">Into&lt;U&gt;</a><a href="#impl-TryFrom%3CU%3E">TryFrom&lt;U&gt;</a><a href="#impl-TryInto%3CU%3E">TryInto&lt;U&gt;</a></div></div><p class='location'><a href='index.html'>flac_bound</a></p><script>window.sidebarCurrent = {name: 'FlacEncoderConfig', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/flac_bound/encoder.rs.html#41' title='goto source code'>[src]</a></span><span class='in-band'>Struct <a href='index.html'>flac_bound</a>::<wbr><a class="struct" href=''>FlacEncoderConfig</a></span></h1><div class="docblock type-decl hidden-by-usual-hider"><pre class='rust struct'>pub struct FlacEncoderConfig(_);</pre></div><h2 id='methods' class='small-section-header'>Methods<a href='#methods' class='anchor'></a></h2><h3 id='impl' class='impl'><code class='in-band'>impl <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a href='#impl' class='anchor'></a><a class='srclink' href='../src/flac_bound/encoder.rs.html#58-604' title='goto source code'>[src]</a></h3><div class='impl-items'><h4 id='method.ogg_serial_number' class="method"><code id='ogg_serial_number.v'>pub fn <a href='#method.ogg_serial_number' class='fnname'>ogg_serial_number</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;serial_number: <a class="type" href="https://doc.rust-lang.org/nightly/std/os/raw/type.c_long.html" title="type std::os::raw::c_long">c_long</a><br>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#75-78' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the serial number for the FLAC stream to use in the Ogg container.</p>
-<p>\note
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `FlacEncoderConfig` struct in crate `flac_bound`."><meta name="keywords" content="rust, rustlang, rust-lang, FlacEncoderConfig"><title>flac_bound::FlacEncoderConfig - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc struct"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../flac_bound/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><p class='location'>Struct FlacEncoderConfig</p><div class="sidebar-elems"><div class="block items"><a class="sidebar-title" href="#methods">Methods</a><div class="sidebar-links"><a href="#method.apodization">apodization</a><a href="#method.bits_per_sample">bits_per_sample</a><a href="#method.blocksize">blocksize</a><a href="#method.channels">channels</a><a href="#method.compression_level">compression_level</a><a href="#method.do_escape_coding">do_escape_coding</a><a href="#method.do_exhaustive_model_search">do_exhaustive_model_search</a><a href="#method.do_mid_side_stereo">do_mid_side_stereo</a><a href="#method.do_qlp_coeff_prec_search">do_qlp_coeff_prec_search</a><a href="#method.loose_mid_side_stereo">loose_mid_side_stereo</a><a href="#method.max_lpc_order">max_lpc_order</a><a href="#method.max_residual_partition_order">max_residual_partition_order</a><a href="#method.metadata">metadata</a><a href="#method.min_residual_partition_order">min_residual_partition_order</a><a href="#method.ogg_serial_number">ogg_serial_number</a><a href="#method.qlp_coeff_precision">qlp_coeff_precision</a><a href="#method.rice_parameter_search_dist">rice_parameter_search_dist</a><a href="#method.sample_rate">sample_rate</a><a href="#method.streamable_subset">streamable_subset</a><a href="#method.total_samples_estimate">total_samples_estimate</a><a href="#method.verify">verify</a></div><a class="sidebar-title" href="#implementations">Trait Implementations</a><div class="sidebar-links"><a href="#impl-Debug">Debug</a><a href="#impl-Drop">Drop</a><a href="#impl-Eq">Eq</a><a href="#impl-Hash">Hash</a><a href="#impl-Ord">Ord</a><a href="#impl-PartialEq%3CFlacEncoderConfig%3E">PartialEq&lt;FlacEncoderConfig&gt;</a><a href="#impl-PartialOrd%3CFlacEncoderConfig%3E">PartialOrd&lt;FlacEncoderConfig&gt;</a></div><a class="sidebar-title" href="#synthetic-implementations">Auto Trait Implementations</a><div class="sidebar-links"><a href="#impl-RefUnwindSafe">RefUnwindSafe</a><a href="#impl-Send">!Send</a><a href="#impl-Sync">!Sync</a><a href="#impl-Unpin">Unpin</a><a href="#impl-UnwindSafe">UnwindSafe</a></div><a class="sidebar-title" href="#blanket-implementations">Blanket Implementations</a><div class="sidebar-links"><a href="#impl-Any">Any</a><a href="#impl-Borrow%3CT%3E">Borrow&lt;T&gt;</a><a href="#impl-BorrowMut%3CT%3E">BorrowMut&lt;T&gt;</a><a href="#impl-From%3CT%3E">From&lt;T&gt;</a><a href="#impl-Into%3CU%3E">Into&lt;U&gt;</a><a href="#impl-TryFrom%3CU%3E">TryFrom&lt;U&gt;</a><a href="#impl-TryInto%3CU%3E">TryInto&lt;U&gt;</a></div></div><p class='location'><a href='index.html'>flac_bound</a></p><script>window.sidebarCurrent = {name: 'FlacEncoderConfig', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/flac_bound/encoder.rs.html#183' title='goto source code'>[src]</a></span><span class='in-band'>Struct <a href='index.html'>flac_bound</a>::<wbr><a class="struct" href=''>FlacEncoderConfig</a></span></h1><div class="docblock type-decl hidden-by-usual-hider"><pre class='rust struct'>pub struct FlacEncoderConfig(_);</pre></div><div class='docblock'><p>Wrapper around a FLAC encoder for configuring the output settings.</p>
+</div><h2 id='methods' class='small-section-header'>Methods<a href='#methods' class='anchor'></a></h2><h3 id='impl' class='impl'><code class='in-band'>impl <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a href='#impl' class='anchor'></a><a class='srclink' href='../src/flac_bound/encoder.rs.html#200-634' title='goto source code'>[src]</a></h3><div class='impl-items'><h4 id='method.ogg_serial_number' class="method"><code id='ogg_serial_number.v'>pub fn <a href='#method.ogg_serial_number' class='fnname'>ogg_serial_number</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;serial_number: <a class="type" href="https://doc.rust-lang.org/nightly/std/os/raw/type.c_long.html" title="type std::os::raw::c_long">c_long</a><br>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#210-213' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the serial number for the FLAC stream to use in the Ogg container.</p>
+<p><strong>Note</strong>:<br />
 This does not need to be set for native FLAC encoding.</p>
-<p>\note
-It is recommended to set a serial number explicitly as the default of '0'
+<p>It is recommended to set a serial number explicitly as the default of '0'
 may collide with other streams.</p>
-<p>\default \c 0
-\param  encoder        An encoder instance to set.
-\param  serial_number  See above.
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.verify' class="method"><code id='verify.v'>pub fn <a href='#method.verify' class='fnname'>verify</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#93-96' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the &quot;verify&quot; flag.  If \c true, the encoder will verify it's own
+<p><strong>Default</strong>: <code>0</code></p>
+</div><h4 id='method.verify' class="method"><code id='verify.v'>pub fn <a href='#method.verify' class='fnname'>verify</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#224-227' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the &quot;verify&quot; flag.</p>
+<p>If <code>true</code>, the encoder will verify its own
 encoded output by feeding it through an internal decoder and comparing
-the original signal against the decoded signal.  If a mismatch occurs,
-the process call will return \c false.  Note that this will slow the
+the original signal against the decoded signal. If a mismatch occurs,
+the process call will return <code>false</code>. Note that this will slow the
 encoding process by the extra time required for decoding and comparison.</p>
-<p>\default \c false
-\param  encoder  An encoder instance to set.
-\param  value    Flag value (see above).
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.streamable_subset' class="method"><code id='streamable_subset.v'>pub fn <a href='#method.streamable_subset' class='fnname'>streamable_subset</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#113-116' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the <A HREF="../format.html#subset">Subset</A> flag.  If \c true,
-the encoder will comply with the Subset and will check the
-settings during FLAC__stream_encoder_init_*() to see if all settings
-comply.  If \c false, the settings may take advantage of the full
+<p><strong>Default</strong>: <code>false</code></p>
+</div><h4 id='method.streamable_subset' class="method"><code id='streamable_subset.v'>pub fn <a href='#method.streamable_subset' class='fnname'>streamable_subset</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#239-242' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the Subset flag.</p>
+<p>If <code>true</code>, the encoder will comply with the Subset and will check the
+settings during <code>FLAC__stream_encoder_init_*()</code> to see if all settings
+comply. If <code>false</code>, the settings may take advantage of the full
 range that the format allows.</p>
-<p>Make sure you know what it entails before setting this to \c false.</p>
-<p>\default \c true
-\param  encoder  An encoder instance to set.
-\param  value    Flag value (see above).
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.channels' class="method"><code id='channels.v'>pub fn <a href='#method.channels' class='fnname'>channels</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#127-130' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the number of channels to be encoded.</p>
-<p>\default \c 2
-\param  encoder  An encoder instance to set.
-\param  value    See above.
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.bits_per_sample' class="method"><code id='bits_per_sample.v'>pub fn <a href='#method.bits_per_sample' class='fnname'>bits_per_sample</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#145-148' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the sample resolution of the input to be encoded.</p>
-<p>\warning
+<p>Make sure you know what it entails before setting this to <code>false</code>.</p>
+<p><strong>Default</strong>: <code>true</code></p>
+</div><h4 id='method.channels' class="method"><code id='channels.v'>pub fn <a href='#method.channels' class='fnname'>channels</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#247-250' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the number of channels to be encoded.</p>
+<p><strong>Default</strong>: <code>2</code></p>
+</div><h4 id='method.bits_per_sample' class="method"><code id='bits_per_sample.v'>pub fn <a href='#method.bits_per_sample' class='fnname'>bits_per_sample</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#259-262' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the sample resolution of the input to be encoded.</p>
+<p><strong>Warning</strong>:<br />
 Do not feed the encoder data that is wider than the value you
 set here or you will generate an invalid stream.</p>
-<p>\default \c 16
-\param  encoder  An encoder instance to set.
-\param  value    See above.
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.sample_rate' class="method"><code id='sample_rate.v'>pub fn <a href='#method.sample_rate' class='fnname'>sample_rate</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#159-162' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the sample rate (in Hz) of the input to be encoded.</p>
-<p>\default \c 44100
-\param  encoder  An encoder instance to set.
-\param  value    See above.
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.compression_level' class="method"><code id='compression_level.v'>pub fn <a href='#method.compression_level' class='fnname'>compression_level</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#233-236' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the compression level</p>
+<p><strong>Default</strong>: <code>16</code></p>
+</div><h4 id='method.sample_rate' class="method"><code id='sample_rate.v'>pub fn <a href='#method.sample_rate' class='fnname'>sample_rate</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#267-270' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the sample rate (in Hz) of the input to be encoded.</p>
+<p><strong>Default</strong>: <code>44100</code></p>
+</div><h4 id='method.compression_level' class="method"><code id='compression_level.v'>pub fn <a href='#method.compression_level' class='fnname'>compression_level</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#344-347' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the compression level</p>
 <p>The compression level is roughly proportional to the amount of effort
-the encoder expends to compress the file.  A higher level usually
-means more computation but higher compression.  The default level is
+the encoder expends to compress the file. A higher level usually
+means more computation but higher compression. The default level is
 suitable for most applications.</p>
-<p>Currently the levels range from \c 0 (fastest, least compression) to
-\c 8 (slowest, most compression).  A value larger than \c 8 will be
-treated as \c 8.</p>
-<p>This function automatically calls the following other \c <em>set</em>
+<p>Currently the levels range from <code>0</code> (fastest, least compression) to
+<code>8</code> (slowest, most compression). A value larger than <code>8</code> will be
+treated as <code>8</code>.</p>
+<p>This function automatically calls the following other <em><code>set</code></em>
 functions with appropriate values, so the client does not need to
 unless it specifically wants to override them:</p>
 <ul>
-<li>FLAC__stream_encoder_set_do_mid_side_stereo()</li>
-<li>FLAC__stream_encoder_set_loose_mid_side_stereo()</li>
-<li>FLAC__stream_encoder_set_apodization()</li>
-<li>FLAC__stream_encoder_set_max_lpc_order()</li>
-<li>FLAC__stream_encoder_set_qlp_coeff_precision()</li>
-<li>FLAC__stream_encoder_set_do_qlp_coeff_prec_search()</li>
-<li>FLAC__stream_encoder_set_do_escape_coding()</li>
-<li>FLAC__stream_encoder_set_do_exhaustive_model_search()</li>
-<li>FLAC__stream_encoder_set_min_residual_partition_order()</li>
-<li>FLAC__stream_encoder_set_max_residual_partition_order()</li>
-<li>FLAC__stream_encoder_set_rice_parameter_search_dist()</li>
+<li><code>FLAC__stream_encoder_set_do_mid_side_stereo()</code></li>
+<li><code>FLAC__stream_encoder_set_loose_mid_side_stereo()</code></li>
+<li><code>FLAC__stream_encoder_set_apodization()</code></li>
+<li><code>FLAC__stream_encoder_set_max_lpc_order()</code></li>
+<li><code>FLAC__stream_encoder_set_qlp_coeff_precision()</code></li>
+<li><code>FLAC__stream_encoder_set_do_qlp_coeff_prec_search()</code></li>
+<li><code>FLAC__stream_encoder_set_do_escape_coding()</code></li>
+<li><code>FLAC__stream_encoder_set_do_exhaustive_model_search()</code></li>
+<li><code>FLAC__stream_encoder_set_min_residual_partition_order()</code></li>
+<li><code>FLAC__stream_encoder_set_max_residual_partition_order()</code></li>
+<li><code>FLAC__stream_encoder_set_rice_parameter_search_dist()</code></li>
 </ul>
 <p>The actual values set for each level are:</p>
 <table>
@@ -103,81 +68,63 @@ unless it specifically wants to override them:</p>
  <td>max residual partition order</td>
  <td>rice parameter search dist</td>
 </tr>
-<tr>  <td><b>0</b></td> <td>false</td> <td>false</td> <td>tukey(0.5)<td>
-      <td>0</td>  <td>0</td> <td>false</td> <td>false</td> <td>false</td> <td>0</td> <td>3</td> <td>0</td> </tr>
-<tr>  <td><b>1</b></td> <td>true</td>  <td>true</td>  <td>tukey(0.5)<td>
-      <td>0</td>  <td>0</td> <td>false</td> <td>false</td> <td>false</td> <td>0</td> <td>3</td> <td>0</td> </tr>
-<tr>  <td><b>2</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5)<td>
-      <td>0</td>  <td>0</td> <td>false</td> <td>false</td> <td>false</td> <td>0</td> <td>3</td> <td>0</td> </tr>
-<tr>  <td><b>3</b></td> <td>false</td> <td>false</td> <td>tukey(0.5)<td>
-      <td>6</td>  <td>0</td> <td>false</td> <td>false</td> <td>false</td> <td>0</td> <td>4</td> <td>0</td> </tr>
-<tr>  <td><b>4</b></td> <td>true</td>  <td>true</td>  <td>tukey(0.5)<td>
-      <td>8</td>  <td>0</td> <td>false</td> <td>false</td> <td>false</td> <td>0</td> <td>4</td> <td>0</td> </tr>
-<tr>  <td><b>5</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5)<td>
-      <td>8</td>  <td>0</td> <td>false</td> <td>false</td> <td>false</td> <td>0</td> <td>5</td> <td>0</td> </tr>
-<tr>  <td><b>6</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5);partial_tukey(2)<td>
-      <td>8</td>  <td>0</td> <td>false</td> <td>false</td> <td>false</td> <td>0</td> <td>6</td> <td>0</td> </tr>
-<tr>  <td><b>7</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5);partial_tukey(2)<td>
-      <td>12</td> <td>0</td> <td>false</td> <td>false</td> <td>false</td> <td>0</td> <td>6</td> <td>0</td> </tr>
-<tr>  <td><b>8</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5);partial_tukey(2);punchout_tukey(3)</td>
-      <td>12</td> <td>0</td> <td>false</td> <td>false</td> <td>false</td> <td>0</td> <td>6</td> <td>0</td> </tr>
+<tr><td><b>0</b></td> <td>false</td> <td>false</td> <td>tukey(0.5)<td>
+    <td>0</td>        <td>0</td>     <td>false</td> <td>false</td>
+    <td>false</td>    <td>0</td>     <td>3</td>     <td>0</td></tr>
+<tr><td><b>1</b></td> <td>true</td>  <td>true</td>  <td>tukey(0.5)<td>
+    <td>0</td>        <td>0</td>     <td>false</td> <td>false</td>
+    <td>false</td>    <td>0</td>     <td>3</td>     <td>0</td></tr>
+<tr><td><b>2</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5)<td>
+    <td>0</td>        <td>0</td>     <td>false</td> <td>false</td>
+    <td>false</td>    <td>0</td>     <td>3</td>     <td>0</td></tr>
+<tr><td><b>3</b></td> <td>false</td> <td>false</td> <td>tukey(0.5)<td>
+    <td>6</td>        <td>0</td>     <td>false</td> <td>false</td>
+    <td>false</td>    <td>0</td>     <td>4</td>     <td>0</td></tr>
+<tr><td><b>4</b></td> <td>true</td>  <td>true</td>  <td>tukey(0.5)<td>
+    <td>8</td>        <td>0</td>     <td>false</td> <td>false</td>
+    <td>false</td>    <td>0</td>     <td>4</td>     <td>0</td></tr>
+<tr><td><b>5</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5)<td>
+    <td>8</td>        <td>0</td>     <td>false</td> <td>false</td>
+    <td>false</td>    <td>0</td>     <td>5</td>     <td>0</td></tr>
+<tr><td><b>6</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5);partial_tukey(2)<td>
+    <td>8</td>        <td>0</td>     <td>false</td> <td>false</td>
+    <td>false</td>    <td>0</td>     <td>6</td>     <td>0</td></tr>
+<tr><td><b>7</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5);partial_tukey(2)<td>
+    <td>12</td>       <td>0</td>     <td>false</td> <td>false</td>
+    <td>false</td>    <td>0</td>     <td>6</td>     <td>0</td></tr>
+<tr><td><b>8</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5);partial_tukey(2);punchout_tukey(3)</td>
+    <td>12</td>       <td>0</td>     <td>false</td> <td>false</td>
+    <td>false</td>    <td>0</td>     <td>6</td>     <td>0</td></tr>
 </table>
-<p>\default \c 5
-\param  encoder  An encoder instance to set.
-\param  value    See above.
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.blocksize' class="method"><code id='blocksize.v'>pub fn <a href='#method.blocksize' class='fnname'>blocksize</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#250-253' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the blocksize to use while encoding.</p>
-<p>The number of samples to use per frame.  Use \c 0 to let the encoder
+<p><strong>Default</strong>: <code>5</code></p>
+</div><h4 id='method.blocksize' class="method"><code id='blocksize.v'>pub fn <a href='#method.blocksize' class='fnname'>blocksize</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#355-358' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the blocksize to use while encoding.</p>
+<p>The number of samples to use per frame. Use <code>0</code> to let the encoder
 estimate a blocksize; this is usually best.</p>
-<p>\default \c 0
-\param  encoder  An encoder instance to set.
-\param  value    See above.
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.do_mid_side_stereo' class="method"><code id='do_mid_side_stereo.v'>pub fn <a href='#method.do_mid_side_stereo' class='fnname'>do_mid_side_stereo</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#266-269' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set to \c true to enable mid-side encoding on stereo input.  The
-number of channels must be 2 for this to have any effect.  Set to
-\c false to use only independent channel coding.</p>
-<p>\default \c true
-\param  encoder  An encoder instance to set.
-\param  value    Flag value (see above).
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.loose_mid_side_stereo' class="method"><code id='loose_mid_side_stereo.v'>pub fn <a href='#method.loose_mid_side_stereo' class='fnname'>loose_mid_side_stereo</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#284-287' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set to \c true to enable adaptive switching between mid-side and
-left-right encoding on stereo input.  Set to \c false to use
-exhaustive searching.  Setting this to \c true requires
-FLAC__stream_encoder_set_do_mid_side_stereo() to also be set to
-\c true in order to have any effect.</p>
-<p>\default \c false
-\param  encoder  An encoder instance to set.
-\param  value    Flag value (see above).
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.apodization' class="method"><code id='apodization.v'>pub fn <a href='#method.apodization' class='fnname'>apodization</a>(&amp;mut self, specification: &amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/ffi/c_str/struct.CStr.html" title="struct std::ffi::c_str::CStr">CStr</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#352-355' title='goto source code'>[src]</a></h4><div class='docblock'><p>Sets the apodization function(s) the encoder will use when windowing
-audio data for LPC analysis.</p>
-<p>The \a specification is a plain ASCII string which specifies exactly
-which functions to use.  There may be more than one (up to 32),
-separated by \c ';' characters.  Some functions take one or more
+<p><strong>Default</strong>: <code>0</code></p>
+</div><h4 id='method.do_mid_side_stereo' class="method"><code id='do_mid_side_stereo.v'>pub fn <a href='#method.do_mid_side_stereo' class='fnname'>do_mid_side_stereo</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#366-369' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set to <code>true</code> to enable mid-side encoding on stereo input.</p>
+<p>The number of channels must be 2 for this to have any effect.
+Set to <code>false</code> to use only independent channel coding.</p>
+<p><strong>Default</strong>: <code>true</code></p>
+</div><h4 id='method.loose_mid_side_stereo' class="method"><code id='loose_mid_side_stereo.v'>pub fn <a href='#method.loose_mid_side_stereo' class='fnname'>loose_mid_side_stereo</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#377-380' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set to <code>true</code> to enable adaptive switching between mid-side and left-right encoding on stereo input.</p>
+<p>Set to <code>false</code> to use exhaustive searching. Setting this to <code>true</code> requires
+FLAC__stream_encoder_set_do_mid_side_stereo() to also be set to <code>true</code> in order to have any effect.</p>
+<p><strong>Default</strong>: <code>false</code></p>
+</div><h4 id='method.apodization' class="method"><code id='apodization.v'>pub fn <a href='#method.apodization' class='fnname'>apodization</a>(&amp;mut self, specification: &amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/ffi/c_str/struct.CStr.html" title="struct std::ffi::c_str::CStr">CStr</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#437-440' title='goto source code'>[src]</a></h4><div class='docblock'><p>Sets the apodization function(s) the encoder will use when windowing audio data for LPC analysis.</p>
+<p>The <em>specification</em> is a plain ASCII string which specifies exactly
+which functions to use. There may be more than one (up to 32),
+separated by <code>';'</code> characters. Some functions take one or more
 comma-separated arguments in parentheses.</p>
-<p>The available functions are \c bartlett, \c bartlett_hann,
-\c blackman, \c blackman_harris_4term_92db, \c connes, \c flattop,
-\c gauss(STDDEV), \c hamming, \c hann, \c kaiser_bessel, \c nuttall,
-\c rectangle, \c triangle, \c tukey(P), \c partial_tukey(n[/ov[/P]]),
-\c punchout_tukey(n[/ov[/P]]), \c welch.</p>
-<p>For \c gauss(STDDEV), STDDEV specifies the standard deviation
+<p>The available functions are <code>bartlett</code>, <code>bartlett_hann</code>,
+<code>blackman</code>, <code>blackman_harris_4term_92db</code>, <code>connes</code>, <code>flattop</code>,
+<code>gauss</code>(STDDEV), <code>hamming</code>, <code>hann</code>, <code>kaiser_bessel</code>, <code>nuttall</code>,
+<code>rectangle</code>, <code>triangle</code>, <code>tukey</code>(P), <code>partial_tukey(n[/ov[/P]])</code>,
+<code>punchout_tukey(n[/ov[/P]])</code>, <code>welch</code>.</p>
+<p>For <code>gauss(STDDEV)</code>, STDDEV specifies the standard deviation
 (0&lt;STDDEV&lt;=0.5).</p>
-<p>For \c tukey(P), P specifies the fraction of the window that is
-tapered (0&lt;=P&lt;=1).  P=0 corresponds to \c rectangle and P=1
-corresponds to \c hann.</p>
-<p>Specifying \c partial_tukey or \c punchout_tukey works a little
+<p>For <code>tukey(P)</code>, P specifies the fraction of the window that is
+tapered (0&lt;=P&lt;=1). P=0 corresponds to <code>rectangle</code> and P=1
+corresponds to <code>hann</code>.</p>
+<p>Specifying <code>partial_tukey</code> or <code>punchout_tukey</code> works a little
 different. These do not specify a single apodization function, but
 a series of them with some overlap. partial_tukey specifies a series
 of small windows (all treated separately) while punchout_tukey
@@ -193,11 +140,11 @@ specified with only a number, a number and an overlap, or a number
 an overlap and a P, for example, partial_tukey(3), partial_tukey(3/0.3)
 and partial_tukey(3/0.3/0.5) are all valid. ov should be smaller than 1
 and can be negative.</p>
-<p>Example specifications are \c &quot;blackman&quot; or
-\c &quot;hann;triangle;tukey(0.5);tukey(0.25);tukey(0.125)&quot;</p>
-<p>Any function that is specified erroneously is silently dropped.  Up
-to 32 functions are kept, the rest are dropped.  If the specification
-is empty the encoder defaults to \c &quot;tukey(0.5)&quot;.</p>
+<p>Example specifications are <code>&quot;blackman&quot;</code> or
+<code>&quot;hann;triangle;tukey(0.5);tukey(0.25);tukey(0.125)&quot;</code></p>
+<p>Any function that is specified erroneously is silently dropped. Up
+to 32 functions are kept, the rest are dropped. If the specification
+is empty the encoder defaults to <code>&quot;tukey(0.5)&quot;</code>.</p>
 <p>When more than one function is specified, then for every subframe the
 encoder will try each of them separately and choose the window that
 results in the smallest compressed subframe.</p>
@@ -205,189 +152,135 @@ results in the smallest compressed subframe.</p>
 floating point array in which to store the window. Also note that the
 values of P, STDDEV and ov are locale-specific, so if the comma
 separator specified by the locale is a comma, a comma should be used.</p>
-<p>\default \c &quot;tukey(0.5)&quot;
-\param  encoder        An encoder instance to set.
-\param  specification  See above.
-\assert
-\code encoder != NULL \endcode
-\code specification != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.max_lpc_order' class="method"><code id='max_lpc_order.v'>pub fn <a href='#method.max_lpc_order' class='fnname'>max_lpc_order</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#366-369' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the maximum LPC order, or \c 0 to use only the fixed predictors.</p>
-<p>\default \c 8
-\param  encoder  An encoder instance to set.
-\param  value    See above.
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.qlp_coeff_precision' class="method"><code id='qlp_coeff_precision.v'>pub fn <a href='#method.qlp_coeff_precision' class='fnname'>qlp_coeff_precision</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#386-389' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the precision, in bits, of the quantized linear predictor
-coefficients, or \c 0 to let the encoder select it based on the
+<p><strong>Default</strong>: <code>&quot;tukey(0.5)&quot;</code></p>
+</div><h4 id='method.max_lpc_order' class="method"><code id='max_lpc_order.v'>pub fn <a href='#method.max_lpc_order' class='fnname'>max_lpc_order</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#445-448' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the maximum LPC order, or <code>0</code> to use only the fixed predictors.</p>
+<p><strong>Default</strong>: <code>8</code></p>
+</div><h4 id='method.qlp_coeff_precision' class="method"><code id='qlp_coeff_precision.v'>pub fn <a href='#method.qlp_coeff_precision' class='fnname'>qlp_coeff_precision</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#459-462' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the precision, in bits, of the quantized linear predictor
+coefficients, or <code>0</code> to let the encoder select it based on the
 blocksize.</p>
-<p>\note
+<p><strong>Note</strong>:<br />
 In the current implementation, qlp_coeff_precision + bits_per_sample must
 be less than 32.</p>
-<p>\default \c 0
-\param  encoder  An encoder instance to set.
-\param  value    See above.
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.do_qlp_coeff_prec_search' class="method"><code id='do_qlp_coeff_prec_search.v'>pub fn <a href='#method.do_qlp_coeff_prec_search' class='fnname'>do_qlp_coeff_prec_search</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a><br>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#402-405' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set to \c false to use only the specified quantized linear predictor
-coefficient precision, or \c true to search neighboring precision
+<p><strong>Default</strong>: <code>0</code></p>
+</div><h4 id='method.do_qlp_coeff_prec_search' class="method"><code id='do_qlp_coeff_prec_search.v'>pub fn <a href='#method.do_qlp_coeff_prec_search' class='fnname'>do_qlp_coeff_prec_search</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a><br>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#469-472' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set to <code>false</code> to use only the specified quantized linear predictor
+coefficient precision, or <code>true</code> to search neighboring precision
 values and use the best one.</p>
-<p>\default \c false
-\param  encoder  An encoder instance to set.
-\param  value    See above.
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.do_escape_coding' class="method"><code id='do_escape_coding.v'>pub fn <a href='#method.do_escape_coding' class='fnname'>do_escape_coding</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#416-419' title='goto source code'>[src]</a></h4><div class='docblock'><p>Deprecated.  Setting this value has no effect.</p>
-<p>\default \c false
-\param  encoder  An encoder instance to set.
-\param  value    See above.
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.do_exhaustive_model_search' class="method"><code id='do_exhaustive_model_search.v'>pub fn <a href='#method.do_exhaustive_model_search' class='fnname'>do_exhaustive_model_search</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a><br>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#432-435' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set to \c false to let the encoder estimate the best model order
-based on the residual signal energy, or \c true to force the
+<p><strong>Default</strong>: <code>false</code></p>
+</div><h4 id='method.do_escape_coding' class="method"><code id='do_escape_coding.v'>pub fn <a href='#method.do_escape_coding' class='fnname'>do_escape_coding</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#477-480' title='goto source code'>[src]</a></h4><div class='docblock'><p>Deprecated. Setting this value has no effect.</p>
+<p><strong>Default</strong>: <code>false</code></p>
+</div><h4 id='method.do_exhaustive_model_search' class="method"><code id='do_exhaustive_model_search.v'>pub fn <a href='#method.do_exhaustive_model_search' class='fnname'>do_exhaustive_model_search</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a><br>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#487-490' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set to <code>false</code> to let the encoder estimate the best model order
+based on the residual signal energy, or <code>true</code> to force the
 encoder to evaluate all order models and select the best.</p>
-<p>\default \c false
-\param  encoder  An encoder instance to set.
-\param  value    See above.
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.min_residual_partition_order' class="method"><code id='min_residual_partition_order.v'>pub fn <a href='#method.min_residual_partition_order' class='fnname'>min_residual_partition_order</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a><br>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#457-460' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the minimum partition order to search when coding the residual.
-This is used in tandem with
-FLAC__stream_encoder_set_max_residual_partition_order().</p>
-<p>The partition order determines the context size in the residual.
-The context size will be approximately <tt>blocksize / (2 ^ order)</tt>.</p>
-<p>Set both min and max values to \c 0 to force a single context,
+<p><strong>Default</strong>: <code>false</code></p>
+</div><h4 id='method.min_residual_partition_order' class="method"><code id='min_residual_partition_order.v'>pub fn <a href='#method.min_residual_partition_order' class='fnname'>min_residual_partition_order</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a><br>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#508-511' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the minimum partition order to search when coding the residual.</p>
+<p>This is used in tandem with
+<code>FLAC__stream_encoder_set_max_residual_partition_order()</code>.</p>
+<p>The partition order determines the context size in the residual.</p>
+<p>The context size will be approximately <code>blocksize / (2 ^ order)</code>.</p>
+<p>Set both min and max values to <code>0</code> to force a single context,
 whose Rice parameter is based on the residual signal variance.
 Otherwise, set a min and max order, and the encoder will search
 all orders, using the mean of each context for its Rice parameter,
 and use the best.</p>
-<p>\default \c 0
-\param  encoder  An encoder instance to set.
-\param  value    See above.
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.max_residual_partition_order' class="method"><code id='max_residual_partition_order.v'>pub fn <a href='#method.max_residual_partition_order' class='fnname'>max_residual_partition_order</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a><br>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#482-485' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the maximum partition order to search when coding the residual.
-This is used in tandem with
-FLAC__stream_encoder_set_min_residual_partition_order().</p>
+<p><strong>Default</strong>: <code>0</code></p>
+</div><h4 id='method.max_residual_partition_order' class="method"><code id='max_residual_partition_order.v'>pub fn <a href='#method.max_residual_partition_order' class='fnname'>max_residual_partition_order</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a><br>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#528-531' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the maximum partition order to search when coding the residual.</p>
+<p>This is used in tandem with
+<code>FLAC__stream_encoder_set_min_residual_partition_order()</code>.</p>
 <p>The partition order determines the context size in the residual.
-The context size will be approximately <tt>blocksize / (2 ^ order)</tt>.</p>
-<p>Set both min and max values to \c 0 to force a single context,
+The context size will be approximately <code>blocksize / (2 ^ order)</code>.</p>
+<p>Set both min and max values to <code>0</code> to force a single context,
 whose Rice parameter is based on the residual signal variance.
 Otherwise, set a min and max order, and the encoder will search
 all orders, using the mean of each context for its Rice parameter,
 and use the best.</p>
-<p>\default \c 5
-\param  encoder  An encoder instance to set.
-\param  value    See above.
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.rice_parameter_search_dist' class="method"><code id='rice_parameter_search_dist.v'>pub fn <a href='#method.rice_parameter_search_dist' class='fnname'>rice_parameter_search_dist</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a><br>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#496-499' title='goto source code'>[src]</a></h4><div class='docblock'><p>Deprecated.  Setting this value has no effect.</p>
-<p>\default \c 0
-\param  encoder  An encoder instance to set.
-\param  value    See above.
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.total_samples_estimate' class="method"><code id='total_samples_estimate.v'>pub fn <a href='#method.total_samples_estimate' class='fnname'>total_samples_estimate</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#514-517' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set an estimate of the total samples that will be encoded.
-This is merely an estimate and may be set to \c 0 if unknown.
+<p><strong>Default</strong>: <code>5</code></p>
+</div><h4 id='method.rice_parameter_search_dist' class="method"><code id='rice_parameter_search_dist.v'>pub fn <a href='#method.rice_parameter_search_dist' class='fnname'>rice_parameter_search_dist</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a><br>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#536-539' title='goto source code'>[src]</a></h4><div class='docblock'><p>Deprecated. Setting this value has no effect.</p>
+<p><strong>Default</strong>: <code>0</code></p>
+</div><h4 id='method.total_samples_estimate' class="method"><code id='total_samples_estimate.v'>pub fn <a href='#method.total_samples_estimate' class='fnname'>total_samples_estimate</a>(&amp;mut self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#549-552' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set an estimate of the total samples that will be encoded.</p>
+<p>This is merely an estimate and may be set to <code>0</code> if unknown.
 This value will be written to the STREAMINFO block before encoding,
 and can remove the need for the caller to rewrite the value later
 if the value is known before encoding.</p>
-<p>\default \c 0
-\param  encoder  An encoder instance to set.
-\param  value    See above.
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.</p>
-</div><h4 id='method.metadata' class="method"><code id='metadata.v'>pub fn <a href='#method.metadata' class='fnname'>metadata</a>(&amp;mut self) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#599-603' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the metadata blocks to be emitted to the stream before encoding.
-A value of \c NULL, \c 0 implies no metadata; otherwise, supply an
-array of pointers to metadata blocks.  The array is non-const since
-the encoder may need to change the \a is_last flag inside them, and
-in some cases update seek point offsets.  Otherwise, the encoder will
-not modify or free the blocks.  It is up to the caller to free the
+<p><strong>Default</strong>: <code>0</code></p>
+</div><h4 id='method.metadata' class="method"><code id='metadata.v'>pub fn <a href='#method.metadata' class='fnname'>metadata</a>(&amp;mut self) -&gt; &amp;mut <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#629-633' title='goto source code'>[src]</a></h4><div class='docblock'><p>Set the metadata blocks to be emitted to the stream before encoding.</p>
+<p>A value of <code>NULL</code>, <code>0</code> implies no metadata; otherwise, supply an
+array of pointers to metadata blocks. The array is non-const since
+the encoder may need to change the <em>is_last</em> flag inside them, and
+in some cases update seek point offsets. Otherwise, the encoder will
+not modify or free the blocks. It is up to the caller to free the
 metadata blocks after encoding finishes.</p>
-<p>\note
-The encoder stores only copies of the pointers in the \a metadata array;
+<p><strong>Note</strong>:<br />
+The encoder stores only copies of the pointers in the <em>metadata</em> array;
 the metadata blocks themselves must survive at least until after
-FLAC__stream_encoder_finish() returns.  Do not free the blocks until then.</p>
-<p>\note
+<code>FLAC__stream_encoder_finish()</code> returns. Do not free the blocks until then.</p>
+<p><strong>Note</strong>:<br />
 The STREAMINFO block is always written and no STREAMINFO block may
 occur in the supplied array.</p>
-<p>\note
-By default the encoder does not create a SEEKTABLE.  If one is supplied
-in the \a metadata array, but the client has specified that it does not
-support seeking, then the SEEKTABLE will be written verbatim.  However
+<p><strong>Note</strong>:<br />
+By default the encoder does not create a SEEKTABLE. If one is supplied
+in the <em>metadata</em> array, but the client has specified that it does not
+support seeking, then the SEEKTABLE will be written verbatim. However
 by itself this is not very useful as the client will not know the stream
-offsets for the seekpoints ahead of time.  In order to get a proper
-seektable the client must support seeking.  See next note.</p>
-<p>\note
-SEEKTABLE blocks are handled specially.  Since you will not know
+offsets for the seekpoints ahead of time. In order to get a proper
+seektable the client must support seeking. See next note.</p>
+<p><strong>Note</strong>:<br />
+SEEKTABLE blocks are handled specially. Since you will not know
 the values for the seek point stream offsets, you should pass in
 a SEEKTABLE 'template', that is, a SEEKTABLE object with the
-required sample numbers (or placeholder points), with \c 0 for the
-\a frame_samples and \a stream_offset fields for each point.  If the
+required sample numbers (or placeholder points), with <code>0</code> for the
+<em>frame_samples</em> and <em>stream_offset</em> fields for each point. If the
 client has specified that it supports seeking by providing a seek
-callback to FLAC__stream_encoder_init_stream() or both seek AND read
-callback to FLAC__stream_encoder_init_ogg_stream() (or by using
-FLAC__stream_encoder_init*_file() or FLAC__stream_encoder_init*<em>FILE()),
+callback to <code>FLAC__stream_encoder_init_stream()</code> or both seek AND read
+callback to <code>FLAC__stream_encoder_init_ogg_stream()</code> (or by using
+<code>FLAC__stream_encoder_init*_file()</code> or <code>FLAC__stream_encoder_init*_FILE()</code>),
 then while it is encoding the encoder will fill the stream offsets in
 for you and when encoding is finished, it will seek back and write the
-real values into the SEEKTABLE block in the stream.  There are helper
+real values into the SEEKTABLE block in the stream. There are helper
 routines for manipulating seektable template blocks; see metadata.h:
-FLAC__metadata_object_seektable_template</em>*().  If the client does
+<code>FLAC__metadata_object_seektable_template_*()</code>. If the client does
 not support seeking, the SEEKTABLE will have inaccurate offsets which
 will slow down or remove the ability to seek in the FLAC stream.</p>
-<p>\note
-The encoder instance \b will modify the first \c SEEKTABLE block
+<p><strong>Note</strong>:<br />
+The encoder instance \b will modify the first <code>SEEKTABLE</code> block
 as it transforms the template to a valid seektable while encoding,
 but it is still up to the caller to free all metadata blocks after
 encoding.</p>
-<p>\note
-A VORBIS_COMMENT block may be supplied.  The vendor string in it
-will be ignored.  libFLAC will use it's own vendor string. libFLAC
+<p><strong>Note</strong>:<br />
+A VORBIS_COMMENT block may be supplied. The vendor string in it
+will be ignored. libFLAC will use it's own vendor string. libFLAC
 will not modify the passed-in VORBIS_COMMENT's vendor string, it
-will simply write it's own into the stream.  If no VORBIS_COMMENT
-block is present in the \a metadata array, libFLAC will write an
+will simply write it's own into the stream. If no VORBIS_COMMENT
+block is present in the <em>metadata</em> array, libFLAC will write an
 empty one, containing only the vendor string.</p>
-<p>\note The Ogg FLAC mapping requires that the VORBIS_COMMENT block be
-the second metadata block of the stream.  The encoder already supplies
-the STREAMINFO block automatically.  If \a metadata does not contain a
-VORBIS_COMMENT block, the encoder will supply that too.  Otherwise, if
-\a metadata does contain a VORBIS_COMMENT block and it is not the
-first, the init function will reorder \a metadata by moving the
+<p><strong>Note</strong>:<br /> The Ogg FLAC mapping requires that the VORBIS_COMMENT block be
+the second metadata block of the stream. The encoder already supplies
+the STREAMINFO block automatically. If <em>metadata</em> does not contain a
+VORBIS_COMMENT block, the encoder will supply that too. Otherwise, if
+<em>metadata</em> does contain a VORBIS_COMMENT block and it is not the
+first, the init function will reorder <em>metadata</em> by moving the
 VORBIS_COMMENT block to the front; the relative ordering of the other
 blocks will remain as they were.</p>
-<p>\note The Ogg FLAC mapping limits the number of metadata blocks per
-stream to \c 65535.  If \a num_blocks exceeds this the function will
-return \c false.</p>
-<p>\default \c NULL, 0
-\param  encoder     An encoder instance to set.
-\param  metadata    See above.
-\param  num_blocks  See above.
-\assert
-\code encoder != NULL \endcode
-\retval FLAC__bool
-\c false if the encoder is already initialized, else \c true.
-\c false if the encoder is already initialized, or if
-\a num_blocks &gt; 65535 if encoding to Ogg FLAC, else \c true.</p>
-</div></div><h2 id='implementations' class='small-section-header'>Trait Implementations<a href='#implementations' class='anchor'></a></h2><div id='implementations-list'><h3 id='impl-Drop' class='impl'><code class='in-band'>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html" title="trait core::ops::drop::Drop">Drop</a> for <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a href='#impl-Drop' class='anchor'></a><a class='srclink' href='../src/flac_bound/encoder.rs.html#43-47' title='goto source code'>[src]</a></h3><div class='impl-items'><h4 id='method.drop' class="method hidden"><code id='drop.v'>fn <a href='https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html#tymethod.drop' class='fnname'>drop</a>(&amp;mut self)</code><a class='srclink' href='../src/flac_bound/encoder.rs.html#44-46' title='goto source code'>[src]</a></h4><div class='docblock hidden'><p>Executes the destructor for this type. <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html#tymethod.drop">Read more</a></p>
+<p><strong>Note</strong>:<br />
+The Ogg FLAC mapping limits the number of metadata blocks per
+stream to <code>65535</code>. If <em>num_blocks</em> exceeds this the function will
+return <code>false</code>.</p>
+<p><strong>Default</strong>: <code>NULL, 0</code></p>
+<p>Requires, that <em>num_blocks</em> &gt; 65535 if encoding to Ogg FLAC.</p>
+</div></div><h2 id='implementations' class='small-section-header'>Trait Implementations<a href='#implementations' class='anchor'></a></h2><div id='implementations-list'><h3 id='impl-Drop' class='impl'><code class='in-band'>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html" title="trait core::ops::drop::Drop">Drop</a> for <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a href='#impl-Drop' class='anchor'></a><a class='srclink' href='../src/flac_bound/encoder.rs.html#185-189' title='goto source code'>[src]</a></h3><div class='impl-items'><h4 id='method.drop' class="method hidden"><code id='drop.v'>fn <a href='https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html#tymethod.drop' class='fnname'>drop</a>(&amp;mut self)</code><a class='srclink' href='../src/flac_bound/encoder.rs.html#186-188' title='goto source code'>[src]</a></h4><div class='docblock hidden'><p>Executes the destructor for this type. <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html#tymethod.drop">Read more</a></p>
+</div></div><h3 id='impl-Eq' class='impl'><code class='in-band'>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html" title="trait core::cmp::Eq">Eq</a> for <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a href='#impl-Eq' class='anchor'></a><a class='srclink' href='../src/flac_bound/encoder.rs.html#182' title='goto source code'>[src]</a></h3><div class='impl-items'></div><h3 id='impl-PartialOrd%3CFlacEncoderConfig%3E' class='impl'><code class='in-band'>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html" title="trait core::cmp::PartialOrd">PartialOrd</a>&lt;<a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a>&gt; for <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a href='#impl-PartialOrd%3CFlacEncoderConfig%3E' class='anchor'></a><a class='srclink' href='../src/flac_bound/encoder.rs.html#182' title='goto source code'>[src]</a></h3><div class='impl-items'><h4 id='method.partial_cmp' class="method hidden"><code id='partial_cmp.v'>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#tymethod.partial_cmp' class='fnname'>partial_cmp</a>(&amp;self, other: &amp;<a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html" title="enum core::cmp::Ordering">Ordering</a>&gt;</code><a class='srclink' href='../src/flac_bound/encoder.rs.html#182' title='goto source code'>[src]</a></h4><div class='docblock hidden'><p>This method returns an ordering between <code>self</code> and <code>other</code> values if one exists. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#tymethod.partial_cmp">Read more</a></p>
+</div><h4 id='method.lt' class="method hidden"><code id='lt.v'>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#method.lt' class='fnname'>lt</a>(&amp;self, other: &amp;<a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#182' title='goto source code'>[src]</a></h4><div class='docblock hidden'><p>This method tests less than (for <code>self</code> and <code>other</code>) and is used by the <code>&lt;</code> operator. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#method.lt">Read more</a></p>
+</div><h4 id='method.le' class="method hidden"><code id='le.v'>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#method.le' class='fnname'>le</a>(&amp;self, other: &amp;<a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#182' title='goto source code'>[src]</a></h4><div class='docblock hidden'><p>This method tests less than or equal to (for <code>self</code> and <code>other</code>) and is used by the <code>&lt;=</code> operator. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#method.le">Read more</a></p>
+</div><h4 id='method.gt' class="method hidden"><code id='gt.v'>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#method.gt' class='fnname'>gt</a>(&amp;self, other: &amp;<a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#182' title='goto source code'>[src]</a></h4><div class='docblock hidden'><p>This method tests greater than (for <code>self</code> and <code>other</code>) and is used by the <code>&gt;</code> operator. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#method.gt">Read more</a></p>
+</div><h4 id='method.ge' class="method hidden"><code id='ge.v'>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#method.ge' class='fnname'>ge</a>(&amp;self, other: &amp;<a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#182' title='goto source code'>[src]</a></h4><div class='docblock hidden'><p>This method tests greater than or equal to (for <code>self</code> and <code>other</code>) and is used by the <code>&gt;=</code> operator. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#method.ge">Read more</a></p>
+</div></div><h3 id='impl-PartialEq%3CFlacEncoderConfig%3E' class='impl'><code class='in-band'>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a>&lt;<a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a>&gt; for <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a href='#impl-PartialEq%3CFlacEncoderConfig%3E' class='anchor'></a><a class='srclink' href='../src/flac_bound/encoder.rs.html#182' title='goto source code'>[src]</a></h3><div class='impl-items'><h4 id='method.eq' class="method hidden"><code id='eq.v'>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq' class='fnname'>eq</a>(&amp;self, other: &amp;<a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#182' title='goto source code'>[src]</a></h4><div class='docblock hidden'><p>This method tests for <code>self</code> and <code>other</code> values to be equal, and is used by <code>==</code>. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq">Read more</a></p>
+</div><h4 id='method.ne' class="method hidden"><code id='ne.v'>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, other: &amp;<a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#182' title='goto source code'>[src]</a></h4><div class='docblock hidden'><p>This method tests for <code>!=</code>.</p>
+</div></div><h3 id='impl-Ord' class='impl'><code class='in-band'>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html" title="trait core::cmp::Ord">Ord</a> for <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a href='#impl-Ord' class='anchor'></a><a class='srclink' href='../src/flac_bound/encoder.rs.html#182' title='goto source code'>[src]</a></h3><div class='impl-items'><h4 id='method.cmp' class="method hidden"><code id='cmp.v'>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.cmp' class='fnname'>cmp</a>(&amp;self, other: &amp;<a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html" title="enum core::cmp::Ordering">Ordering</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#182' title='goto source code'>[src]</a></h4><div class='docblock hidden'><p>This method returns an <code>Ordering</code> between <code>self</code> and <code>other</code>. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.cmp">Read more</a></p>
+</div><h4 id='method.max' class="method hidden"><code id='max.v'>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.max' class='fnname'>max</a>(self, other: Self) -&gt; Self</code><span class='since' title='Stable since Rust version 1.21.0'>1.21.0</span><a class='srclink' href='https://doc.rust-lang.org/nightly/src/core/cmp.rs.html#571-574' title='goto source code'>[src]</a></h4><div class='docblock hidden'><p>Compares and returns the maximum of two values. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.max">Read more</a></p>
+</div><h4 id='method.min' class="method hidden"><code id='min.v'>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.min' class='fnname'>min</a>(self, other: Self) -&gt; Self</code><span class='since' title='Stable since Rust version 1.21.0'>1.21.0</span><a class='srclink' href='https://doc.rust-lang.org/nightly/src/core/cmp.rs.html#588-591' title='goto source code'>[src]</a></h4><div class='docblock hidden'><p>Compares and returns the minimum of two values. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.min">Read more</a></p>
+</div><h4 id='method.clamp' class="method hidden"><code id='clamp.v'>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.clamp' class='fnname'>clamp</a>(self, min: Self, max: Self) -&gt; Self</code><a class='srclink' href='https://doc.rust-lang.org/nightly/src/core/cmp.rs.html#612-622' title='goto source code'>[src]</a></h4><div class='stability hidden'><div class='stab unstable'><span class='emoji'>🔬</span> This is a nightly-only experimental API. (<code>clamp</code>)</div></div><div class='docblock hidden'><p>Restrict a value to a certain interval. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.clamp">Read more</a></p>
+</div></div><h3 id='impl-Hash' class='impl'><code class='in-band'>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html" title="trait core::hash::Hash">Hash</a> for <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a href='#impl-Hash' class='anchor'></a><a class='srclink' href='../src/flac_bound/encoder.rs.html#182' title='goto source code'>[src]</a></h3><div class='impl-items'><h4 id='method.hash' class="method hidden"><code id='hash.v'>fn <a href='https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#tymethod.hash' class='fnname'>hash</a>&lt;__H:&nbsp;<a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html" title="trait core::hash::Hasher">Hasher</a>&gt;(&amp;self, state: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>__H)</code><a class='srclink' href='../src/flac_bound/encoder.rs.html#182' title='goto source code'>[src]</a></h4><div class='docblock hidden'><p>Feeds this value into the given [<code>Hasher</code>]. <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#tymethod.hash">Read more</a></p>
+</div><h4 id='method.hash_slice' class="method hidden"><code id='hash_slice.v'>fn <a href='https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#method.hash_slice' class='fnname'>hash_slice</a>&lt;H&gt;(data: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">&amp;[Self]</a>, state: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>H) <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;H: <a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html" title="trait core::hash::Hasher">Hasher</a>,&nbsp;</span></code><span class='since' title='Stable since Rust version 1.3.0'>1.3.0</span><a class='srclink' href='https://doc.rust-lang.org/nightly/src/core/hash/mod.rs.html#192-198' title='goto source code'>[src]</a></h4><div class='docblock hidden'><p>Feeds a slice of this type into the given [<code>Hasher</code>]. <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#method.hash_slice">Read more</a></p>
+</div></div><h3 id='impl-Debug' class='impl'><code class='in-band'>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a href='#impl-Debug' class='anchor'></a><a class='srclink' href='../src/flac_bound/encoder.rs.html#182' title='goto source code'>[src]</a></h3><div class='impl-items'><h4 id='method.fmt' class="method hidden"><code id='fmt.v'>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></code><a class='srclink' href='../src/flac_bound/encoder.rs.html#182' title='goto source code'>[src]</a></h4><div class='docblock hidden'><p>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt">Read more</a></p>
 </div></div></div><h2 id='synthetic-implementations' class='small-section-header'>Auto Trait Implementations<a href='#synthetic-implementations' class='anchor'></a></h2><div id='synthetic-implementations-list'><h3 id='impl-Send' class='impl'><code class='in-band'>impl !<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> for <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a href='#impl-Send' class='anchor'></a></h3><div class='impl-items'></div><h3 id='impl-Unpin' class='impl'><code class='in-band'>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Unpin.html" title="trait core::marker::Unpin">Unpin</a> for <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a href='#impl-Unpin' class='anchor'></a></h3><div class='impl-items'></div><h3 id='impl-Sync' class='impl'><code class='in-band'>impl !<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> for <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a href='#impl-Sync' class='anchor'></a></h3><div class='impl-items'></div><h3 id='impl-UnwindSafe' class='impl'><code class='in-band'>impl <a class="trait" href="https://doc.rust-lang.org/nightly/std/panic/trait.UnwindSafe.html" title="trait std::panic::UnwindSafe">UnwindSafe</a> for <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a href='#impl-UnwindSafe' class='anchor'></a></h3><div class='impl-items'></div><h3 id='impl-RefUnwindSafe' class='impl'><code class='in-band'>impl <a class="trait" href="https://doc.rust-lang.org/nightly/std/panic/trait.RefUnwindSafe.html" title="trait std::panic::RefUnwindSafe">RefUnwindSafe</a> for <a class="struct" href="../flac_bound/struct.FlacEncoderConfig.html" title="struct flac_bound::FlacEncoderConfig">FlacEncoderConfig</a></code><a href='#impl-RefUnwindSafe' class='anchor'></a></h3><div class='impl-items'></div></div><h2 id='blanket-implementations' class='small-section-header'>Blanket Implementations<a href='#blanket-implementations' class='anchor'></a></h2><div id='blanket-implementations-list'><h3 id='impl-Into%3CU%3E' class='impl'><code class='in-band'>impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;U&gt; for T <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt;,&nbsp;</span></code><a href='#impl-Into%3CU%3E' class='anchor'></a><a class='srclink' href='https://doc.rust-lang.org/nightly/src/core/convert.rs.html#544-549' title='goto source code'>[src]</a></h3><div class='impl-items'><h4 id='method.into' class="method hidden"><code id='into.v'>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html#tymethod.into' class='fnname'>into</a>(self) -&gt; U</code><a class='srclink' href='https://doc.rust-lang.org/nightly/src/core/convert.rs.html#546-548' title='goto source code'>[src]</a></h4><div class='docblock hidden'><p>Performs the conversion.</p>
 </div></div><h3 id='impl-From%3CT%3E' class='impl'><code class='in-band'>impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt; for T</code><a href='#impl-From%3CT%3E' class='anchor'></a><a class='srclink' href='https://doc.rust-lang.org/nightly/src/core/convert.rs.html#553-555' title='goto source code'>[src]</a></h3><div class='impl-items'><h4 id='method.from' class="method hidden"><code id='from.v'>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(t: T) -&gt; T</code><a class='srclink' href='https://doc.rust-lang.org/nightly/src/core/convert.rs.html#554' title='goto source code'>[src]</a></h4><div class='docblock hidden'><p>Performs the conversion.</p>
 </div></div><h3 id='impl-TryFrom%3CU%3E' class='impl'><code class='in-band'>impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;U&gt; for T <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;T&gt;,&nbsp;</span></code><a href='#impl-TryFrom%3CU%3E' class='anchor'></a><a class='srclink' href='https://doc.rust-lang.org/nightly/src/core/convert.rs.html#572-578' title='goto source code'>[src]</a></h3><div class='impl-items'><h4 id='associatedtype.Error' class="type"><code id='Error.t'>type <a href='https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error' class="type">Error</a> = <a class="enum" href="https://doc.rust-lang.org/nightly/core/convert/enum.Infallible.html" title="enum core::convert::Infallible">Infallible</a></code></h4><div class='docblock'><p>The type returned in the event of a conversion error.</p>
