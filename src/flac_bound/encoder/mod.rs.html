@@ -21,9 +21,12 @@
 <span id="21">21</span>
 <span id="22">22</span>
 <span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">encoder</span>;
 <span class="kw">mod</span> <span class="ident">config</span>;
+<span class="kw">mod</span> <span class="ident">state</span>;
 <span class="kw">mod</span> <span class="ident">error</span>;
 
 <span class="kw">use</span> <span class="ident">flac_sys</span>::{<span class="ident">FLAC__StreamEncoder</span>, <span class="ident">FLAC__stream_encoder_delete</span>};
@@ -31,6 +34,7 @@
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">error</span>::<span class="ident">FlacEncoderInitError</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">config</span>::<span class="ident">FlacEncoderConfig</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">state</span>::<span class="ident">FlacEncoderState</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">encoder</span>::<span class="ident">FlacEncoder</span>;
 
 
