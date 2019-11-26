@@ -542,6 +542,65 @@
 <span id="542">542</span>
 <span id="543">543</span>
 <span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">flac_sys</span>::{<span class="ident">FLAC__StreamEncoderInitStatus</span>, <span class="ident">FLAC__bool</span>, <span class="ident">FLAC__stream_encoder_set_ogg_serial_number</span>, <span class="ident">FLAC__stream_encoder_set_verify</span>,
                <span class="ident">FLAC__stream_encoder_set_streamable_subset</span>, <span class="ident">FLAC__stream_encoder_set_channels</span>, <span class="ident">FLAC__stream_encoder_set_bits_per_sample</span>,
@@ -551,12 +610,14 @@
                <span class="ident">FLAC__stream_encoder_set_do_escape_coding</span>, <span class="ident">FLAC__stream_encoder_set_do_exhaustive_model_search</span>,
                <span class="ident">FLAC__stream_encoder_set_min_residual_partition_order</span>, <span class="ident">FLAC__stream_encoder_set_max_residual_partition_order</span>,
                <span class="ident">FLAC__stream_encoder_set_rice_parameter_search_dist</span>,
-               <span class="ident">FLAC__stream_encoder_set_total_samples_estimate</span> <span class="comment">/* , FLAC__stream_encoder_set_metadata */</span>, <span class="ident">FLAC__stream_encoder_init_file</span>,
-               <span class="ident">FLAC__stream_encoder_init_ogg_file</span>, <span class="ident">FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK</span>};
-<span class="kw">use</span> <span class="self">self</span>::<span class="kw">super</span>::{<span class="ident">StreamEncoderContainer</span>, <span class="ident">FlacEncoderInitError</span>, <span class="ident">FlacEncoder</span>};
+               <span class="ident">FLAC__stream_encoder_set_total_samples_estimate</span> <span class="comment">/* , FLAC__stream_encoder_set_metadata */</span>, <span class="ident">FLAC__stream_encoder_init_stream</span>,
+               <span class="ident">FLAC__stream_encoder_init_ogg_stream</span>, <span class="ident">FLAC__stream_encoder_init_file</span>, <span class="ident">FLAC__stream_encoder_init_ogg_file</span>,
+               <span class="ident">FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK</span>};
+<span class="kw">use</span> <span class="self">self</span>::<span class="kw">super</span>::{<span class="ident">StreamEncoderContainer</span>, <span class="ident">FlacEncoderInitError</span>, <span class="ident">WriteWrapper</span>, <span class="ident">FlacEncoder</span>, <span class="ident">flac_encoder_write_write_callback</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">os</span>::<span class="ident">raw</span>::{<span class="ident">c_long</span>, <span class="ident">c_void</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::{<span class="ident">CString</span>, <span class="ident">CStr</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">TryFrom</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">os</span>::<span class="ident">raw</span>::<span class="ident">c_long</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">Path</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
 
@@ -564,12 +625,69 @@
 
 <span class="doccomment">/// Wrapper around a FLAC encoder for configuring the output settings.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// `FILE*`/stream constructors unsupported as of yet</span>
+<span class="doccomment">/// `FILE*` constructors unsupported, Write+Seek constructors unsupportable due to https://github.com/rust-lang/rfcs/issues/2035</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Hash</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>)]</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FlacEncoderConfig</span>(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">StreamEncoderContainer</span>);
 
 <span class="kw">impl</span> <span class="ident">FlacEncoderConfig</span> {
+    <span class="doccomment">/// Initialize the encoder instance to encode native FLAC streams.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This flavor of initialization sets up the encoder to encode to a</span>
+    <span class="doccomment">/// native FLAC stream. I/O is performed via callbacks to the client.</span>
+    <span class="doccomment">/// For encoding to a plain file via filename or open `FILE*`,</span>
+    <span class="doccomment">/// `FLAC__stream_encoder_init_file()` and `FLAC__stream_encoder_init_FILE()`</span>
+    <span class="doccomment">/// provide a simpler interface.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This function should be called after `FLAC__stream_encoder_new()` and</span>
+    <span class="doccomment">/// `FLAC__stream_encoder_set_*(`) but before `FLAC__stream_encoder_process()`</span>
+    <span class="doccomment">/// or `FLAC__stream_encoder_process_interleaved()`.</span>
+    <span class="doccomment">/// initialization succeeded.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The call to `FLAC__stream_encoder_init_stream()` currently will also</span>
+    <span class="doccomment">/// immediately call the write callback several times, once with the `fLaC`</span>
+    <span class="doccomment">/// signature, and once for each encoded metadata block.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_write</span><span class="op">&lt;</span><span class="lifetime">&#39;out</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">out</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;out</span> <span class="kw-2">mut</span> <span class="ident">WriteWrapper</span><span class="op">&lt;</span><span class="lifetime">&#39;out</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span><span class="op">&lt;</span><span class="lifetime">&#39;out</span><span class="op">&gt;</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">unsafe</span> {
+            <span class="ident">FLAC__stream_encoder_init_stream</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>,
+                                             <span class="prelude-val">Some</span>(<span class="ident">flac_encoder_write_write_callback</span>),
+                                             <span class="prelude-val">None</span>,
+                                             <span class="prelude-val">None</span>,
+                                             <span class="prelude-val">None</span>,
+                                             <span class="ident">out</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">WriteWrapper</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>)
+        };
+        <span class="self">self</span>.<span class="ident">do_init</span>(<span class="ident">result</span>)
+    }
+
+    <span class="doccomment">/// Initialize the encoder instance to encode Ogg FLAC streams.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This flavor of initialization sets up the encoder to encode to a FLAC</span>
+    <span class="doccomment">/// stream in an Ogg container.  I/O is performed via callbacks to the</span>
+    <span class="doccomment">/// client.  For encoding to a plain file via filename or open `FILE*`,</span>
+    <span class="doccomment">/// `FLAC__stream_encoder_init_ogg_file()` and `FLAC__stream_encoder_init_ogg_FILE()`</span>
+    <span class="doccomment">/// provide a simpler interface.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This function should be called after `FLAC__stream_encoder_new()` and</span>
+    <span class="doccomment">/// `FLAC__stream_encoder_set_*()` but before `FLAC__stream_encoder_process()`</span>
+    <span class="doccomment">/// or `FLAC__stream_encoder_process_interleaved()`.</span>
+    <span class="doccomment">/// initialization succeeded.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The call to `FLAC__stream_encoder_init_ogg_stream()` currently will also</span>
+    <span class="doccomment">/// immediately call the write callback several times, once with the `fLaC`</span>
+    <span class="doccomment">/// signature, and once for each encoded metadata block.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_write_ogg</span><span class="op">&lt;</span><span class="lifetime">&#39;out</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">out</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;out</span> <span class="kw-2">mut</span> <span class="ident">WriteWrapper</span><span class="op">&lt;</span><span class="lifetime">&#39;out</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span><span class="op">&lt;</span><span class="lifetime">&#39;out</span><span class="op">&gt;</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">unsafe</span> {
+            <span class="ident">FLAC__stream_encoder_init_ogg_stream</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>,
+                                                 <span class="prelude-val">None</span>,
+                                                 <span class="prelude-val">Some</span>(<span class="ident">flac_encoder_write_write_callback</span>),
+                                                 <span class="prelude-val">None</span>,
+                                                 <span class="prelude-val">None</span>,
+                                                 <span class="prelude-val">None</span>,
+                                                 <span class="ident">out</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">WriteWrapper</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>)
+        };
+        <span class="self">self</span>.<span class="ident">do_init</span>(<span class="ident">result</span>)
+    }
+
     <span class="doccomment">/// Initialize the encoder instance to encode native FLAC files.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This flavor of initialization sets up the encoder to encode to a plain</span>
@@ -580,12 +698,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// The file will be opened with `fopen()`.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_file</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">filename</span>: <span class="kw-2">&amp;</span><span class="ident">P</span> <span class="comment">/* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */</span>)
-                                     <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
+                                     <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span><span class="op">&gt;</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">init_file_impl</span>(<span class="ident">filename</span>.<span class="ident">as_ref</span>())
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_file_impl</span>(<span class="self">self</span>, <span class="ident">filename</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span> <span class="comment">/* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */</span>)
-                          <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">init_file_impl</span>(<span class="self">self</span>, <span class="ident">filename</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span> <span class="comment">/* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */</span>)
+                      <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span><span class="op">&gt;</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_init_file</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">FlacEncoderConfig</span>::<span class="ident">convert_path</span>(<span class="ident">filename</span>).<span class="ident">as_ptr</span>(), <span class="prelude-val">None</span>, <span class="ident">ptr</span>::<span class="ident">null_mut</span>()) };
         <span class="self">self</span>.<span class="ident">do_init</span>(<span class="ident">result</span>)
     }
@@ -600,12 +718,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// The file will be opened with `fopen()`.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_file_ogg</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">filename</span>: <span class="kw-2">&amp;</span><span class="ident">P</span> <span class="comment">/* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */</span>)
-                                         <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">init_file_impl</span>(<span class="ident">filename</span>.<span class="ident">as_ref</span>())
+                                         <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span><span class="op">&gt;</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">init_file_ogg_impl</span>(<span class="ident">filename</span>.<span class="ident">as_ref</span>())
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_file_ogg_impl</span>(<span class="self">self</span>, <span class="ident">filename</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span> <span class="comment">/* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */</span>)
-                              <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">init_file_ogg_impl</span>(<span class="self">self</span>, <span class="ident">filename</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span> <span class="comment">/* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */</span>)
+                          <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span><span class="op">&gt;</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_init_ogg_file</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">FlacEncoderConfig</span>::<span class="ident">convert_path</span>(<span class="ident">filename</span>).<span class="ident">as_ptr</span>(), <span class="prelude-val">None</span>, <span class="ident">ptr</span>::<span class="ident">null_mut</span>()) };
         <span class="self">self</span>.<span class="ident">do_init</span>(<span class="ident">result</span>)
     }
@@ -619,7 +737,7 @@
     <span class="doccomment">/// and provide callbacks for the I/O.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Note**:  a proper SEEKTABLE cannot be created when encoding to `stdout` since it is not seekable.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_stdout</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_stdout</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span><span class="op">&gt;</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_init_file</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">ptr</span>::<span class="ident">null</span>(), <span class="prelude-val">None</span>, <span class="ident">ptr</span>::<span class="ident">null_mut</span>()) };
         <span class="self">self</span>.<span class="ident">do_init</span>(<span class="ident">result</span>)
     }
@@ -633,7 +751,7 @@
     <span class="doccomment">/// and provide callbacks for the I/O.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// **Note**:  a proper SEEKTABLE cannot be created when encoding to `stdout` since it is not seekable.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_stdout_ogg</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_stdout_ogg</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span><span class="op">&gt;</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_init_ogg_file</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">ptr</span>::<span class="ident">null</span>(), <span class="prelude-val">None</span>, <span class="ident">ptr</span>::<span class="ident">null_mut</span>()) };
         <span class="self">self</span>.<span class="ident">do_init</span>(<span class="ident">result</span>)
     }
@@ -642,9 +760,9 @@
         <span class="ident">CString</span>::<span class="ident">new</span>(<span class="ident">path</span>.<span class="ident">to_str</span>().<span class="ident">expect</span>(<span class="string">&quot;non-UTF-8 filename&quot;</span>)).<span class="ident">expect</span>(<span class="string">&quot;filename has internal NULs&quot;</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">do_init</span>(<span class="self">self</span>, <span class="ident">init_result</span>: <span class="ident">FLAC__StreamEncoderInitStatus</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">do_init</span><span class="op">&lt;</span><span class="lifetime">&#39;out</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">init_result</span>: <span class="ident">FLAC__StreamEncoderInitStatus</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FlacEncoder</span><span class="op">&lt;</span><span class="lifetime">&#39;out</span><span class="op">&gt;</span>, <span class="ident">FlacEncoderInitError</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="ident">init_result</span> <span class="op">=</span><span class="op">=</span> <span class="ident">FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK</span> {
-            <span class="prelude-val">Ok</span>(<span class="ident">FlacEncoder</span>(<span class="self">self</span>.<span class="number">0</span>))
+            <span class="prelude-val">Ok</span>(<span class="ident">FlacEncoder</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">PhantomData</span>))
         } <span class="kw">else</span> {
             <span class="prelude-val">Err</span>(<span class="ident">FlacEncoderInitError</span>::<span class="ident">try_from</span>(<span class="ident">init_result</span>).<span class="ident">unwrap</span>())
         }
