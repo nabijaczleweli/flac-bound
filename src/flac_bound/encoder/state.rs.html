@@ -70,6 +70,8 @@
 <span id="70">70</span>
 <span id="71">71</span>
 <span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">flac_sys</span>::{<span class="ident">FLAC__StreamEncoderState</span>, <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_OK</span>, <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_UNINITIALIZED</span>,
                <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_OGG_ERROR</span>, <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_VERIFY_DECODER_ERROR</span>,
@@ -79,27 +81,29 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">TryFrom</span>;
 
 
-<span class="doccomment">/// State values for a `FLAC__StreamEncoder`.</span>
+<span class="doccomment">/// State values for a [`FlacEncoder`](struct.FlacEncoder.html).</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// The encoder&#39;s state can be obtained by calling `FLAC__stream_encoder_get_state()`.</span>
+<span class="doccomment">/// The encoder&#39;s state can be obtained by calling [`FlacEncoder::state()`](struct.FlacEncoder.html#method.state).</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// If the encoder gets into any other state besides `FLAC__STREAM_ENCODER_OK`</span>
-<span class="doccomment">/// or `FLAC__STREAM_ENCODER_UNINITIALIZED`, it becomes invalid for encoding and</span>
-<span class="doccomment">/// must be deleted with FLAC__stream_encoder_delete().</span>
+<span class="doccomment">/// If the encoder gets into any other state besides `Ok`</span>
+<span class="doccomment">/// or `Uninitialized`, it becomes invalid for encoding and</span>
+<span class="doccomment">/// must be deleted by dropping.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Hash</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>)]</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">u32</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">FlacEncoderState</span> {
     <span class="doccomment">/// The encoder is in the normal OK state and samples can be processed.</span>
     <span class="prelude-val">Ok</span> <span class="op">=</span> <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_OK</span>,
 
-    <span class="doccomment">/// The encoder is in the uninitialized state; one of the `FLAC__stream_encoder_init_*()` functions must be called before</span>
-    <span class="doccomment">/// samples can be processed.</span>
+    <span class="doccomment">/// The encoder is in the uninitialized state; one of the</span>
+    <span class="doccomment">/// [`FlacEncoderConfig::init_*()`](struct.FlacEncoderConfig.html#method.init_write)</span>
+    <span class="doccomment">/// functions must be called before samples can be processed.</span>
     <span class="ident">Uninitialized</span> <span class="op">=</span> <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_UNINITIALIZED</span>,
 
     <span class="doccomment">/// An error occurred in the underlying Ogg layer.</span>
     <span class="ident">OggError</span> <span class="op">=</span> <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_OGG_ERROR</span>,
 
-    <span class="doccomment">/// An error occurred in the underlying verify stream decoder; check `FLAC__stream_encoder_get_verify_decoder_state()`.</span>
+    <span class="doccomment">/// An error occurred in the underlying verify stream decoder; check</span>
+    <span class="doccomment">/// [`FlacEncoder::verify_decoder_state()`](struct.FlacEncoder.html#method.verify_decoder_state).</span>
     <span class="ident">VerifyDecoderError</span> <span class="op">=</span> <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_VERIFY_DECODER_ERROR</span>,
 
     <span class="doccomment">/// The verify decoder detected a mismatch between the original audio signal and the decoded audio signal.</span>
