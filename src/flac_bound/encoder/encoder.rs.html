@@ -285,9 +285,6 @@
 <span id="285">285</span>
 <span id="286">286</span>
 <span id="287">287</span>
-<span id="288">288</span>
-<span id="289">289</span>
-<span id="290">290</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">flac_sys</span>::{<span class="ident">FLAC__stream_encoder_new</span>, <span class="ident">FLAC__stream_encoder_get_state</span>, <span class="ident">FLAC__stream_encoder_get_verify_decoder_state</span>, <span class="ident">FLAC__stream_encoder_finish</span>,
                <span class="ident">FLAC__stream_encoder_process</span>, <span class="ident">FLAC__stream_encoder_process_interleaved</span>};
@@ -572,10 +569,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;out</span><span class="op">&gt;</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">FlacEncoder</span><span class="op">&lt;</span><span class="lifetime">&#39;out</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="kw">if</span> <span class="op">!</span>(<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>.<span class="ident">is_null</span>() {
-            <span class="macro">eprintln</span><span class="macro">!</span>(<span class="string">&quot;drop nonnull&quot;</span>);
             <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_finish</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>) };
-        } <span class="kw">else</span> {
-            <span class="macro">eprintln</span><span class="macro">!</span>(<span class="string">&quot;drop null&quot;</span>);
         }
     }
 }

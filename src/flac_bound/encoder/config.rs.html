@@ -519,88 +519,6 @@
 <span id="519">519</span>
 <span id="520">520</span>
 <span id="521">521</span>
-<span id="522">522</span>
-<span id="523">523</span>
-<span id="524">524</span>
-<span id="525">525</span>
-<span id="526">526</span>
-<span id="527">527</span>
-<span id="528">528</span>
-<span id="529">529</span>
-<span id="530">530</span>
-<span id="531">531</span>
-<span id="532">532</span>
-<span id="533">533</span>
-<span id="534">534</span>
-<span id="535">535</span>
-<span id="536">536</span>
-<span id="537">537</span>
-<span id="538">538</span>
-<span id="539">539</span>
-<span id="540">540</span>
-<span id="541">541</span>
-<span id="542">542</span>
-<span id="543">543</span>
-<span id="544">544</span>
-<span id="545">545</span>
-<span id="546">546</span>
-<span id="547">547</span>
-<span id="548">548</span>
-<span id="549">549</span>
-<span id="550">550</span>
-<span id="551">551</span>
-<span id="552">552</span>
-<span id="553">553</span>
-<span id="554">554</span>
-<span id="555">555</span>
-<span id="556">556</span>
-<span id="557">557</span>
-<span id="558">558</span>
-<span id="559">559</span>
-<span id="560">560</span>
-<span id="561">561</span>
-<span id="562">562</span>
-<span id="563">563</span>
-<span id="564">564</span>
-<span id="565">565</span>
-<span id="566">566</span>
-<span id="567">567</span>
-<span id="568">568</span>
-<span id="569">569</span>
-<span id="570">570</span>
-<span id="571">571</span>
-<span id="572">572</span>
-<span id="573">573</span>
-<span id="574">574</span>
-<span id="575">575</span>
-<span id="576">576</span>
-<span id="577">577</span>
-<span id="578">578</span>
-<span id="579">579</span>
-<span id="580">580</span>
-<span id="581">581</span>
-<span id="582">582</span>
-<span id="583">583</span>
-<span id="584">584</span>
-<span id="585">585</span>
-<span id="586">586</span>
-<span id="587">587</span>
-<span id="588">588</span>
-<span id="589">589</span>
-<span id="590">590</span>
-<span id="591">591</span>
-<span id="592">592</span>
-<span id="593">593</span>
-<span id="594">594</span>
-<span id="595">595</span>
-<span id="596">596</span>
-<span id="597">597</span>
-<span id="598">598</span>
-<span id="599">599</span>
-<span id="600">600</span>
-<span id="601">601</span>
-<span id="602">602</span>
-<span id="603">603</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">flac_sys</span>::{<span class="ident">FLAC__StreamEncoderInitStatus</span>, <span class="ident">FLAC__bool</span>, <span class="ident">FLAC__stream_encoder_set_ogg_serial_number</span>, <span class="ident">FLAC__stream_encoder_set_verify</span>,
                <span class="ident">FLAC__stream_encoder_set_streamable_subset</span>, <span class="ident">FLAC__stream_encoder_set_channels</span>, <span class="ident">FLAC__stream_encoder_set_bits_per_sample</span>,
@@ -620,7 +538,6 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">TryFrom</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">Path</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
-
 
 
 <span class="doccomment">/// Wrapper around a FLAC encoder for configuring the output settings.</span>
@@ -1122,87 +1039,6 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">total_samples_estimate</span>(<span class="self">self</span>, <span class="ident">value</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
         <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_set_total_samples_estimate</span>((<span class="self">self</span>.<span class="number">0</span>).<span class="number">0</span>, <span class="ident">value</span>) };
         <span class="self">self</span>
-    }
-
-    <span class="doccomment">/// Set the metadata blocks to be emitted to the stream before encoding.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// A value of `NULL`, `0` implies no metadata; otherwise, supply an</span>
-    <span class="doccomment">/// array of pointers to metadata blocks. The array is non-const since</span>
-    <span class="doccomment">/// the encoder may need to change the *is_last* flag inside them, and</span>
-    <span class="doccomment">/// in some cases update seek point offsets. Otherwise, the encoder will</span>
-    <span class="doccomment">/// not modify or free the blocks. It is up to the caller to free the</span>
-    <span class="doccomment">/// metadata blocks after encoding finishes.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// **Note**:&lt;br /&gt;</span>
-    <span class="doccomment">/// The encoder stores only copies of the pointers in the *metadata* array;</span>
-    <span class="doccomment">/// the metadata blocks themselves must survive at least until after</span>
-    <span class="doccomment">/// `FLAC__stream_encoder_finish()` returns. Do not free the blocks until then.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// **Note**:&lt;br /&gt;</span>
-    <span class="doccomment">/// The STREAMINFO block is always written and no STREAMINFO block may</span>
-    <span class="doccomment">/// occur in the supplied array.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// **Note**:&lt;br /&gt;</span>
-    <span class="doccomment">/// By default the encoder does not create a SEEKTABLE. If one is supplied</span>
-    <span class="doccomment">/// in the *metadata* array, but the client has specified that it does not</span>
-    <span class="doccomment">/// support seeking, then the SEEKTABLE will be written verbatim. However</span>
-    <span class="doccomment">/// by itself this is not very useful as the client will not know the stream</span>
-    <span class="doccomment">/// offsets for the seekpoints ahead of time. In order to get a proper</span>
-    <span class="doccomment">/// seektable the client must support seeking. See next note.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// **Note**:&lt;br /&gt;</span>
-    <span class="doccomment">/// SEEKTABLE blocks are handled specially. Since you will not know</span>
-    <span class="doccomment">/// the values for the seek point stream offsets, you should pass in</span>
-    <span class="doccomment">/// a SEEKTABLE &#39;template&#39;, that is, a SEEKTABLE object with the</span>
-    <span class="doccomment">/// required sample numbers (or placeholder points), with `0` for the</span>
-    <span class="doccomment">/// *frame_samples* and *stream_offset* fields for each point. If the</span>
-    <span class="doccomment">/// client has specified that it supports seeking by providing a seek</span>
-    <span class="doccomment">/// callback to `FLAC__stream_encoder_init_stream()` or both seek AND read</span>
-    <span class="doccomment">/// callback to `FLAC__stream_encoder_init_ogg_stream()` (or by using</span>
-    <span class="doccomment">/// `FLAC__stream_encoder_init*_file()` or `FLAC__stream_encoder_init*_FILE()`),</span>
-    <span class="doccomment">/// then while it is encoding the encoder will fill the stream offsets in</span>
-    <span class="doccomment">/// for you and when encoding is finished, it will seek back and write the</span>
-    <span class="doccomment">/// real values into the SEEKTABLE block in the stream. There are helper</span>
-    <span class="doccomment">/// routines for manipulating seektable template blocks; see metadata.h:</span>
-    <span class="doccomment">/// `FLAC__metadata_object_seektable_template_*()`. If the client does</span>
-    <span class="doccomment">/// not support seeking, the SEEKTABLE will have inaccurate offsets which</span>
-    <span class="doccomment">/// will slow down or remove the ability to seek in the FLAC stream.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// **Note**:&lt;br /&gt;</span>
-    <span class="doccomment">/// The encoder instance \b will modify the first `SEEKTABLE` block</span>
-    <span class="doccomment">/// as it transforms the template to a valid seektable while encoding,</span>
-    <span class="doccomment">/// but it is still up to the caller to free all metadata blocks after</span>
-    <span class="doccomment">/// encoding.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// **Note**:&lt;br /&gt;</span>
-    <span class="doccomment">/// A VORBIS_COMMENT block may be supplied. The vendor string in it</span>
-    <span class="doccomment">/// will be ignored. libFLAC will use it&#39;s own vendor string. libFLAC</span>
-    <span class="doccomment">/// will not modify the passed-in VORBIS_COMMENT&#39;s vendor string, it</span>
-    <span class="doccomment">/// will simply write it&#39;s own into the stream. If no VORBIS_COMMENT</span>
-    <span class="doccomment">/// block is present in the *metadata* array, libFLAC will write an</span>
-    <span class="doccomment">/// empty one, containing only the vendor string.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// **Note**:&lt;br /&gt; The Ogg FLAC mapping requires that the VORBIS_COMMENT block be</span>
-    <span class="doccomment">/// the second metadata block of the stream. The encoder already supplies</span>
-    <span class="doccomment">/// the STREAMINFO block automatically. If *metadata* does not contain a</span>
-    <span class="doccomment">/// VORBIS_COMMENT block, the encoder will supply that too. Otherwise, if</span>
-    <span class="doccomment">/// *metadata* does contain a VORBIS_COMMENT block and it is not the</span>
-    <span class="doccomment">/// first, the init function will reorder *metadata* by moving the</span>
-    <span class="doccomment">/// VORBIS_COMMENT block to the front; the relative ordering of the other</span>
-    <span class="doccomment">/// blocks will remain as they were.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// **Note**:&lt;br /&gt;</span>
-    <span class="doccomment">/// The Ogg FLAC mapping limits the number of metadata blocks per</span>
-    <span class="doccomment">/// stream to `65535`. If *num_blocks* exceeds this the function will</span>
-    <span class="doccomment">/// return `false`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// **Default**: `NULL, 0`</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Requires, that *num_blocks* &gt; 65535 if encoding to Ogg FLAC.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">metadata</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FlacEncoderConfig</span> {
-        <span class="macro">unimplemented</span><span class="macro">!</span>();
-        <span class="comment">// FLAC__stream_encoder_set_metadata(self.0);</span>
-        <span class="comment">// self</span>
     }
 }
 </pre></div>
