@@ -184,7 +184,7 @@ impl<'out> FlacEncoder<'out> {
     /// representing one channel. The samples need not be block-aligned,
     /// but each channel should have the same number of samples. Each sample
     /// should be a signed integer, right-justified to the resolution set by
-    /// [`FlacEncoderConfig::bits_per_sample()`](struct.FlacEncoderConfig.html#method.bits_per_sample. For example, if the
+    /// [`FlacEncoderConfig::bits_per_sample()`](struct.FlacEncoderConfig.html#method.bits_per_sample). For example, if the
     /// resolution is 16 bits per sample, the samples should all be in the
     /// range [-32768,32767].
     ///
