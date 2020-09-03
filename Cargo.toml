@@ -12,6 +12,15 @@ version = "0.1.0"
 authors = ["nabijaczleweli <nabijaczleweli@gmail.com>"]
 exclude = ["*.enc"]
 
+[dependencies.flac-sys]
+version = "0.1"
+optional = true
 
-[dependencies]
-flac-sys = "0.1"
+[dependencies.libflac-sys]
+version = "0.1"
+optional = true
+
+[features]
+default  = ["flac"]
+flac     = ["flac-sys"]
+libflac  = ["libflac-sys"]

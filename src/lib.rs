@@ -34,7 +34,10 @@
 //!   * ThePhD
 
 
+#[cfg(feature="flac")]
 extern crate flac_sys;
+#[cfg(feature="libflac")]
+extern crate libflac_sys;
 
 mod encoder;
 

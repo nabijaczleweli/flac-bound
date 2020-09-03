@@ -1,10 +1,16 @@
 mod callbacks;
+#[allow(clippy::module_inception)]
 mod encoder;
 mod config;
 mod state;
 mod error;
 
+#[cfg(feature = "flac")]
 use flac_sys::{FLAC__StreamEncoder, FLAC__stream_encoder_delete};
+
+#[cfg(feature = "libflac")]
+use libflac_sys::{FLAC__StreamEncoder, FLAC__stream_encoder_delete};
+
 use std::{mem, ptr};
 
 pub use self::callbacks::{WriteWrapper, flac_encoder_write_write_callback};

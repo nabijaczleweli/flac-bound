@@ -1,8 +1,22 @@
+#[cfg(feature = "flac")]
 use flac_sys::{FLAC__StreamEncoderState, FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_OK, FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_UNINITIALIZED,
                FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_OGG_ERROR, FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_VERIFY_DECODER_ERROR,
                FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_VERIFY_MISMATCH_IN_AUDIO_DATA, FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_CLIENT_ERROR,
                FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_IO_ERROR, FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_FRAMING_ERROR,
                FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_MEMORY_ALLOCATION_ERROR};
+
+#[cfg(feature = "libflac")]
+use libflac_sys::{FLAC__StreamEncoderState,
+                  FLAC__STREAM_ENCODER_OK as FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_OK,
+                  FLAC__STREAM_ENCODER_UNINITIALIZED as FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_UNINITIALIZED,
+                  FLAC__STREAM_ENCODER_OGG_ERROR as FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_OGG_ERROR,
+                  FLAC__STREAM_ENCODER_VERIFY_DECODER_ERROR as FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_VERIFY_DECODER_ERROR,
+                  FLAC__STREAM_ENCODER_VERIFY_MISMATCH_IN_AUDIO_DATA as FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_VERIFY_MISMATCH_IN_AUDIO_DATA,
+                  FLAC__STREAM_ENCODER_CLIENT_ERROR as FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_CLIENT_ERROR,
+                  FLAC__STREAM_ENCODER_IO_ERROR as FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_IO_ERROR,
+                  FLAC__STREAM_ENCODER_FRAMING_ERROR as FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_FRAMING_ERROR,
+                  FLAC__STREAM_ENCODER_MEMORY_ALLOCATION_ERROR as FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_MEMORY_ALLOCATION_ERROR};
+
 use std::convert::TryFrom;
 
 
@@ -68,7 +82,7 @@ impl TryFrom<FLAC__StreamEncoderState> for FlacEncoderState {
             FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_IO_ERROR => FlacEncoderState::IoError,
             FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_FRAMING_ERROR => FlacEncoderState::FramingError,
             FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_MEMORY_ALLOCATION_ERROR => FlacEncoderState::MemoryAllocationError,
-            _ => Err(())?,
+            _ => return Err(()),
         })
     }
 }
