@@ -1,6 +1,12 @@
+#[cfg(feature = "default")]
 use flac_sys::{FLAC__stream_encoder_new, FLAC__stream_encoder_get_state, FLAC__stream_encoder_get_verify_decoder_state, FLAC__stream_encoder_finish,
                FLAC__stream_encoder_process, FLAC__stream_encoder_process_interleaved};
-use self::super::{StreamEncoderContainer, FlacEncoderConfig, FlacEncoderState};
+
+#[cfg(feature = "libflac")]
+use libflac_sys::{FLAC__stream_encoder_new, FLAC__stream_encoder_get_state, FLAC__stream_encoder_get_verify_decoder_state, FLAC__stream_encoder_finish,
+    FLAC__stream_encoder_process, FLAC__stream_encoder_process_interleaved};
+
+use super::{StreamEncoderContainer, FlacEncoderConfig, FlacEncoderState};
 use std::marker::PhantomData;
 use std::convert::TryFrom;
 use std::os::raw::c_uint;
@@ -155,6 +161,7 @@ pub struct FlacEncoder<'out>(pub(super) StreamEncoderContainer, pub(super) Phant
 
 impl<'out> FlacEncoder<'out> {
     /// Create a new stream encoder, in a configuration wrapper, or `None` if one couldn't be allocated.
+    #[allow(clippy::new_ret_no_self)]
     pub fn new() -> Option<FlacEncoderConfig> {
         let enc = unsafe { FLAC__stream_encoder_new() };
         if !enc.is_null() {

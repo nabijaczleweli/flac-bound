@@ -11,7 +11,12 @@ license = "MIT"
 version = "0.1.0"
 authors = ["nabijaczleweli <nabijaczleweli@gmail.com>"]
 exclude = ["*.enc"]
-
+edition = "2018"
 
 [dependencies]
-flac-sys = "0.1"
+flac-sys = { version = "0.1", optional = true }
+libflac-sys = { version = "0.1", optional = true }
+
+[features]
+default = ["flac-sys"]
+libflac = ["libflac-sys"]

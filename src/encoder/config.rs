@@ -1,3 +1,4 @@
+#[cfg(feature = "default")]
 use flac_sys::{FLAC__StreamEncoderInitStatus, FLAC__bool, FLAC__stream_encoder_set_ogg_serial_number, FLAC__stream_encoder_set_verify,
                FLAC__stream_encoder_set_streamable_subset, FLAC__stream_encoder_set_channels, FLAC__stream_encoder_set_bits_per_sample,
                FLAC__stream_encoder_set_sample_rate, FLAC__stream_encoder_set_compression_level, FLAC__stream_encoder_set_blocksize,
@@ -9,7 +10,22 @@ use flac_sys::{FLAC__StreamEncoderInitStatus, FLAC__bool, FLAC__stream_encoder_s
                FLAC__stream_encoder_set_total_samples_estimate /* , FLAC__stream_encoder_set_metadata */, FLAC__stream_encoder_init_stream,
                FLAC__stream_encoder_init_ogg_stream, FLAC__stream_encoder_init_file, FLAC__stream_encoder_init_ogg_file,
                FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK};
-use self::super::{StreamEncoderContainer, FlacEncoderInitError, WriteWrapper, FlacEncoder, flac_encoder_write_write_callback};
+
+#[cfg(feature = "libflac")]
+use libflac_sys::{FLAC__StreamEncoderInitStatus, FLAC__bool, FLAC__stream_encoder_set_ogg_serial_number, FLAC__stream_encoder_set_verify,
+                  FLAC__stream_encoder_set_streamable_subset, FLAC__stream_encoder_set_channels, FLAC__stream_encoder_set_bits_per_sample,
+                  FLAC__stream_encoder_set_sample_rate, FLAC__stream_encoder_set_compression_level, FLAC__stream_encoder_set_blocksize,
+                  FLAC__stream_encoder_set_do_mid_side_stereo, FLAC__stream_encoder_set_loose_mid_side_stereo, FLAC__stream_encoder_set_apodization,
+                  FLAC__stream_encoder_set_max_lpc_order, FLAC__stream_encoder_set_qlp_coeff_precision, FLAC__stream_encoder_set_do_qlp_coeff_prec_search,
+                  FLAC__stream_encoder_set_do_escape_coding, FLAC__stream_encoder_set_do_exhaustive_model_search,
+                  FLAC__stream_encoder_set_min_residual_partition_order, FLAC__stream_encoder_set_max_residual_partition_order,
+                  FLAC__stream_encoder_set_rice_parameter_search_dist,
+                  FLAC__stream_encoder_set_total_samples_estimate /* , FLAC__stream_encoder_set_metadata */, FLAC__stream_encoder_init_stream,
+                  FLAC__stream_encoder_init_ogg_stream, FLAC__stream_encoder_init_file, FLAC__stream_encoder_init_ogg_file,
+                  FLAC__STREAM_ENCODER_INIT_STATUS_OK as FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK};
+
+               
+use super::{StreamEncoderContainer, FlacEncoderInitError, WriteWrapper, FlacEncoder, flac_encoder_write_write_callback};
 use std::os::raw::{c_long, c_void};
 use std::ffi::{CString, CStr};
 use std::marker::PhantomData;
