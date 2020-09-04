@@ -72,12 +72,40 @@
 <span id="72">72</span>
 <span id="73">73</span>
 <span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;flac&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">flac_sys</span>::{<span class="ident">FLAC__StreamEncoderState</span>, <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_OK</span>, <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_UNINITIALIZED</span>,
                <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_OGG_ERROR</span>, <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_VERIFY_DECODER_ERROR</span>,
                <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_VERIFY_MISMATCH_IN_AUDIO_DATA</span>, <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_CLIENT_ERROR</span>,
                <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_IO_ERROR</span>, <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_FRAMING_ERROR</span>,
                <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_MEMORY_ALLOCATION_ERROR</span>};
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;libflac&quot;</span>)]</span>
+<span class="kw">use</span> <span class="ident">libflac_sys</span>::{<span class="ident">FLAC__StreamEncoderState</span>,
+                  <span class="ident">FLAC__STREAM_ENCODER_OK</span> <span class="kw">as</span> <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_OK</span>,
+                  <span class="ident">FLAC__STREAM_ENCODER_UNINITIALIZED</span> <span class="kw">as</span> <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_UNINITIALIZED</span>,
+                  <span class="ident">FLAC__STREAM_ENCODER_OGG_ERROR</span> <span class="kw">as</span> <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_OGG_ERROR</span>,
+                  <span class="ident">FLAC__STREAM_ENCODER_VERIFY_DECODER_ERROR</span> <span class="kw">as</span> <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_VERIFY_DECODER_ERROR</span>,
+                  <span class="ident">FLAC__STREAM_ENCODER_VERIFY_MISMATCH_IN_AUDIO_DATA</span> <span class="kw">as</span> <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_VERIFY_MISMATCH_IN_AUDIO_DATA</span>,
+                  <span class="ident">FLAC__STREAM_ENCODER_CLIENT_ERROR</span> <span class="kw">as</span> <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_CLIENT_ERROR</span>,
+                  <span class="ident">FLAC__STREAM_ENCODER_IO_ERROR</span> <span class="kw">as</span> <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_IO_ERROR</span>,
+                  <span class="ident">FLAC__STREAM_ENCODER_FRAMING_ERROR</span> <span class="kw">as</span> <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_FRAMING_ERROR</span>,
+                  <span class="ident">FLAC__STREAM_ENCODER_MEMORY_ALLOCATION_ERROR</span> <span class="kw">as</span> <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_MEMORY_ALLOCATION_ERROR</span>};
+
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">TryFrom</span>;
 
 
@@ -143,7 +171,7 @@
             <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_IO_ERROR</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">FlacEncoderState</span>::<span class="ident">IoError</span>,
             <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_FRAMING_ERROR</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">FlacEncoderState</span>::<span class="ident">FramingError</span>,
             <span class="ident">FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_MEMORY_ALLOCATION_ERROR</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">FlacEncoderState</span>::<span class="ident">MemoryAllocationError</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(())<span class="question-mark">?</span>,
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(()),
         })
     }
 }

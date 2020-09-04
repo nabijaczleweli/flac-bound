@@ -283,10 +283,23 @@
 <span id="283">283</span>
 <span id="284">284</span>
 <span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;flac&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">flac_sys</span>::{<span class="ident">FLAC__stream_encoder_new</span>, <span class="ident">FLAC__stream_encoder_get_state</span>, <span class="ident">FLAC__stream_encoder_get_verify_decoder_state</span>, <span class="ident">FLAC__stream_encoder_finish</span>,
                <span class="ident">FLAC__stream_encoder_process</span>, <span class="ident">FLAC__stream_encoder_process_interleaved</span>};
-<span class="kw">use</span> <span class="self">self</span>::<span class="kw">super</span>::{<span class="ident">StreamEncoderContainer</span>, <span class="ident">FlacEncoderConfig</span>, <span class="ident">FlacEncoderState</span>};
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;libflac&quot;</span>)]</span>
+<span class="kw">use</span> <span class="ident">libflac_sys</span>::{<span class="ident">FLAC__stream_encoder_new</span>, <span class="ident">FLAC__stream_encoder_get_state</span>, <span class="ident">FLAC__stream_encoder_get_verify_decoder_state</span>, <span class="ident">FLAC__stream_encoder_finish</span>,
+    <span class="ident">FLAC__stream_encoder_process</span>, <span class="ident">FLAC__stream_encoder_process_interleaved</span>};
+
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">StreamEncoderContainer</span>, <span class="ident">FlacEncoderConfig</span>, <span class="ident">FlacEncoderState</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">TryFrom</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">os</span>::<span class="ident">raw</span>::<span class="ident">c_uint</span>;
@@ -441,6 +454,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;out</span><span class="op">&gt;</span> <span class="ident">FlacEncoder</span><span class="op">&lt;</span><span class="lifetime">&#39;out</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Create a new stream encoder, in a configuration wrapper, or `None` if one couldn&#39;t be allocated.</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">new_ret_no_self</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FlacEncoderConfig</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">enc</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">FLAC__stream_encoder_new</span>() };
         <span class="kw">if</span> <span class="op">!</span><span class="ident">enc</span>.<span class="ident">is_null</span>() {

@@ -31,9 +31,23 @@
 <span id="31">31</span>
 <span id="32">32</span>
 <span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;flac&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">flac_sys</span>::{<span class="ident">FLAC__StreamEncoder</span>, <span class="ident">FLAC__StreamEncoderWriteStatus</span>, <span class="ident">FLAC__StreamEncoderWriteStatus_FLAC__STREAM_ENCODER_WRITE_STATUS_OK</span>,
                <span class="ident">FLAC__StreamEncoderWriteStatus_FLAC__STREAM_ENCODER_WRITE_STATUS_FATAL_ERROR</span>};
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;libflac&quot;</span>)]</span>
+<span class="kw">use</span> <span class="ident">libflac_sys</span>::{<span class="ident">FLAC__StreamEncoder</span>, <span class="ident">FLAC__StreamEncoderWriteStatus</span>,
+                  <span class="ident">FLAC__STREAM_ENCODER_WRITE_STATUS_OK</span> <span class="kw">as</span> <span class="ident">FLAC__StreamEncoderWriteStatus_FLAC__STREAM_ENCODER_WRITE_STATUS_OK</span>,
+                  <span class="ident">FLAC__STREAM_ENCODER_WRITE_STATUS_FATAL_ERROR</span> <span class="kw">as</span> <span class="ident">FLAC__StreamEncoderWriteStatus_FLAC__STREAM_ENCODER_WRITE_STATUS_FATAL_ERROR</span>};
+
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">os</span>::<span class="ident">raw</span>::{<span class="ident">c_uint</span>, <span class="ident">c_void</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Write</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">slice</span>;

@@ -493,7 +493,24 @@
 <span id="493">493</span>
 <span id="494">494</span>
 <span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;flac&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">flac_sys</span>::{<span class="ident">FLAC__StreamEncoderInitStatus</span>, <span class="ident">FLAC__bool</span>, <span class="ident">FLAC__stream_encoder_set_ogg_serial_number</span>, <span class="ident">FLAC__stream_encoder_set_verify</span>,
                <span class="ident">FLAC__stream_encoder_set_streamable_subset</span>, <span class="ident">FLAC__stream_encoder_set_channels</span>, <span class="ident">FLAC__stream_encoder_set_bits_per_sample</span>,
                <span class="ident">FLAC__stream_encoder_set_sample_rate</span>, <span class="ident">FLAC__stream_encoder_set_compression_level</span>, <span class="ident">FLAC__stream_encoder_set_blocksize</span>,
@@ -505,7 +522,22 @@
                <span class="ident">FLAC__stream_encoder_set_total_samples_estimate</span> <span class="comment">/* , FLAC__stream_encoder_set_metadata */</span>, <span class="ident">FLAC__stream_encoder_init_stream</span>,
                <span class="ident">FLAC__stream_encoder_init_ogg_stream</span>, <span class="ident">FLAC__stream_encoder_init_file</span>, <span class="ident">FLAC__stream_encoder_init_ogg_file</span>,
                <span class="ident">FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK</span>};
-<span class="kw">use</span> <span class="self">self</span>::<span class="kw">super</span>::{<span class="ident">StreamEncoderContainer</span>, <span class="ident">FlacEncoderInitError</span>, <span class="ident">WriteWrapper</span>, <span class="ident">FlacEncoder</span>, <span class="ident">flac_encoder_write_write_callback</span>};
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;libflac&quot;</span>)]</span>
+<span class="kw">use</span> <span class="ident">libflac_sys</span>::{<span class="ident">FLAC__StreamEncoderInitStatus</span>, <span class="ident">FLAC__bool</span>, <span class="ident">FLAC__stream_encoder_set_ogg_serial_number</span>, <span class="ident">FLAC__stream_encoder_set_verify</span>,
+                  <span class="ident">FLAC__stream_encoder_set_streamable_subset</span>, <span class="ident">FLAC__stream_encoder_set_channels</span>, <span class="ident">FLAC__stream_encoder_set_bits_per_sample</span>,
+                  <span class="ident">FLAC__stream_encoder_set_sample_rate</span>, <span class="ident">FLAC__stream_encoder_set_compression_level</span>, <span class="ident">FLAC__stream_encoder_set_blocksize</span>,
+                  <span class="ident">FLAC__stream_encoder_set_do_mid_side_stereo</span>, <span class="ident">FLAC__stream_encoder_set_loose_mid_side_stereo</span>, <span class="ident">FLAC__stream_encoder_set_apodization</span>,
+                  <span class="ident">FLAC__stream_encoder_set_max_lpc_order</span>, <span class="ident">FLAC__stream_encoder_set_qlp_coeff_precision</span>, <span class="ident">FLAC__stream_encoder_set_do_qlp_coeff_prec_search</span>,
+                  <span class="ident">FLAC__stream_encoder_set_do_escape_coding</span>, <span class="ident">FLAC__stream_encoder_set_do_exhaustive_model_search</span>,
+                  <span class="ident">FLAC__stream_encoder_set_min_residual_partition_order</span>, <span class="ident">FLAC__stream_encoder_set_max_residual_partition_order</span>,
+                  <span class="ident">FLAC__stream_encoder_set_rice_parameter_search_dist</span>,
+                  <span class="ident">FLAC__stream_encoder_set_total_samples_estimate</span> <span class="comment">/* , FLAC__stream_encoder_set_metadata */</span>, <span class="ident">FLAC__stream_encoder_init_stream</span>,
+                  <span class="ident">FLAC__stream_encoder_init_ogg_stream</span>, <span class="ident">FLAC__stream_encoder_init_file</span>, <span class="ident">FLAC__stream_encoder_init_ogg_file</span>,
+                  <span class="ident">FLAC__STREAM_ENCODER_INIT_STATUS_OK</span> <span class="kw">as</span> <span class="ident">FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK</span>};
+
+
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">StreamEncoderContainer</span>, <span class="ident">FlacEncoderInitError</span>, <span class="ident">WriteWrapper</span>, <span class="ident">FlacEncoder</span>, <span class="ident">flac_encoder_write_write_callback</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">os</span>::<span class="ident">raw</span>::{<span class="ident">c_long</span>, <span class="ident">c_void</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ffi</span>::{<span class="ident">CString</span>, <span class="ident">CStr</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span>;
