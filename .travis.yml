@@ -15,6 +15,14 @@ matrix:
             - libflac-dev
           sources: &sources
             - r-packages-trusty
+    - env: LANGUAGE=Rust LIBFLAC=1
+      language: rust
+      rust: stable
+      addons:
+        apt:
+          packages:
+            - cmake
+          sources: *sources
     - env: LANGUAGE=Rust
       language: rust
       rust: beta
@@ -46,17 +54,21 @@ before_install:
     fi
 
 install:
-  - mkdir -p target/debug/deps
-  - cp /usr/lib/x86_64-linux-gnu/libFLAC.so target/debug/deps/libflac.so
+  - if ! [ "$LIBFLAC" == "1" ]; then
+      mkdir -p target/debug/deps;
+      cp /usr/lib/x86_64-linux-gnu/libFLAC.so target/debug/deps/libflac.so;
+    else
+      FEATURES="--no-default-features --features=libflac";
+    fi
   -
   - if [ "$CLIPPY" ]; then
       CLIPPY_INSTALLED=0 && (rustup component add clippy-preview || cargo install --git https://github.com/rust-lang/rust-clippy clippy -f) && CLIPPY_INSTALLED=1;
     fi
 
 script:
-  - if [ "$LANGUAGE" == "Rust" ]; then cargo build --verbose; fi
-  - if [ "$LANGUAGE" == "Rust" ]; then cargo test  --verbose; fi
-  - if [ "$LANGUAGE" == "Rust" ] && [ "$CLIPPY_INSTALLED" == 1 ]; then cargo clippy; fi
+  - if [ "$LANGUAGE" == "Rust" ]; then cargo build --verbose $FEATURES; fi
+  - if [ "$LANGUAGE" == "Rust" ]; then cargo test  --verbose $FEATURES; fi
+  - if [ "$LANGUAGE" == "Rust" ] && [ "$CLIPPY_INSTALLED" == 1 ]; then cargo clippy $FEATURES; fi
 
 after_success:
   - if [ "$LANGUAGE" == "Rust-doc" ]; then
