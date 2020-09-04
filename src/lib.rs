@@ -32,6 +32,7 @@
 //! To all who support further development on [Patreon](https://patreon.com/nabijaczleweli), in particular:
 //!
 //!   * ThePhD
+//!   * Embark Studios
 
 
 #[cfg(feature="flac")]

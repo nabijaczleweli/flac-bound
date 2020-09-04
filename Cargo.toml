@@ -9,7 +9,7 @@ categories = ["api-bindings"]
 license = "MIT"
 # Remember to also update in appveyor.yml
 version = "0.1.0"
-authors = ["nabijaczleweli <nabijaczleweli@gmail.com>"]
+authors = ["наб <nabijaczleweli@nabijaczleweli.xyz>"]
 exclude = ["*.enc"]
 
 [dependencies.flac-sys]
