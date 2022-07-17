@@ -13,7 +13,7 @@ use flac_sys::{FLAC__StreamEncoderInitStatus, FLAC__StreamEncoderInitStatus_FLAC
                FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_INVALID_METADATA,
                FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_ALREADY_INITIALIZED};
 
-#[cfg(feature = "libflac")]
+#[cfg(feature = "libflac-nobuild")]
 use libflac_sys::{FLAC__StreamEncoderInitStatus,
                   FLAC__STREAM_ENCODER_INIT_STATUS_ENCODER_ERROR as FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_ENCODER_ERROR,
                   FLAC__STREAM_ENCODER_INIT_STATUS_UNSUPPORTED_CONTAINER as FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_UNSUPPORTED_CONTAINER,

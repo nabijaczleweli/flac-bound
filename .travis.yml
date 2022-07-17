@@ -15,7 +15,7 @@ matrix:
             - libflac-dev
           sources: &sources
             - r-packages-trusty
-    - env: LANGUAGE=Rust LIBFLAC=1
+    - env: LANGUAGE=Rust FEATURES="--no-default-features --features=libflac"
       language: rust
       rust: stable
       addons:
@@ -23,7 +23,23 @@ matrix:
           packages:
             - cmake
           sources: *sources
-    - env: LANGUAGE=Rust
+    - env: LANGUAGE=Rust FEATURES="--no-default-features --features=libflac-noogg"
+      language: rust
+      rust: stable
+      addons:
+        apt:
+          packages:
+            - cmake
+          sources: *sources
+    - env: LANGUAGE=Rust FEATURES="--no-default-features --features=libflac-nobuild" COPYSO=1
+      language: rust
+      rust: stable
+      addons:
+        apt:
+          packages:
+            - cmake
+          sources: *sources
+    - env: LANGUAGE=Rust COPYSO=1
       language: rust
       rust: beta
       addons:
@@ -54,11 +70,9 @@ before_install:
     fi
 
 install:
-  - if ! [ "$LIBFLAC" == "1" ]; then
+  - if [ "$COPYSO" = "1" ]; then
       mkdir -p target/debug/deps;
       cp /usr/lib/x86_64-linux-gnu/libFLAC.so target/debug/deps/libflac.so;
-    else
-      FEATURES="--no-default-features --features=libflac";
     fi
   -
   - if [ "$CLIPPY" ]; then

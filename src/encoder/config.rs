@@ -11,7 +11,7 @@ use flac_sys::{FLAC__StreamEncoderInitStatus, FLAC__bool, FLAC__stream_encoder_s
                FLAC__stream_encoder_init_ogg_stream, FLAC__stream_encoder_init_file, FLAC__stream_encoder_init_ogg_file,
                FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK};
 
-#[cfg(feature = "libflac")]
+#[cfg(feature = "libflac-nobuild")]
 use libflac_sys::{FLAC__StreamEncoderInitStatus, FLAC__bool, FLAC__stream_encoder_set_ogg_serial_number, FLAC__stream_encoder_set_verify,
                   FLAC__stream_encoder_set_streamable_subset, FLAC__stream_encoder_set_channels, FLAC__stream_encoder_set_bits_per_sample,
                   FLAC__stream_encoder_set_sample_rate, FLAC__stream_encoder_set_compression_level, FLAC__stream_encoder_set_blocksize,
@@ -135,7 +135,7 @@ impl FlacEncoderConfig {
     /// Initialize the encoder instance to encode Ogg FLAC files.
     ///
     /// This flavor of initialization sets up the encoder to encode a plain
-    /// Ogg FLAC file to stdout.
+    /// OGG FLAC file to stdout.
     ///
     /// **Note**: a proper SEEKTABLE cannot be created when encoding to `stdout` since it is not seekable.
     pub fn init_stdout_ogg(self) -> Result<FlacEncoder<'static>, FlacEncoderInitError> {

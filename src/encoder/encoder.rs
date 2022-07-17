@@ -2,7 +2,7 @@
 use flac_sys::{FLAC__stream_encoder_new, FLAC__stream_encoder_get_state, FLAC__stream_encoder_get_verify_decoder_state, FLAC__stream_encoder_finish,
                FLAC__stream_encoder_process, FLAC__stream_encoder_process_interleaved};
 
-#[cfg(feature = "libflac")]
+#[cfg(feature = "libflac-nobuild")]
 use libflac_sys::{FLAC__stream_encoder_new, FLAC__stream_encoder_get_state, FLAC__stream_encoder_get_verify_decoder_state, FLAC__stream_encoder_finish,
     FLAC__stream_encoder_process, FLAC__stream_encoder_process_interleaved};
 

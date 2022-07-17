@@ -5,7 +5,7 @@ use flac_sys::{FLAC__StreamEncoderState, FLAC__StreamEncoderState_FLAC__STREAM_E
                FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_IO_ERROR, FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_FRAMING_ERROR,
                FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_MEMORY_ALLOCATION_ERROR};
 
-#[cfg(feature = "libflac")]
+#[cfg(feature = "libflac-nobuild")]
 use libflac_sys::{FLAC__StreamEncoderState,
                   FLAC__STREAM_ENCODER_OK as FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_OK,
                   FLAC__STREAM_ENCODER_UNINITIALIZED as FLAC__StreamEncoderState_FLAC__STREAM_ENCODER_UNINITIALIZED,

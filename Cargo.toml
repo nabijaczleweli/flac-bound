@@ -20,8 +20,11 @@ optional = true
 [dependencies.libflac-sys]
 version = "0.2"
 optional = true
+default-features = false
 
 [features]
-default  = ["flac"]
-flac     = ["flac-sys"]
-libflac  = ["libflac-sys"]
+default         = ["flac"]
+flac            = ["flac-sys"]
+libflac         = ["libflac-nobuild", "libflac-sys/build-ogg"]
+libflac-noogg   = ["libflac-nobuild", "libflac-sys/build-flac"]
+libflac-nobuild = ["libflac-sys"]

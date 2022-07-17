@@ -2,7 +2,7 @@
 use flac_sys::{FLAC__StreamEncoder, FLAC__StreamEncoderWriteStatus, FLAC__StreamEncoderWriteStatus_FLAC__STREAM_ENCODER_WRITE_STATUS_OK,
                FLAC__StreamEncoderWriteStatus_FLAC__STREAM_ENCODER_WRITE_STATUS_FATAL_ERROR};
 
-#[cfg(feature = "libflac")]
+#[cfg(feature = "libflac-nobuild")]
 use libflac_sys::{FLAC__StreamEncoder, FLAC__StreamEncoderWriteStatus,
                   FLAC__STREAM_ENCODER_WRITE_STATUS_OK as FLAC__StreamEncoderWriteStatus_FLAC__STREAM_ENCODER_WRITE_STATUS_OK,
                   FLAC__STREAM_ENCODER_WRITE_STATUS_FATAL_ERROR as FLAC__StreamEncoderWriteStatus_FLAC__STREAM_ENCODER_WRITE_STATUS_FATAL_ERROR};

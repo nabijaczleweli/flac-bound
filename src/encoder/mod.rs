@@ -8,7 +8,7 @@ mod error;
 #[cfg(feature = "flac")]
 use flac_sys::{FLAC__StreamEncoder, FLAC__stream_encoder_delete};
 
-#[cfg(feature = "libflac")]
+#[cfg(feature = "libflac-nobuild")]
 use libflac_sys::{FLAC__StreamEncoder, FLAC__stream_encoder_delete};
 
 use std::{mem, ptr};
