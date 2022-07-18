@@ -8,7 +8,7 @@ keywords = ["flac", "encoding", "encoder", "encode"]
 categories = ["api-bindings"]
 license = "MIT"
 # Remember to also update in appveyor.yml
-version = "0.2.0"
+version = "0.3.0"
 authors = ["наб <nabijaczleweli@nabijaczleweli.xyz>",
            "Valentin Kahl <git@valentin-kahl.de>"]
 exclude = ["*.enc"]
