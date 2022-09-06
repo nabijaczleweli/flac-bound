@@ -68,8 +68,8 @@ impl FlacEncoderConfig {
     /// stream in an Ogg container. I/O is performed into the specified stream.
     ///
     /// The call to `init_write_ogg()` currently will also
-    /// immediately write several times, once with the `fLaC`
-    /// signature, and once for each encoded metadata block.
+    /// immediately write several times, once for the Ogg container,
+    /// `fLaC` signature, and encoded metadata block.
     pub fn init_write_ogg<'out>(self, out: &'out mut WriteWrapper<'out>) -> Result<FlacEncoder<'out>, FlacEncoderInitError> {
         let result = unsafe {
             FLAC__stream_encoder_init_ogg_stream((self.0).0,
