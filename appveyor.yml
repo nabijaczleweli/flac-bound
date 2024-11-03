@@ -1,7 +1,7 @@
 image:
   - Visual Studio 2022
 
-version: 0.3.0-{build}
+version: 0.4.0-{build}
 
 skip_tags: false
 
@@ -14,13 +14,13 @@ install:
   - set PATH=C:\msys64\mingw64\bin;C:\msys64\usr\bin;%PATH%;C:\Users\appveyor\.cargo\bin
   - bash -lc "pacman --noconfirm -Syyu"
   - bash -lc "pacman --noconfirm -Syyu"
-  - bash -lc "pacman --noconfirm -S mingw-w64-x86_64-toolchain zip"
+  - bash -lc "pacman --noconfirm -S mingw-w64-x86_64-toolchain zip mingw-w64-x86_64-flac"
   -
   - mkdir -p target\release\deps
   - cp C:\Windows\System32\ntdll.dll C:\msys64\mingw64\lib\libflac.dll.a target\release\deps
   -
   - curl -SL https://win.rustup.rs/ -oC:\rustup-init.exe
-  - C:\rustup-init.exe -y --default-host="x86_64-pc-windows-gnu" --default-toolchain="%TOOLCHAIN%"
+  - C:\rustup-init.exe -y --default-host="x86_64-pc-windows-gnu" --default-toolchain="stable"
   -
   - curl -SL https://win.rustup.rs/ -oC:\rustup-init.exe
   - C:\rustup-init.exe -y --default-host="x86_64-pc-windows-gnu"
