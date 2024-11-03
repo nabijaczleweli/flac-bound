@@ -9,8 +9,10 @@ categories = ["api-bindings"]
 license = "MIT"
 # Remember to also update in appveyor.yml
 version = "0.3.0"
-authors = ["наб <nabijaczleweli@nabijaczleweli.xyz>",
-           "Valentin Kahl <git@valentin-kahl.de>"]
+authors = [
+    "наб <nabijaczleweli@nabijaczleweli.xyz>",
+    "Valentin Kahl <git@valentin-kahl.de>",
+]
 exclude = ["*.enc"]
 
 [dependencies.flac-sys]
@@ -18,13 +20,13 @@ version = "0.1"
 optional = true
 
 [dependencies.libflac-sys]
-version = "0.2"
+version = "0.3.1"
 optional = true
 default-features = false
 
 [features]
-default         = ["flac"]
-flac            = ["flac-sys"]
-libflac         = ["libflac-nobuild", "libflac-sys/build-ogg"]
-libflac-noogg   = ["libflac-nobuild", "libflac-sys/build-flac"]
+default = ["flac"]
+flac = ["flac-sys"]
+libflac = ["libflac-nobuild", "libflac-sys/build-ogg"]
+libflac-noogg = ["libflac-nobuild", "libflac-sys/build-flac"]
 libflac-nobuild = ["libflac-sys"]
