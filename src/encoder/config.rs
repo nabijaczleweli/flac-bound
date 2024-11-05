@@ -1,38 +1,37 @@
 #[cfg(feature = "flac")]
-use flac_sys::{FLAC__StreamEncoderInitStatus, FLAC__bool, FLAC__stream_encoder_set_ogg_serial_number, FLAC__stream_encoder_set_verify,
-               FLAC__stream_encoder_set_streamable_subset, FLAC__stream_encoder_set_channels, FLAC__stream_encoder_set_bits_per_sample,
-               FLAC__stream_encoder_set_sample_rate, FLAC__stream_encoder_set_compression_level, FLAC__stream_encoder_set_blocksize,
-               FLAC__stream_encoder_set_do_mid_side_stereo, FLAC__stream_encoder_set_loose_mid_side_stereo, FLAC__stream_encoder_set_apodization,
-               FLAC__stream_encoder_set_max_lpc_order, FLAC__stream_encoder_set_qlp_coeff_precision, FLAC__stream_encoder_set_do_qlp_coeff_prec_search,
-               FLAC__stream_encoder_set_do_escape_coding, FLAC__stream_encoder_set_do_exhaustive_model_search,
-               FLAC__stream_encoder_set_min_residual_partition_order, FLAC__stream_encoder_set_max_residual_partition_order,
-               FLAC__stream_encoder_set_rice_parameter_search_dist,
-               FLAC__stream_encoder_set_total_samples_estimate /* , FLAC__stream_encoder_set_metadata */, FLAC__stream_encoder_init_stream,
-               FLAC__stream_encoder_init_ogg_stream, FLAC__stream_encoder_init_file, FLAC__stream_encoder_init_ogg_file,
-               FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK};
+use flac_sys::{
+    FLAC__StreamEncoderInitStatus, FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK, FLAC__bool, FLAC__stream_encoder_init_file,
+    FLAC__stream_encoder_init_ogg_file, FLAC__stream_encoder_init_ogg_stream, FLAC__stream_encoder_init_stream, FLAC__stream_encoder_set_apodization,
+    FLAC__stream_encoder_set_bits_per_sample, FLAC__stream_encoder_set_blocksize, FLAC__stream_encoder_set_channels,
+    FLAC__stream_encoder_set_compression_level, FLAC__stream_encoder_set_do_escape_coding, FLAC__stream_encoder_set_do_exhaustive_model_search,
+    FLAC__stream_encoder_set_do_mid_side_stereo, FLAC__stream_encoder_set_do_qlp_coeff_prec_search, FLAC__stream_encoder_set_loose_mid_side_stereo,
+    FLAC__stream_encoder_set_max_lpc_order, FLAC__stream_encoder_set_max_residual_partition_order, FLAC__stream_encoder_set_min_residual_partition_order,
+    FLAC__stream_encoder_set_ogg_serial_number, FLAC__stream_encoder_set_qlp_coeff_precision, FLAC__stream_encoder_set_rice_parameter_search_dist,
+    FLAC__stream_encoder_set_sample_rate, FLAC__stream_encoder_set_streamable_subset,
+    FLAC__stream_encoder_set_total_samples_estimate, /* , FLAC__stream_encoder_set_metadata */
+    FLAC__stream_encoder_set_verify,
+};
 
 #[cfg(feature = "libflac-nobuild")]
-use libflac_sys::{FLAC__StreamEncoderInitStatus, FLAC__bool, FLAC__stream_encoder_set_ogg_serial_number, FLAC__stream_encoder_set_verify,
-                  FLAC__stream_encoder_set_streamable_subset, FLAC__stream_encoder_set_channels, FLAC__stream_encoder_set_bits_per_sample,
-                  FLAC__stream_encoder_set_sample_rate, FLAC__stream_encoder_set_compression_level, FLAC__stream_encoder_set_blocksize,
-                  FLAC__stream_encoder_set_do_mid_side_stereo, FLAC__stream_encoder_set_loose_mid_side_stereo, FLAC__stream_encoder_set_apodization,
-                  FLAC__stream_encoder_set_max_lpc_order, FLAC__stream_encoder_set_qlp_coeff_precision, FLAC__stream_encoder_set_do_qlp_coeff_prec_search,
-                  FLAC__stream_encoder_set_do_escape_coding, FLAC__stream_encoder_set_do_exhaustive_model_search,
-                  FLAC__stream_encoder_set_min_residual_partition_order, FLAC__stream_encoder_set_max_residual_partition_order,
-                  FLAC__stream_encoder_set_rice_parameter_search_dist,
-                  FLAC__stream_encoder_set_total_samples_estimate /* , FLAC__stream_encoder_set_metadata */, FLAC__stream_encoder_init_stream,
-                  FLAC__stream_encoder_init_ogg_stream, FLAC__stream_encoder_init_file, FLAC__stream_encoder_init_ogg_file,
-                  FLAC__STREAM_ENCODER_INIT_STATUS_OK as FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK};
+use libflac_sys::{
+    FLAC__StreamEncoderInitStatus, FLAC__bool, FLAC__stream_encoder_init_file, FLAC__stream_encoder_init_ogg_file, FLAC__stream_encoder_init_ogg_stream,
+    FLAC__stream_encoder_init_stream, FLAC__stream_encoder_set_apodization, FLAC__stream_encoder_set_bits_per_sample, FLAC__stream_encoder_set_blocksize,
+    FLAC__stream_encoder_set_channels, FLAC__stream_encoder_set_compression_level, FLAC__stream_encoder_set_do_escape_coding,
+    FLAC__stream_encoder_set_do_exhaustive_model_search, FLAC__stream_encoder_set_do_mid_side_stereo, FLAC__stream_encoder_set_do_qlp_coeff_prec_search,
+    FLAC__stream_encoder_set_limit_min_bitrate, FLAC__stream_encoder_set_loose_mid_side_stereo, FLAC__stream_encoder_set_max_lpc_order,
+    FLAC__stream_encoder_set_max_residual_partition_order, FLAC__stream_encoder_set_min_residual_partition_order, FLAC__stream_encoder_set_ogg_serial_number,
+    FLAC__stream_encoder_set_qlp_coeff_precision, FLAC__stream_encoder_set_rice_parameter_search_dist, FLAC__stream_encoder_set_sample_rate,
+    FLAC__stream_encoder_set_streamable_subset, FLAC__stream_encoder_set_total_samples_estimate, /* , FLAC__stream_encoder_set_metadata */
+    FLAC__stream_encoder_set_verify, FLAC__STREAM_ENCODER_INIT_STATUS_OK as FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK,
+};
 
-
-use super::{StreamEncoderContainer, FlacEncoderInitError, WriteWrapper, FlacEncoder, flac_encoder_write_write_callback};
-use std::os::raw::{c_long, c_void};
-use std::ffi::{CString, CStr};
-use std::marker::PhantomData;
+use super::{flac_encoder_write_write_callback, FlacEncoder, FlacEncoderInitError, StreamEncoderContainer, WriteWrapper};
 use std::convert::TryFrom;
+use std::ffi::{CStr, CString};
+use std::marker::PhantomData;
+use std::os::raw::{c_long, c_void};
 use std::path::Path;
 use std::ptr;
-
 
 /// Wrapper around a FLAC encoder for configuring the output settings.
 ///
@@ -52,12 +51,14 @@ impl FlacEncoderConfig {
     /// signature, and once for each encoded metadata block.
     pub fn init_write<'out>(self, out: &'out mut WriteWrapper<'out>) -> Result<FlacEncoder<'out>, FlacEncoderInitError> {
         let result = unsafe {
-            FLAC__stream_encoder_init_stream((self.0).0,
-                                             Some(flac_encoder_write_write_callback),
-                                             None,
-                                             None,
-                                             None,
-                                             out as *mut WriteWrapper as *mut c_void)
+            FLAC__stream_encoder_init_stream(
+                (self.0).0,
+                Some(flac_encoder_write_write_callback),
+                None,
+                None,
+                None,
+                out as *mut WriteWrapper as *mut c_void,
+            )
         };
         self.do_init(result)
     }
@@ -72,13 +73,15 @@ impl FlacEncoderConfig {
     /// `fLaC` signature, and encoded metadata block.
     pub fn init_write_ogg<'out>(self, out: &'out mut WriteWrapper<'out>) -> Result<FlacEncoder<'out>, FlacEncoderInitError> {
         let result = unsafe {
-            FLAC__stream_encoder_init_ogg_stream((self.0).0,
-                                                 None,
-                                                 Some(flac_encoder_write_write_callback),
-                                                 None,
-                                                 None,
-                                                 None,
-                                                 out as *mut WriteWrapper as *mut c_void)
+            FLAC__stream_encoder_init_ogg_stream(
+                (self.0).0,
+                None,
+                Some(flac_encoder_write_write_callback),
+                None,
+                None,
+                None,
+                out as *mut WriteWrapper as *mut c_void,
+            )
         };
         self.do_init(result)
     }
@@ -91,13 +94,17 @@ impl FlacEncoderConfig {
     /// and provide the output stream.
     ///
     /// The file will be opened with `fopen()`.
-    pub fn init_file<P: AsRef<Path>>(self, filename: &P /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */)
-                                     -> Result<FlacEncoder<'static>, FlacEncoderInitError> {
+    pub fn init_file<P: AsRef<Path>>(
+        self,
+        filename: &P, /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */
+    ) -> Result<FlacEncoder<'static>, FlacEncoderInitError> {
         self.init_file_impl(filename.as_ref())
     }
 
-    fn init_file_impl(self, filename: &Path /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */)
-                      -> Result<FlacEncoder<'static>, FlacEncoderInitError> {
+    fn init_file_impl(
+        self,
+        filename: &Path, /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */
+    ) -> Result<FlacEncoder<'static>, FlacEncoderInitError> {
         let result = unsafe { FLAC__stream_encoder_init_file((self.0).0, FlacEncoderConfig::convert_path(filename).as_ptr(), None, ptr::null_mut()) };
         self.do_init(result)
     }
@@ -110,13 +117,17 @@ impl FlacEncoderConfig {
     /// and provide the output stream.
     ///
     /// The file will be opened with `fopen()`.
-    pub fn init_file_ogg<P: AsRef<Path>>(self, filename: &P /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */)
-                                         -> Result<FlacEncoder<'static>, FlacEncoderInitError> {
+    pub fn init_file_ogg<P: AsRef<Path>>(
+        self,
+        filename: &P, /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */
+    ) -> Result<FlacEncoder<'static>, FlacEncoderInitError> {
         self.init_file_ogg_impl(filename.as_ref())
     }
 
-    fn init_file_ogg_impl(self, filename: &Path /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */)
-                          -> Result<FlacEncoder<'static>, FlacEncoderInitError> {
+    fn init_file_ogg_impl(
+        self,
+        filename: &Path, /* FLAC__StreamEncoderProgressCallback progress_callback, void *client_data */
+    ) -> Result<FlacEncoder<'static>, FlacEncoderInitError> {
         let result = unsafe { FLAC__stream_encoder_init_ogg_file((self.0).0, FlacEncoderConfig::convert_path(filename).as_ptr(), None, ptr::null_mut()) };
         self.do_init(result)
     }
@@ -155,7 +166,6 @@ impl FlacEncoderConfig {
         }
     }
 }
-
 
 impl FlacEncoderConfig {
     /// Set the serial number for the FLAC stream to use in the Ogg container.
@@ -485,6 +495,19 @@ impl FlacEncoderConfig {
     /// **Default**: `5`
     pub fn max_residual_partition_order(self, value: u32) -> FlacEncoderConfig {
         unsafe { FLAC__stream_encoder_set_max_residual_partition_order((self.0).0, value) };
+        self
+    }
+
+    /// Limit the compression of digital silence to prevent streaming connection loss
+    ///
+    /// see https://github.com/xiph/flac/pull/264
+    ///
+    /// Note that FLAC_bool is actual a c_int (i32)
+    ///
+    /// **Default**: `0` (false)
+    #[cfg(feature = "libflac-nobuild")]
+    pub fn set_limit_min_bitrate(self, value: i32) -> FlacEncoderConfig {
+        unsafe { FLAC__stream_encoder_set_limit_min_bitrate((self.0).0, value) };
         self
     }
 
