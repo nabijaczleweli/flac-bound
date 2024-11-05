@@ -36,7 +36,7 @@ use std::ptr;
 
 /// Wrapper around a FLAC encoder for configuring the output settings.
 ///
-/// `FILE*` constructors unsupported, Write+Seek constructors unsupportable due to https://github.com/rust-lang/rfcs/issues/2035
+/// `FILE*` constructors unsupported, Write+Seek constructors unsupportable due to <https://github.com/rust-lang/rfcs/issues/2035>
 #[derive(Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct FlacEncoderConfig(pub(super) StreamEncoderContainer);
@@ -271,28 +271,28 @@ impl FlacEncoderConfig {
     ///  <td>max residual partition order</td>
     ///  <td>rice parameter search dist</td>
     /// </tr>
-    /// <tr><td><b>0</b></td> <td>false</td> <td>false</td> <td>tukey(0.5)<td>
+    /// <tr><td><b>0</b></td> <td>false</td> <td>false</td> <td>tukey(0.5)</td>
     ///     <td>0</td>        <td>0</td>     <td>false</td> <td>false</td>
     ///     <td>false</td>    <td>0</td>     <td>3</td>     <td>0</td></tr>
-    /// <tr><td><b>1</b></td> <td>true</td>  <td>true</td>  <td>tukey(0.5)<td>
+    /// <tr><td><b>1</b></td> <td>true</td>  <td>true</td>  <td>tukey(0.5)</td>
     ///     <td>0</td>        <td>0</td>     <td>false</td> <td>false</td>
     ///     <td>false</td>    <td>0</td>     <td>3</td>     <td>0</td></tr>
-    /// <tr><td><b>2</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5)<td>
+    /// <tr><td><b>2</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5)</td>
     ///     <td>0</td>        <td>0</td>     <td>false</td> <td>false</td>
     ///     <td>false</td>    <td>0</td>     <td>3</td>     <td>0</td></tr>
-    /// <tr><td><b>3</b></td> <td>false</td> <td>false</td> <td>tukey(0.5)<td>
+    /// <tr><td><b>3</b></td> <td>false</td> <td>false</td> <td>tukey(0.5)</td>
     ///     <td>6</td>        <td>0</td>     <td>false</td> <td>false</td>
     ///     <td>false</td>    <td>0</td>     <td>4</td>     <td>0</td></tr>
-    /// <tr><td><b>4</b></td> <td>true</td>  <td>true</td>  <td>tukey(0.5)<td>
+    /// <tr><td><b>4</b></td> <td>true</td>  <td>true</td>  <td>tukey(0.5)</td>
     ///     <td>8</td>        <td>0</td>     <td>false</td> <td>false</td>
     ///     <td>false</td>    <td>0</td>     <td>4</td>     <td>0</td></tr>
-    /// <tr><td><b>5</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5)<td>
+    /// <tr><td><b>5</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5)</td>
     ///     <td>8</td>        <td>0</td>     <td>false</td> <td>false</td>
     ///     <td>false</td>    <td>0</td>     <td>5</td>     <td>0</td></tr>
-    /// <tr><td><b>6</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5);partial_tukey(2)<td>
+    /// <tr><td><b>6</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5);partial_tukey(2)</td>
     ///     <td>8</td>        <td>0</td>     <td>false</td> <td>false</td>
     ///     <td>false</td>    <td>0</td>     <td>6</td>     <td>0</td></tr>
-    /// <tr><td><b>7</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5);partial_tukey(2)<td>
+    /// <tr><td><b>7</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5);partial_tukey(2)</td>
     ///     <td>12</td>       <td>0</td>     <td>false</td> <td>false</td>
     ///     <td>false</td>    <td>0</td>     <td>6</td>     <td>0</td></tr>
     /// <tr><td><b>8</b></td> <td>true</td>  <td>false</td> <td>tukey(0.5);partial_tukey(2);punchout_tukey(3)</td>
@@ -490,7 +490,7 @@ impl FlacEncoderConfig {
 
     /// Limit the compression of digital silence to prevent streaming connection loss
     ///
-    /// See https://github.com/xiph/flac/pull/264
+    /// See <https://github.com/xiph/flac/pull/264>.
     ///
     /// **Default**: `false`
     #[cfg(feature = "libflac-nobuild")]
