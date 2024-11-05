@@ -16,7 +16,7 @@
 //!
 //! The `"libflac-noogg"` feature will build libFLAC without OGG support.
 //!
-//! The `"libflac-nobuild"` feature will still use `libflac-sys` but instruct it to link to the system libFLAC.
+//! The `"libflac-nobuild"` feature will still use `libflac-sys` but instruct it to link to the system libFLAC (≥ 1.4.0).
 //!
 //! Downstreams are encouraged to expose these features to the user.
 //!
