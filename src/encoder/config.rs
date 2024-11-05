@@ -19,7 +19,7 @@ use libflac_sys::{FLAC__StreamEncoderInitStatus, FLAC__bool, FLAC__stream_encode
                   FLAC__stream_encoder_set_max_lpc_order, FLAC__stream_encoder_set_qlp_coeff_precision, FLAC__stream_encoder_set_do_qlp_coeff_prec_search,
                   FLAC__stream_encoder_set_do_escape_coding, FLAC__stream_encoder_set_do_exhaustive_model_search,
                   FLAC__stream_encoder_set_min_residual_partition_order, FLAC__stream_encoder_set_max_residual_partition_order,
-                  FLAC__stream_encoder_set_rice_parameter_search_dist,
+                  FLAC__stream_encoder_set_limit_min_bitrate, FLAC__stream_encoder_set_rice_parameter_search_dist,
                   FLAC__stream_encoder_set_total_samples_estimate /* , FLAC__stream_encoder_set_metadata */, FLAC__stream_encoder_init_stream,
                   FLAC__stream_encoder_init_ogg_stream, FLAC__stream_encoder_init_file, FLAC__stream_encoder_init_ogg_file,
                   FLAC__STREAM_ENCODER_INIT_STATUS_OK as FLAC__StreamEncoderInitStatus_FLAC__STREAM_ENCODER_INIT_STATUS_OK};
@@ -485,6 +485,17 @@ impl FlacEncoderConfig {
     /// **Default**: `5`
     pub fn max_residual_partition_order(self, value: u32) -> FlacEncoderConfig {
         unsafe { FLAC__stream_encoder_set_max_residual_partition_order((self.0).0, value) };
+        self
+    }
+
+    /// Limit the compression of digital silence to prevent streaming connection loss
+    ///
+    /// See https://github.com/xiph/flac/pull/264
+    ///
+    /// **Default**: `false`
+    #[cfg(feature = "libflac-nobuild")]
+    pub fn set_limit_min_bitrate(self, value: bool) -> FlacEncoderConfig {
+        unsafe { FLAC__stream_encoder_set_limit_min_bitrate((self.0).0, value as FLAC__bool) };
         self
     }
 
