@@ -4,7 +4,8 @@
 //!
 //! There are two supported libFLAC back-ends:
 //!   * [`flac-sys`](https://crates.io/crates/flac-sys), under the `"flac"` feature, the default, and
-//!   * [`libflac-sys`](https://crates.io/crates/libflac-sys), under the `"libflac"` feature group.
+//!   * [`libflac-sys`](https://crates.io/crates/libflac-sys), under the `"libflac"` feature group
+//!     (better-maintained, [`FlacEncoderConfig::set_limit_min_bitrate()`] is only available here).
 //!
 //! `flac-sys` tries to link to a libFLAC already present on your system, but it doesn't do a very good job, and might need some help by copying
 //! `/usr/lib/x86_64-linux-gnu/libFLAC.so` (Debian), `$MSYSROOT\mingw64\lib\libflac.dll.a` (msys2), or equivalent
